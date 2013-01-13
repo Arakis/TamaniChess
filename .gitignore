@@ -9,3 +9,4 @@ TestResults
 *.csproj.user
 *.vspscc
 *.vssscc
+*.lck
