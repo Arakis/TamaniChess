@@ -6,3 +6,6 @@ obj
 TestResults
 
 *.suo
+*.csproj.user
+*.vspscc
+*.vssscc
