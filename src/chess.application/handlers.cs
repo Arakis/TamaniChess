@@ -257,8 +257,6 @@ namespace chess.application
 	public class TComputerMoveHandler : TMoveHandler
 	{
 
-		public List<TSwitchChangeEvent> changes = new List<TSwitchChangeEvent>();
-
 		public TMove move;
 
 		public TComputerMoveHandler(TMove move) {
@@ -279,23 +277,18 @@ namespace chess.application
 		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
 			base.onPieceChangedDelay(e);
 
-			if (e.pos != move.pos1 && changes.Count == 0) {
-				Console.WriteLine("Wrong computer's pice");
+			if (e.pos == move.pos1) tmpMove.pos1 = e.pos;
+			else if (e.pos == move.pos2) tmpMove.pos2 = e.pos;
+			else {
+				Console.WriteLine("Wrong position");
 				return;
 			}
 
-			if (e.pos != move.pos2 && changes.Count == 1) {
-				Console.WriteLine("Wrong computer's destination position");
-				return;
-			}
-
-			if (changes.Count == 0) {
+			if (tmpMove.pos1 != null) {
 				foreach (var led in boardLeds.getAllFieldLeds(move.pos1)) led.off();
 				foreach (var led in boardLeds.getAllFieldLeds(move.pos2)) led.on();
-
-				changes.Add(e);
 			}
-			else if (changes.Count == 1) {
+			if (tmpMove.pos1 != null && tmpMove.pos2 != null) {
 
 				string newFEN;
 				bool isCheck;

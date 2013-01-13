@@ -96,7 +96,8 @@ namespace chess.application
 				engine = new TEngine();
 				engine.start();
 				
-				board.newGame("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1");
+				//board.newGame("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1");
+				board.newGame();
 				
 				initHandler.uninstall();
 
