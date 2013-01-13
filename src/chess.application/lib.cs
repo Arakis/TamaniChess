@@ -293,6 +293,8 @@ namespace chess.application
 
 			bool changedDelay = false;
 			const int switchDelay = 300;
+			//const int switchDelay = 3000;
+
 			if (watch.IsRunning && watch.ElapsedMilliseconds >= switchDelay) {
 				watch.Stop();
 				ioHardware.updateDelaySwitches();
@@ -581,7 +583,6 @@ namespace chess.application
 			}
 
 			if (changed) {
-				Console.Write("#");
 				oldLedBits = bitList;
 				sipo.setBits(bitList);
 			}
@@ -609,24 +610,24 @@ namespace chess.application
 
 	public class TMove
 	{
-		public TPosition pos1;
-		public TPosition pos2;
+		public TPosition start;
+		public TPosition target;
 
 		public TMove() { }
 
 		public TMove(TPosition pos1, TPosition pos2) {
-			this.pos1 = pos1;
-			this.pos2 = pos2;
+			this.start = pos1;
+			this.target = pos2;
 		}
 
 		public TMove(int x1, int y1, int x2, int y2) {
-			pos1 = new TPosition(x1, y1);
-			pos2 = new TPosition(x2, y2);
+			start = new TPosition(x1, y1);
+			target = new TPosition(x2, y2);
 		}
 
 		public TMove(string move) {
-			pos1 = new TPosition(move.Substring(0, 2));
-			pos2 = new TPosition(move.Substring(2, 2));
+			start = new TPosition(move.Substring(0, 2));
+			target = new TPosition(move.Substring(2, 2));
 		}
 
 		public static bool operator ==(TMove a, TMove b) {
@@ -640,7 +641,7 @@ namespace chess.application
 				return false;
 			}
 
-			return a.pos1 == b.pos1 && a.pos2 == b.pos2;
+			return a.start == b.start && a.target == b.target;
 		}
 
 		public static bool operator !=(TMove a, TMove b) {
@@ -652,11 +653,11 @@ namespace chess.application
 		}
 
 		public static string ToString(TPosition pos1, TPosition pos2) {
-			return TPosition.ToString(pos1.x, pos1.y) + TPosition.ToString(pos2.x, pos2.y);
+			return (pos1 == null ? "--" : pos1.ToString()) + (pos2 == null ? "--" : pos2.ToString());
 		}
 
 		public override string ToString() {
-			return ToString(pos1.x, pos1.y, pos2.x, pos2.y);
+			return ToString(start, target);
 		}
 
 	}

@@ -95,23 +95,23 @@ namespace chess.application
 
 				engine = new TEngine();
 				engine.start();
-				
-				//board.newGame("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1");
+
+				//board.newGame("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1");
 				board.newGame();
-				
-				initHandler.uninstall();
 
 				cmdThread = new TCommandLineThread();
 				cmdThread.start();
-				
+
 				var cmdHandler = new TConsoleHandler();
 				cmdHandler.install();
 
 				var dbgHandler = new TDebugHandler();
 				dbgHandler.install();
-				
+
 				ui.drawAll();
-				
+
+				initHandler.uninstall();
+
 				Console.WriteLine("ready");
 				ioController.eventLoop();
 			}

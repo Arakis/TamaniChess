@@ -145,15 +145,15 @@ namespace chess.application
 		public TMove tmpMove;
 		public TMove showMove;
 
-		public TPosition start { get { return tmpMove.pos1; } set { tmpMove.pos1 = value; } }
-		public TPosition target { get { return tmpMove.pos2; } set { tmpMove.pos2 = value; } }
+		public TPosition start { get { return tmpMove.start; } set { tmpMove.start = value; } }
+		public TPosition target { get { return tmpMove.target; } set { tmpMove.target = value; } }
 
 		public override void onDrawBoard(TDrawBoardEvent e) {
 			base.onDrawBoard(e);
 
 			if (e.type == EDrawBoardEventType.backgroundDrawed) {
-				highlightPosition(e, showMove.pos1);
-				highlightPosition(e, showMove.pos2);
+				highlightPosition(e, showMove.start);
+				highlightPosition(e, showMove.target);
 			}
 
 		}
@@ -182,7 +182,7 @@ namespace chess.application
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
-			Console.Write("-");
+			Console.Write("*");
 			base.onPieceChanged(e);
 			boardLeds.clear();
 			if ((!e.state && !app.board[e.pos].isEmtpy) || (e.state && app.board[e.pos].isEmtpy))
@@ -257,6 +257,11 @@ namespace chess.application
 	public class TComputerMoveHandler : TMoveHandler
 	{
 
+		// up fast up fast down
+		// up slow up fast down
+		// up fast up
+		// up slow up
+
 		public TMove move;
 
 		public TComputerMoveHandler(TMove move) {
@@ -267,28 +272,27 @@ namespace chess.application
 
 		public override void install() {
 			base.install();
-			foreach (var led in boardLeds.getAllFieldLeds(move.pos1)) led.on();
+			foreach (var led in boardLeds.getAllFieldLeds(move.start)) led.on();
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
-			Console.Write("-");
-		}
+			//Console.WriteLine("~");
+			if (e.pos == move.start && !e.state) tmpMove.start = e.pos;
+			if (e.pos == move.start && e.state) tmpMove.start = null;
+			if (e.pos == move.target && e.state) tmpMove.target = e.pos;
+			if (e.pos == move.target && !e.state) tmpMove.target = null;
 
-		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
-			base.onPieceChangedDelay(e);
-
-			if (e.pos == move.pos1) tmpMove.pos1 = e.pos;
-			else if (e.pos == move.pos2) tmpMove.pos2 = e.pos;
+			if (tmpMove.start == null) {
+				foreach (var led in boardLeds.getAllFieldLeds(move.target)) led.off();
+				foreach (var led in boardLeds.getAllFieldLeds(move.start)) led.on();
+			}
 			else {
-				Console.WriteLine("Wrong position");
-				return;
+				foreach (var led in boardLeds.getAllFieldLeds(move.start)) led.off();
+				foreach (var led in boardLeds.getAllFieldLeds(move.target)) led.on();
 			}
 
-			if (tmpMove.pos1 != null) {
-				foreach (var led in boardLeds.getAllFieldLeds(move.pos1)) led.off();
-				foreach (var led in boardLeds.getAllFieldLeds(move.pos2)) led.on();
-			}
-			if (tmpMove.pos1 != null && tmpMove.pos2 != null) {
+
+			if (tmpMove.start != null && tmpMove.target != null) {
 
 				string newFEN;
 				bool isCheck;
@@ -309,6 +313,11 @@ namespace chess.application
 				}
 
 			}
+		}
+
+		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
+			base.onPieceChangedDelay(e);
+
 		}
 
 	}
