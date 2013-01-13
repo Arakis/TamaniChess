@@ -77,41 +77,47 @@ namespace chess.application
 		public TUIController ui;
 
 		public void start() {
-			Console.WriteLine("chess application initialization");
+			try {
+				Console.WriteLine("chess application initialization");
 
-			ioController = new TEventController();
+				ioController = new TEventController();
 
-			var initHandler = new TInitHandler();
-			initHandler.install();
+				var initHandler = new TInitHandler();
+				initHandler.install();
 
-			ui = new TUIController();
-			ui.init();
+				ui = new TUIController();
+				ui.init();
 
-			player = new TAudioPlayer();
-			player.load("sound1", Config.soundPath + "sound1.wav");
-			player.load("sound2", Config.soundPath + "sound2.wav");
-			player.load("sound3", Config.soundPath + "sound3.wav");
+				player = new TAudioPlayer();
+				player.load("sound1", Config.soundPath + "sound1.wav");
+				player.load("sound2", Config.soundPath + "sound2.wav");
+				player.load("sound3", Config.soundPath + "sound3.wav");
 
-			engine = new TEngine();
-			engine.start();
+				engine = new TEngine();
+				engine.start();
+				
+				board.newGame("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1");
+				
+				initHandler.uninstall();
 
-			board.newGame("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBN1 w KQkq - 0 1");
+				cmdThread = new TCommandLineThread();
+				cmdThread.start();
+				
+				var cmdHandler = new TConsoleHandler();
+				cmdHandler.install();
 
-			initHandler.uninstall();
-
-			cmdThread = new TCommandLineThread();
-			cmdThread.start();
-
-			var cmdHandler = new TConsoleHandler();
-			cmdHandler.install();
-
-			var dbgHandler = new TDebugHandler();
-			dbgHandler.install();
-
-			ui.drawAll();
-
-			Console.WriteLine("ready");
-			ioController.eventLoop();
+				var dbgHandler = new TDebugHandler();
+				dbgHandler.install();
+				
+				ui.drawAll();
+				
+				Console.WriteLine("ready");
+				ioController.eventLoop();
+			}
+			catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
+				Thread.Sleep(5000);
+			}
 		}
 
 		//public void start() {

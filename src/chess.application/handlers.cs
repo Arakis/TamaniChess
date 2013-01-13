@@ -279,12 +279,12 @@ namespace chess.application
 		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
 			base.onPieceChangedDelay(e);
 
-			if (!e.pos.Equals(move.pos1) && changes.Count == 0) {
+			if (e.pos != move.pos1 && changes.Count == 0) {
 				Console.WriteLine("Wrong computer's pice");
 				return;
 			}
 
-			if (!e.pos.Equals(move.pos2) && changes.Count == 1) {
+			if (e.pos != move.pos2 && changes.Count == 1) {
 				Console.WriteLine("Wrong computer's destination position");
 				return;
 			}

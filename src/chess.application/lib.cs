@@ -306,9 +306,9 @@ namespace chess.application
 				}
 
 				//if (changedDelay) {
-					if (onPiecesChangedDelay != null) {
-						onPiecesChangedDelay(new TSwitchesChangesEvent() { oldSwitches = ioHardware.figureSwitchesOldDelay, newSwitches = ioHardware.figureSwitchesNewDelay });
-					}
+				if (onPiecesChangedDelay != null) {
+					onPiecesChangedDelay(new TSwitchesChangesEvent() { oldSwitches = ioHardware.figureSwitchesOldDelay, newSwitches = ioHardware.figureSwitchesNewDelay });
+				}
 				//}
 			}
 
@@ -629,6 +629,24 @@ namespace chess.application
 			pos2 = new TPosition(move.Substring(2, 2));
 		}
 
+		public static bool operator ==(TMove a, TMove b) {
+			// If both are null, or both are same instance, return true.
+			if (System.Object.ReferenceEquals(a, b)) {
+				return true;
+			}
+
+			// If one is null, but not both, return false.
+			if (((object)a == null) || ((object)b == null)) {
+				return false;
+			}
+
+			return a.pos1 == b.pos1 && a.pos2 == b.pos2;
+		}
+
+		public static bool operator !=(TMove a, TMove b) {
+			return !(a == b);
+		}
+
 		public static string ToString(int x1, int y1, int x2, int y2) {
 			return TPosition.ToString(x1, y1) + TPosition.ToString(x2, y2);
 		}
@@ -648,12 +666,22 @@ namespace chess.application
 		public int x;
 		public int y;
 
-		public override bool Equals(object obj) {
-			return Equals((TPosition)obj);
+		public static bool operator ==(TPosition a, TPosition b) {
+			// If both are null, or both are same instance, return true.
+			if (System.Object.ReferenceEquals(a, b)) {
+				return true;
+			}
+
+			// If one is null, but not both, return false.
+			if (((object)a == null) || ((object)b == null)) {
+				return false;
+			}
+
+			return a != null && b != null && a.x == b.x && a.y == b.y;
 		}
 
-		public bool Equals(TPosition obj) {
-			return x == obj.x && y == obj.y;
+		public static bool operator !=(TPosition a, TPosition b) {
+			return !(a == b);
 		}
 
 		public TPosition(int x, int y) {
