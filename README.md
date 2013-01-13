@@ -9,7 +9,7 @@ TamaniChess is a open source chess computer. This project contains:
 * The software, written in C#. It controls the chess board, the display and the chess engine
 * The "Stockfish" chess engine: http://stockfishchess.org/
 
-COMMON QUESTIONS
+Common Questions
 ----------------
 
 Q. Is TamaniChess Open Source?  
