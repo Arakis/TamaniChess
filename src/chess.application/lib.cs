@@ -612,6 +612,7 @@ namespace chess.application
 	{
 		public TPosition start;
 		public TPosition target;
+		public EPieceType pawnConversion = EPieceType.none;
 
 		public TMove() { }
 
@@ -628,7 +629,10 @@ namespace chess.application
 		public TMove(string move) {
 			start = new TPosition(move.Substring(0, 2));
 			target = new TPosition(move.Substring(2, 2));
+			if (move.Length > 4) pawnConversion = TChessBoard.getPieceFromChar(move.Substring(4, 1)[0]).getPieceType();
 		}
+
+		#region comparison
 
 		public static bool operator ==(TMove a, TMove b) {
 			// If both are null, or both are same instance, return true.
@@ -641,23 +645,33 @@ namespace chess.application
 				return false;
 			}
 
-			return a.start == b.start && a.target == b.target;
+			return a.start == b.start && a.target == b.target && a.pawnConversion == b.pawnConversion;
 		}
 
 		public static bool operator !=(TMove a, TMove b) {
 			return !(a == b);
 		}
 
-		public static string ToString(int x1, int y1, int x2, int y2) {
-			return TPosition.ToString(x1, y1) + TPosition.ToString(x2, y2);
+		public override bool Equals(object obj) {
+			return this == (TMove)obj;
 		}
 
-		public static string ToString(TPosition pos1, TPosition pos2) {
-			return (pos1 == null ? "--" : pos1.ToString()) + (pos2 == null ? "--" : pos2.ToString());
+		public bool Equals(TMove obj) {
+			return this == obj;
+		}
+
+		#endregion
+
+		public static string ToString(int x1, int y1, int x2, int y2, EPieceType pawnConversion) {
+			return TPosition.ToString(x1, y1) + TPosition.ToString(x2, y2) + (pawnConversion == EPieceType.none ? "" : TChessBoard.pieceTypeToChar(pawnConversion).ToString());
+		}
+
+		public static string ToString(TPosition pos1, TPosition pos2, EPieceType pawnConversion) {
+			return (pos1 == null ? "--" : pos1.ToString()) + (pos2 == null ? "--" : pos2.ToString()) + (pawnConversion == EPieceType.none ? "" : TChessBoard.pieceTypeToChar(pawnConversion).ToString());
 		}
 
 		public override string ToString() {
-			return ToString(start, target);
+			return ToString(start, target, pawnConversion);
 		}
 
 	}
@@ -666,6 +680,8 @@ namespace chess.application
 	{
 		public int x;
 		public int y;
+
+		#region comparison
 
 		public static bool operator ==(TPosition a, TPosition b) {
 			// If both are null, or both are same instance, return true.
@@ -684,6 +700,16 @@ namespace chess.application
 		public static bool operator !=(TPosition a, TPosition b) {
 			return !(a == b);
 		}
+
+		public override bool Equals(object obj) {
+			return this == (TPosition)obj;
+		}
+
+		public bool Equals(TPosition obj) {
+			return this == obj;
+		}
+
+		#endregion
 
 		public TPosition(int x, int y) {
 			this.x = x;
@@ -997,8 +1023,8 @@ namespace chess.application
 			return sb.ToString();
 		}
 
-		public static char pieceToChar(EPiece fig) {
-			switch (fig) {
+		public static char pieceToChar(EPiece piece) {
+			switch (piece) {
 				case EPiece.bRock: return 'r';
 				case EPiece.bKnight: return 'n';
 				case EPiece.bBishop: return 'b';
@@ -1015,6 +1041,18 @@ namespace chess.application
 
 				default: return '1';
 			}
+		}
+
+		public static char pieceTypeToChar(EPieceType pieceType) {
+			switch (pieceType) {
+				case EPieceType.rock: return 'r';
+				case EPieceType.knight: return 'n';
+				case EPieceType.bishop: return 'b';
+				case EPieceType.queen: return 'q';
+				case EPieceType.king: return 'k';
+				case EPieceType.pawn: return 'p';
+			}
+			throw new ArgumentException();
 		}
 
 		public static EPiece getPieceFromChar(char c) {

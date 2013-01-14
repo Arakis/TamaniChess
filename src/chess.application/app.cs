@@ -96,7 +96,8 @@ namespace chess.application
 				engine = new TEngine();
 				engine.start();
 
-				//board.newGame("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1");
+				//board.newGame("k7/8/8/8/8/7p/8/K7 w - - 0 1");
+				//board.newGame("k7/7P/8/8/8/8/8/K7 b - - 0 1");
 				board.newGame();
 
 				cmdThread = new TCommandLineThread();

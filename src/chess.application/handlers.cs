@@ -182,7 +182,7 @@ namespace chess.application
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
-			Console.Write("*");
+			Console.WriteLine(e.pos.ToString() + e.state.ToString());
 			base.onPieceChanged(e);
 			boardLeds.clear();
 			if ((!e.state && !app.board[e.pos].isEmtpy) || (e.state && app.board[e.pos].isEmtpy))
@@ -230,7 +230,7 @@ namespace chess.application
 			string newFEN;
 			bool isCheck;
 
-			if (engine.validateMove(app.board.FEN, TMove.ToString(start, target), out newFEN, out isCheck)) {
+			if (engine.validateMove(app.board.FEN, tmpMove.ToString(), out newFEN, out isCheck)) {
 				app.player.play("sound3");
 				app.board.setFEN(newFEN);
 				//board.copyTo(boardTemp);
@@ -276,7 +276,7 @@ namespace chess.application
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
-			//Console.WriteLine("~");
+			Console.WriteLine(e.pos.ToString() + e.state.ToString());
 			if (e.pos == move.start && !e.state) tmpMove.start = e.pos;
 			if (e.pos == move.start && e.state) tmpMove.start = null;
 			if (e.pos == move.target && e.state) tmpMove.target = e.pos;
