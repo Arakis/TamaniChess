@@ -325,6 +325,11 @@ namespace chess.application
 	public class TDebugHandler : THandler
 	{
 
+		public override void onButtonChanged(TButtonChangeEvent e) {
+			base.onButtonChanged(e);
+			Console.WriteLine("***");
+		}
+
 		public override void onConsoleLine(TConsoleLineEvent e) {
 			base.onConsoleLine(e);
 			if (e.command == "f1") {
@@ -332,6 +337,8 @@ namespace chess.application
 					Console.WriteLine(h.GetType().Name);
 			}
 		}
+
+		
 
 	}
 

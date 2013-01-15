@@ -105,6 +105,12 @@ namespace chess.application
 		public virtual void onPiecesChangedDelay(TSwitchesChangesEvent e) { }
 		public virtual void onPieceChanged(TSwitchChangeEvent e) { }
 		public virtual void onPiecesChanged(TSwitchesChangesEvent e) { }
+
+		public virtual void onButtonChangedDelay(TButtonChangeEvent e) { }
+		public virtual void onButtonsChangedDelay(TButtonsChangesEvent e) { }
+		public virtual void onButtonChanged(TButtonChangeEvent e) { }
+		public virtual void onButtonsChanged(TButtonsChangesEvent e) { }
+
 		public virtual void onConsoleLine(TConsoleLineEvent e) { }
 
 		public virtual void onDrawBoard(TDrawBoardEvent e) { }
@@ -136,6 +142,18 @@ namespace chess.application
 		PiecesDrawed
 	}
 
+	public class TButtonChangeEvent
+	{
+		public bool state;
+		public EButton button;
+	}
+
+	public class TButtonsChangesEvent
+	{
+		public bool[] oldSwitches;
+		public bool[] newSwitches;
+	}
+
 	public class TSwitchChangeEvent
 	{
 		public TPosition pos;
@@ -157,6 +175,10 @@ namespace chess.application
 
 	public delegate void DPieceChanged(TSwitchChangeEvent e);
 	public delegate void DPiecesChanged(TSwitchesChangesEvent e);
+
+	public delegate void DButtonChanged(TButtonChangeEvent e);
+	public delegate void DButtonsChanged(TButtonsChangesEvent e);
+
 	public delegate void DConsoleLine(TConsoleLineEvent e);
 
 	public class THandlerList : List<THandler>
@@ -186,6 +208,12 @@ namespace chess.application
 		public event DPiecesChanged onPiecesChangedDelay;
 		public event DPieceChanged onPieceChanged;
 		public event DPiecesChanged onPiecesChanged;
+
+		public event DButtonChanged onButtonChangedDelay;
+		public event DButtonsChanged onButtonsChangedDelay;
+		public event DButtonChanged onButtonChanged;
+		public event DButtonsChanged onButtonsChanged;
+
 		public event DConsoleLine onConsoleLine;
 		public event Action onProcessEvents;
 
@@ -219,6 +247,32 @@ namespace chess.application
 						h.onPiecesChanged(e);
 			};
 
+			//--
+			onButtonChangedDelay += (e) => {
+				foreach (var h in handlers.ToArray())
+					if (h.active)
+						h.onButtonChangedDelay(e);
+			};
+
+			onButtonsChangedDelay += (e) => {
+				foreach (var h in handlers.ToArray())
+					if (h.active)
+						h.onButtonsChangedDelay(e);
+			};
+
+			onButtonChanged += (e) => {
+				foreach (var h in handlers.ToArray())
+					if (h.active)
+						h.onButtonChanged(e);
+			};
+
+			onButtonsChanged += (e) => {
+				foreach (var h in handlers.ToArray())
+					if (h.active)
+						h.onButtonsChanged(e);
+			};
+
+			//--
 			onProcessEvents += () => {
 				foreach (var h in handlers.ToArray())
 					if (h.active)
@@ -272,6 +326,7 @@ namespace chess.application
 			ioHardware.updateSwitches();
 
 			bool changed = false;
+			bool buttonsChanged = false;
 			for (var y = 0; y < 8; y++) {
 				for (var x = 0; x < 8; x++) {
 					if (ioHardware.figureSwitchesNew[x, y] != ioHardware.figureSwitchesOld[x, y]) {
@@ -279,7 +334,13 @@ namespace chess.application
 						if (onPieceChanged != null) onPieceChanged(new TSwitchChangeEvent() { pos = new TPosition(x, y), state = ioHardware.figureSwitchesNew[x, y] });
 					}
 				}
-				if (changed) break;
+				//if (changed) break;
+			}
+			for (var i = 0; i < ioHardware.sideSwitchCount; i++) {
+				if (ioHardware.sideSwitchesNew[i] != ioHardware.sideSwitchesOld[i]) {
+					buttonsChanged = true;
+					if (onButtonChanged != null) onButtonChanged(new TButtonChangeEvent() { state = ioHardware.sideSwitchesNew[i] });
+				}
 			}
 
 			if (changed) {
@@ -291,7 +352,6 @@ namespace chess.application
 				}
 			}
 
-			bool changedDelay = false;
 			const int switchDelay = 300;
 			//const int switchDelay = 3000;
 
@@ -301,17 +361,14 @@ namespace chess.application
 				for (var y = 0; y < 8; y++) {
 					for (var x = 0; x < 8; x++) {
 						if (ioHardware.figureSwitchesNewDelay[x, y] != ioHardware.figureSwitchesOldDelay[x, y]) {
-							//changedDelay = true;
 							if (onPieceChangedDelay != null) onPieceChangedDelay(new TSwitchChangeEvent() { pos = new TPosition(x, y), state = ioHardware.figureSwitchesNewDelay[x, y] });
 						}
 					}
 				}
 
-				//if (changedDelay) {
 				if (onPiecesChangedDelay != null) {
 					onPiecesChangedDelay(new TSwitchesChangesEvent() { oldSwitches = ioHardware.figureSwitchesOldDelay, newSwitches = ioHardware.figureSwitchesNewDelay });
 				}
-				//}
 			}
 
 			lock (Program.app.consoleCommandQueue)
@@ -442,6 +499,15 @@ namespace chess.application
 
 	}
 
+	[Flags]
+	public enum EButton
+	{
+		none = 0,
+		ok = 1,
+		up = 2,
+		down = 4,
+	}
+
 	public class TIOHardware
 	{
 
@@ -453,6 +519,7 @@ namespace chess.application
 		private TBitMapping ledMappingSpecial;
 		private TBitMapping outMapping;
 		private TBitMapping outMappingBugFix;
+		private TBitMapping sideMapping;
 
 		public bool[,] figureSwitchesOld = new bool[8, 8];
 		public bool[,] figureSwitchesNew = new bool[8, 8];
@@ -460,14 +527,22 @@ namespace chess.application
 		public bool[,] figureSwitchesOldDelay = new bool[8, 8];
 		public bool[,] figureSwitchesNewDelay = new bool[8, 8];
 
-		public bool[,] copySwitches() {
-			var bits = new bool[8, 8];
-			for (var y = 0; y < 9; y++)
-				for (var x = 0; x < 9; x++)
-					bits[x, y] = figureSwitchesNew[x, y];
+		public int sideSwitchCount = 16;
 
-			return bits;
-		}
+		public bool[] sideSwitchesOld;
+		public bool[] sideSwitchesNew;
+
+		public bool[] sideSwitchesOldDelay;
+		public bool[] sideSwitchesNewDelay;
+
+		//public bool[,] copySwitches() {
+		//	var bits = new bool[8, 8];
+		//	for (var y = 0; y < 9; y++)
+		//		for (var x = 0; x < 9; x++)
+		//			bits[x, y] = figureSwitchesNew[x, y];
+
+		//	return bits;
+		//}
 
 		public void updateDelaySwitches() {
 			for (var y = 0; y < 8; y++) {
@@ -475,6 +550,12 @@ namespace chess.application
 					figureSwitchesOldDelay[x, y] = figureSwitchesNewDelay[x, y];
 					figureSwitchesNewDelay[x, y] = figureSwitchesNew[x, y];
 				}
+			}
+
+			for (var i = 0; i < sideSwitchCount; i++) {
+				sideSwitchesOldDelay[i] = sideSwitchesNewDelay[i];
+				sideSwitchesNewDelay[i] = sideSwitchesNew[i];
+				if (sideSwitchesNew[i]) Console.Write(i);
 			}
 		}
 
@@ -524,6 +605,13 @@ namespace chess.application
 			outMappingBugFix = new TBitMapping(8);
 			outMappingBugFix.setMapping(4, 0, 1, 2, 5, 7, 6, 3);
 
+			sideMapping = new TBitMapping(8);
+			sideMapping.setMapping(7, 0, 1, 2, 3, 4, 5, 6);
+
+			sideSwitchesOld = new bool[sideSwitchCount];
+			sideSwitchesNew = new bool[sideSwitchCount];
+			sideSwitchesOldDelay = new bool[sideSwitchCount];
+			sideSwitchesNewDelay = new bool[sideSwitchCount];
 		}
 
 		public void updateSwitches() {
@@ -531,14 +619,18 @@ namespace chess.application
 			figureSwitchesNew = new bool[8, 8];
 
 			piso.load();
-			readSwitchBits(0, 0, figureSwitchesNew);
-			readSwitchBits(0, 2, figureSwitchesNew);
-			readSwitchBits(0, 4, figureSwitchesNew, outMappingBugFix);
-			readSwitchBits(0, 6, figureSwitchesNew);
-			readSwitchBits(4, 6, figureSwitchesNew);
-			readSwitchBits(4, 4, figureSwitchesNew);
-			readSwitchBits(4, 2, figureSwitchesNew);
-			readSwitchBits(4, 0, figureSwitchesNew);
+			readFieldSwitchBits(0, 0, figureSwitchesNew);
+			readFieldSwitchBits(0, 2, figureSwitchesNew);
+			readFieldSwitchBits(0, 4, figureSwitchesNew, outMappingBugFix);
+			readFieldSwitchBits(0, 6, figureSwitchesNew);
+			readFieldSwitchBits(4, 6, figureSwitchesNew);
+			readFieldSwitchBits(4, 4, figureSwitchesNew);
+			readFieldSwitchBits(4, 2, figureSwitchesNew);
+			readFieldSwitchBits(4, 0, figureSwitchesNew);
+
+			sideSwitchesOld = sideSwitchesNew;
+			sideSwitchesNew = new bool[sideSwitchCount];
+			readSideSwitchBits(0, 8, sideSwitchesNew);
 		}
 
 		private List<bool> oldLedBits = new List<bool>();
@@ -588,13 +680,19 @@ namespace chess.application
 			}
 		}
 
-		private void readSwitchBits(int x, int y, bool[,] figureSwitches, TBitMapping mapping = null) {
+		private void readFieldSwitchBits(int x, int y, bool[,] figureSwitches, TBitMapping mapping = null) {
 			if (mapping == null) mapping = outMapping;
 			var tmpBits = mapping.convert(piso.readBits(8, false)).ToArray();
 			for (var i = 0; i < 4; i++) {
 				figureSwitches[x + i, y] = tmpBits[i];
 				figureSwitches[x + i, y + 1] = tmpBits[i + 4];
 			}
+		}
+
+		private void readSideSwitchBits(int index, int count, bool[] sideSwitches, TBitMapping mapping = null) {
+			if (mapping == null) mapping = sideMapping;
+			var tmpBits = mapping.convert(piso.readBits(8, false)).ToArray();
+			Array.Copy(tmpBits, 0, sideSwitches, index, count);
 		}
 
 		private void addLedBits(int x, int y, bool[,] ledBits, List<bool> bitList) {
