@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iotest", "tests\iotest\iote
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chess.launcher", "chess.launcher\chess.launcher.csproj", "{CCA4E073-988F-4E4F-9B7A-56FC4D296C81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspberryPiDotNet", "thirdparty\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj", "{FC84D8A0-B578-4663-9BDA-D946513E2801}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspberryPiDotNet", "..\..\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj", "{FC84D8A0-B578-4663-9BDA-D946513E2801}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

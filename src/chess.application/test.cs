@@ -60,22 +60,23 @@ namespace chess.application
 			//Console.WriteLine(IONative.getpid());
 			var device = new RPI();
 
-			//var SDI = device.createPin(GPIO.GPIOPins.GPIO10, GPIO.DirectionEnum.OUT, false);
-			//var CLK = device.createPin(GPIO.GPIOPins.GPIO11, GPIO.DirectionEnum.OUT, false);
-			//var CS = device.createPin(GPIO.GPIOPins.GPIO27, GPIO.DirectionEnum.OUT, false);
+			var D9 = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			var D10 = device.createPin(GPIOPins.V2_GPIO_15, GPIODirection.Out, false);
+			var D11 = device.createPin(GPIOPins.V2_GPIO_14, GPIODirection.Out, false);
 
-			//var RST = device.createPin(GPIO.GPIOPins.GPIO04, GPIO.DirectionEnum.OUT, false);
-			//var RS = device.createPin(GPIO.GPIOPins.GPIO17, GPIO.DirectionEnum.OUT, false);
+			var D12 = device.createPin(GPIOPins.V2_GPIO_31, GPIODirection.Out, false);
+			var D13 = device.createPin(GPIOPins.V2_GPIO_29, GPIODirection.Out, false);
+			var D14 = device.createPin(GPIOPins.V2_GPIO_30, GPIODirection.Out, false);
+			var D15 = device.createPin(GPIOPins.V2_GPIO_28, GPIODirection.Out, false);
 
-			var SDI = device.createPin(GPIO.GPIOPins.GPIO25, GPIO.DirectionEnum.OUT, false);
-			var CLK = device.createPin(GPIO.GPIOPins.GPIO08, GPIO.DirectionEnum.OUT, false);
-			var CS = device.createPin(GPIO.GPIOPins.GPIO07, GPIO.DirectionEnum.OUT, false);
+			var D16_SDI = device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
+			var D17_CLK = device.createPin(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			var CS = device.createPin(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIO.GPIOPins.GPIO23, GPIO.DirectionEnum.OUT, false);
-			var RS = device.createPin(GPIO.GPIOPins.GPIO24, GPIO.DirectionEnum.OUT, false);
+			var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
+			var RS = device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
 
-
-			var spi = new TSPIEmulator(SDI, null, CLK, CS);
+			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
 			//var spi = new TSPIFile(0, 1, CS);
 			//var spi = new TSPI_BCM(CS);
 			var rnd = new Random();
@@ -90,7 +91,7 @@ namespace chess.application
 			lcd.cls();
 
 			var adapter = new TOLEDDisplayAdapter(lcd);
-			adapter.update(bg, 0, 0, lcd.width, lcd.height);
+			//adapter.update(bg, 0, 0, lcd.width, lcd.height);
 
 			var bmp = new Bitmap(160, 128);
 			var gfx = Graphics.FromImage(bmp);
@@ -109,20 +110,20 @@ namespace chess.application
 			st.Add("Neunter Eintrag");
 			st.Add("Zehnter Eintrag");
 
-
 			while (true) {
-				gfx.DrawImage(bg, 0, 0);
+				gfx.Clear(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
+				//gfx.DrawImage(bg, 0, 0);
 
 				st.Add(st[0]);
 				st.RemoveAt(0);
 				//gfx.DrawString(string.Join("\n", st.ToArray()), new Font(FontFamily.GenericSansSerif, 11), new SolidBrush(Color.DarkBlue), new PointF(0, 0));
 
-				gfx.DrawString("Schach", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
+				//gfx.DrawString("Schach", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
 
 				watch.Restart();
 				adapter.update(bmp, 0, 0, lcd.width, lcd.height);
 				Console.WriteLine(watch.ElapsedMilliseconds);
-				System.Threading.Thread.Sleep(2000);
+				//System.Threading.Thread.Sleep(2000);
 			}
 			//while (true) {
 			//lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));

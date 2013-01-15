@@ -64,6 +64,10 @@
     <Compile Include="ui.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
+      <Project>{FC84D8A0-B578-4663-9BDA-D946513E2801}</Project>
+      <Name>RaspberryPiDotNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\chess.shared\chess.shared.csproj">
       <Project>{75d520da-e59a-4866-85ad-99fde597a9d8}</Project>
       <Name>chess.shared</Name>
@@ -71,10 +75,6 @@
     <ProjectReference Include="..\larne.io.ic\larne.io.ic.csproj">
       <Project>{033A23F4-BAAB-43E0-9AA8-5FF60B13FC68}</Project>
       <Name>larne.io.ic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\thirdparty\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
-      <Project>{FC84D8A0-B578-4663-9BDA-D946513E2801}</Project>
-      <Name>RaspberryPiDotNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

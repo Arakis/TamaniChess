@@ -321,6 +321,15 @@ namespace chess.application
 			}
 		}
 
+		private EButton getButtonBySwitchIndex(int index) {
+			switch (index) {
+				case 0: return EButton.down;
+				case 1: return EButton.ok;
+				case 2: return EButton.up;
+				default: return EButton.none;
+			}
+		}
+
 		private System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 		private void processEvents() {
 			ioHardware.updateSwitches();
@@ -339,7 +348,7 @@ namespace chess.application
 			for (var i = 0; i < ioHardware.sideSwitchCount; i++) {
 				if (ioHardware.sideSwitchesNew[i] != ioHardware.sideSwitchesOld[i]) {
 					buttonsChanged = true;
-					if (onButtonChanged != null) onButtonChanged(new TButtonChangeEvent() { state = ioHardware.sideSwitchesNew[i] });
+					if (onButtonChanged != null) onButtonChanged(new TButtonChangeEvent() { state = ioHardware.sideSwitchesNew[i], button = getButtonBySwitchIndex(i) });
 				}
 			}
 
@@ -574,18 +583,18 @@ namespace chess.application
 
 			var namedPins = new TNamedPins();
 
-			namedPins.Add("LOW", device.createPin(GPIO.GPIOPins.GPIO03, GPIO.DirectionEnum.OUT, false));
-			namedPins.Add("HI", device.createPin(GPIO.GPIOPins.GPIO27, GPIO.DirectionEnum.OUT, true));
+			namedPins.Add("LOW", device.createPin(GPIOPins.V2_GPIO_03, GPIODirection.Out, false));
+			namedPins.Add("HI", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, true));
 
-			namedPins.Add("SER", device.createPin(GPIO.GPIOPins.GPIO02, GPIO.DirectionEnum.OUT, false));
+			namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_02, GPIODirection.Out, false));
 			namedPins.Add("OE", null);
-			namedPins.Add("RCLK", device.createPin(GPIO.GPIOPins.GPIO04, GPIO.DirectionEnum.OUT, false));
-			namedPins.Add("SRCLK", device.createPin(GPIO.GPIOPins.GPIO17, GPIO.DirectionEnum.OUT, false));
+			namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_04, GPIODirection.Out, false));
+			namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, false));
 			namedPins.Add("SRCLR", null);
 
-			namedPins.Add("O7", device.createPin(GPIO.GPIOPins.GPIO10, GPIO.DirectionEnum.IN));
-			namedPins.Add("CP", device.createPin(GPIO.GPIOPins.GPIO09, GPIO.DirectionEnum.OUT, false));
-			namedPins.Add("PL", device.createPin(GPIO.GPIOPins.GPIO11, GPIO.DirectionEnum.OUT, false));
+			namedPins.Add("O7", device.createPin(GPIOPins.V2_GPIO_10, GPIODirection.In));
+			namedPins.Add("CP", device.createPin(GPIOPins.V2_GPIO_09, GPIODirection.Out, false));
+			namedPins.Add("PL", device.createPin(GPIOPins.V2_GPIO_11, GPIODirection.Out, false));
 
 			sipo = new TSIPO(namedPins["SER"], namedPins["OE"], namedPins["RCLK"], namedPins["SRCLK"], namedPins["SRCLR"]);
 			sipo.setBits(new int[200]); //clear all

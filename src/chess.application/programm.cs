@@ -45,8 +45,8 @@ namespace chess.application
 		public static TApplication app;
 
 		static void Main(string[] args) {
-			startApp();
-			//startTest();
+			//startApp();
+			startTest();
 		}
 
 		private static void startApp() {

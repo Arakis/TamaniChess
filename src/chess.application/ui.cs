@@ -119,12 +119,12 @@ namespace chess.application
 		public void init() {
 			var device = new RPI();
 
-			var SDI = device.createPin(GPIO.GPIOPins.GPIO25, GPIO.DirectionEnum.OUT, false);
-			var CLK = device.createPin(GPIO.GPIOPins.GPIO08, GPIO.DirectionEnum.OUT, false);
-			var CS = device.createPin(GPIO.GPIOPins.GPIO07, GPIO.DirectionEnum.OUT, false);
+			var SDI = device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
+			var CLK = device.createPin(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			var CS = device.createPin(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIO.GPIOPins.GPIO23, GPIO.DirectionEnum.OUT, false);
-			var RS = device.createPin(GPIO.GPIOPins.GPIO24, GPIO.DirectionEnum.OUT, false);
+			var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
+			var RS = device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
 
 			var spi = new TSPIEmulator(SDI, null, CLK, CS);
 			var watch = new System.Diagnostics.Stopwatch();

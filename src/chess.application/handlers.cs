@@ -327,7 +327,7 @@ namespace chess.application
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
 			base.onButtonChanged(e);
-			Console.WriteLine("***");
+			Console.WriteLine(e.button);
 		}
 
 		public override void onConsoleLine(TConsoleLineEvent e) {

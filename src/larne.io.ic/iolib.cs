@@ -181,24 +181,24 @@ namespace larne.io.ic
 	public abstract class Device
 	{
 
-		public abstract GPIO createPin(GPIO.GPIOPins pin);
-		public abstract GPIO createPin(GPIO.GPIOPins pin, GPIO.DirectionEnum direction);
-		public abstract GPIO createPin(GPIO.GPIOPins pin, GPIO.DirectionEnum direction, bool initialValue);
+		public abstract GPIO createPin(GPIOPins pin);
+		public abstract GPIO createPin(GPIOPins pin, GPIODirection direction);
+		public abstract GPIO createPin(GPIOPins pin, GPIODirection direction, bool initialValue);
 
 	}
 
 	public class RPI : Device
 	{
 
-		public override GPIO createPin(GPIO.GPIOPins pin) {
+		public override GPIO createPin(GPIOPins pin) {
 			return new GPIOMem(pin);
 		}
 
-		public override GPIO createPin(GPIO.GPIOPins pin, GPIO.DirectionEnum direction) {
+		public override GPIO createPin(GPIOPins pin, GPIODirection direction) {
 			return new GPIOMem(pin, direction);
 		}
 
-		public override GPIO createPin(GPIO.GPIOPins pin, GPIO.DirectionEnum direction, bool initialValue) {
+		public override GPIO createPin(GPIOPins pin, GPIODirection direction, bool initialValue) {
 			return new GPIOMem(pin, direction, initialValue);
 		}
 
@@ -391,29 +391,29 @@ namespace larne.io.ic
 		private GPIO CS;
 
 		public TSPI_BCM(GPIO CS = null) {
-			this.CS = CS;
-			GPIOMem.Initialize();
+			//this.CS = CS;
+			//GPIOMem.Initialize();
 
-			BCM2835Native.bcm2835_spi_begin();
-			BCM2835Native.bcm2835_spi_setBitOrder(BCM2835Native.BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
-			BCM2835Native.bcm2835_spi_setDataMode(BCM2835Native.BCM2835_SPI_MODE0);                   // 0, 3
-			BCM2835Native.bcm2835_spi_setClockDivider(BCM2835Native.BCM2835_SPI_CLOCK_DIVIDER_16); // The default
-			BCM2835Native.bcm2835_spi_chipSelect(BCM2835Native.BCM2835_SPI_CS_NONE);                      // The default
-			//BCM2835Native.bcm2835_spi_setChipSelectPolarity(BCM2835Native.BCM2835_SPI_CS0, BCM2835Native.LOW); // the default
-			CS.Write(true);
+			//BCM2835Native.bcm2835_spi_begin();
+			//BCM2835Native.bcm2835_spi_setBitOrder(BCM2835Native.BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
+			//BCM2835Native.bcm2835_spi_setDataMode(BCM2835Native.BCM2835_SPI_MODE0);                   // 0, 3
+			//BCM2835Native.bcm2835_spi_setClockDivider(BCM2835Native.BCM2835_SPI_CLOCK_DIVIDER_16); // The default
+			//BCM2835Native.bcm2835_spi_chipSelect(BCM2835Native.BCM2835_SPI_CS_NONE);                      // The default
+			////BCM2835Native.bcm2835_spi_setChipSelectPolarity(BCM2835Native.BCM2835_SPI_CS0, BCM2835Native.LOW); // the default
+			//CS.Write(true);
 		}
 
 		//private int cnt;
 		public override void writeBits(bool[] bits) {
-			//System.Threading.Thread.Sleep(1);
-			CS.Write(false);
-			var bytes = IOUtils.ToByteArray(bits);
-			foreach (var b in bytes) {
-				//if (cnt++ < 20) Console.WriteLine(b);
-				BCM2835Native.bcm2835_spi_transfer(b);
-			}
-			//System.Threading.Thread.Sleep(1);
-			CS.Write(true);
+			////System.Threading.Thread.Sleep(1);
+			//CS.Write(false);
+			//var bytes = IOUtils.ToByteArray(bits);
+			//foreach (var b in bytes) {
+			//	//if (cnt++ < 20) Console.WriteLine(b);
+			//	BCM2835Native.bcm2835_spi_transfer(b);
+			//}
+			////System.Threading.Thread.Sleep(1);
+			//CS.Write(true);
 		}
 
 		public override IEnumerable<bool> readBits() {
@@ -425,22 +425,22 @@ namespace larne.io.ic
 	public static class SPITest
 	{
 		public static void main() {
-			GPIOMem.Initialize();
+			//GPIOMem.Initialize();
 
-			BCM2835Native.bcm2835_spi_begin();
-			BCM2835Native.bcm2835_spi_setBitOrder(BCM2835Native.BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
-			BCM2835Native.bcm2835_spi_setDataMode(BCM2835Native.BCM2835_SPI_MODE0);                   // The default
-			BCM2835Native.bcm2835_spi_setClockDivider(BCM2835Native.BCM2835_SPI_CLOCK_DIVIDER_256); // The default
-			BCM2835Native.bcm2835_spi_chipSelect(BCM2835Native.BCM2835_SPI_CS0);                      // The default
-			BCM2835Native.bcm2835_spi_setChipSelectPolarity(BCM2835Native.BCM2835_SPI_CS0, BCM2835Native.LOW);      // the default
+			//BCM2835Native.bcm2835_spi_begin();
+			//BCM2835Native.bcm2835_spi_setBitOrder(BCM2835Native.BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
+			//BCM2835Native.bcm2835_spi_setDataMode(BCM2835Native.BCM2835_SPI_MODE0);                   // The default
+			//BCM2835Native.bcm2835_spi_setClockDivider(BCM2835Native.BCM2835_SPI_CLOCK_DIVIDER_256); // The default
+			//BCM2835Native.bcm2835_spi_chipSelect(BCM2835Native.BCM2835_SPI_CS0);                      // The default
+			//BCM2835Native.bcm2835_spi_setChipSelectPolarity(BCM2835Native.BCM2835_SPI_CS0, BCM2835Native.LOW);      // the default
 
-			// Send a byte to the slave and simultaneously read a byte back from the slave
-			// If you tie MISO to MOSI, you should read back what was sent
-			int data = BCM2835Native.bcm2835_spi_transfer(0x23);
-			Console.WriteLine("Read from SPI: {0}", data);
+			//// Send a byte to the slave and simultaneously read a byte back from the slave
+			//// If you tie MISO to MOSI, you should read back what was sent
+			//int data = BCM2835Native.bcm2835_spi_transfer(0x23);
+			//Console.WriteLine("Read from SPI: {0}", data);
 
-			BCM2835Native.bcm2835_spi_end();
-			BCM2835Native.bcm2835_close();
+			//BCM2835Native.bcm2835_spi_end();
+			//BCM2835Native.bcm2835_close();
 		}
 	}
 

@@ -48,7 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\thirdparty\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
+    <ProjectReference Include="..\..\..\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
       <Project>{FC84D8A0-B578-4663-9BDA-D946513E2801}</Project>
       <Name>RaspberryPiDotNet</Name>
     </ProjectReference>

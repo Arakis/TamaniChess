@@ -84,13 +84,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
+      <Project>{FC84D8A0-B578-4663-9BDA-D946513E2801}</Project>
+      <Name>RaspberryPiDotNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\larne.io.ic\larne.io.ic.csproj">
       <Project>{033a23f4-baab-43e0-9aa8-5ff60b13fc68}</Project>
       <Name>larne.io.ic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\thirdparty\RaspberryPi.Net\RaspberryPiDotNet\RaspberryPiDotNet.csproj">
-      <Project>{FC84D8A0-B578-4663-9BDA-D946513E2801}</Project>
-      <Name>RaspberryPiDotNet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
