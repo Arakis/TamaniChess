@@ -391,13 +391,20 @@ void bcm2835_gpio_write(uint8_t pin, uint8_t on)
 	bcm2835_gpio_clr(pin);
 }
 
-// Set the state of a all 32 outputs
+// Set the state of a all 32 outputs in the mask to on or off
 void bcm2835_gpio_write_multi(uint32_t mask, uint8_t on)
 {
     if (on)
 	bcm2835_gpio_set_multi(mask);
     else
 	bcm2835_gpio_clr_multi(mask);
+}
+
+// Set the state of a all 32 outputs in the mask to the values in value
+void bcm2835_gpio_write_mask(uint32_t value, uint32_t mask)
+{
+    bcm2835_gpio_set_multi(value & mask);
+    bcm2835_gpio_clr_multi((~value) & mask);
 }
 
 // Set the pullup/down resistor for a pin
@@ -741,3 +748,16 @@ int main(int argc, char **argv)
     return 0;
 }
 #endif
+
+volatile uint32_t* bcm2835_gpio_set_multi_addr()
+{
+    volatile uint32_t* paddr = bcm2835_gpio + BCM2835_GPSET0/4;
+	return paddr;
+}
+
+// Clear all output pins in the mask
+volatile uint32_t* bcm2835_gpio_clr_multi_addr()
+{
+    volatile uint32_t* paddr = bcm2835_gpio + BCM2835_GPCLR0/4;
+    return paddr;
+}
