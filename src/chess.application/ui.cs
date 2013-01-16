@@ -129,7 +129,8 @@ namespace chess.application
 			var spi = new TSPIEmulator(SDI, null, CLK, CS);
 			var watch = new System.Diagnostics.Stopwatch();
 
-			lcd = new TOLEDDisplay(spi, RST, RS);
+			var bus = new TOLEDSPIDataBus(spi, RST, RS);
+			lcd = new TOLEDDisplay(bus);
 			lcd.background(Color.Black);
 
 			//var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");

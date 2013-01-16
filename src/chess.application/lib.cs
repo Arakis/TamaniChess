@@ -1234,6 +1234,9 @@ namespace chess.application
 		private int[,] deviceImage;
 
 		public void update(Bitmap bmp, int rectX, int rectY, int rectWidth, int rectHeight) {
+			//dsp.drawImage(bmp, new Point(rectX, rectY), new Point(rectX, rectY), new Size(rectWidth, rectHeight));
+			//return;
+
 			const int skipUnchanged = 5;
 
 
@@ -1285,10 +1288,254 @@ namespace chess.application
 
 	}
 
+	public abstract class TOLEDDataBus
+	{
+
+		protected GPIO RST;
+		protected GPIO RS;
+
+		public void reset() {
+			//Initialize interface and reset display driver chip
+			RST.Write(false);
+			RST.Write(true);
+
+		}
+
+		public abstract void command(uint value);
+
+		public abstract void data(uint value);
+
+		public abstract void rgbdot(int r, int g, int b);
+
+	}
+
+	public class TOLEDSPIDataBus : TOLEDDataBus
+	{
+
+		public TOLEDSPIDataBus(TSPIDevice spi, GPIO RST, GPIO RS) {
+			this.RS = RS;
+			this.RST = RST;
+			this.spi = spi;
+		}
+
+		private TSPIDevice spi;
+
+		private bool _rs = false;
+		public override void command(uint value) {
+			RS.Write(false);
+			spi.writeByte(value);
+			RS.Write(true);
+		}
+
+		public override void data(uint value) {
+			//RS.Write(true);
+			spi.writeByte(value);
+		}
+
+		private bool[] tmp8Bits = new bool[8];
+		private bool[] tmp6Bits = new bool[6];
+
+		public override void rgbdot(int r, int g, int b) {
+			//RS.Write(true);
+			//spi.writeByte(r);
+			//spi.writeByte(g);
+			//spi.writeByte(b);
+
+			var bits = tmp6Bits;
+
+			getColorBits((byte)r, bits);
+			spi.writeBits(bits);
+
+			getColorBits((byte)g, bits);
+			spi.writeBits(bits);
+
+			getColorBits((byte)b, bits);
+			spi.writeBits(bits);
+		}
+
+		public static void getColorBits(byte b, bool[] bits) {
+			//bits[0] = (b & (1 << 0)) != 0;
+			//bits[1] = (b & (1 << 1)) != 0;
+			bits[0] = (b & (1 << 2)) != 0;
+			bits[1] = (b & (1 << 3)) != 0;
+			bits[2] = (b & (1 << 4)) != 0;
+			bits[3] = (b & (1 << 5)) != 0;
+			bits[4] = (b & (1 << 6)) != 0;
+			bits[5] = (b & (1 << 7)) != 0;
+		}
+
+	}
+
+	public unsafe class TOLEDSPIFastDataBus : TOLEDDataBus
+	{
+
+		public TOLEDSPIFastDataBus(TSPIEmulator spi, GPIO RST, GPIO RS) {
+			this.RS = RS;
+			this.RST = RST;
+			this.spi = spi;
+
+			set1 = GPIOMem.SetAddr;
+			set0 = GPIOMem.ClrAddr;
+
+			CSMask = (uint)spi.CS.Mask;
+			SDIMask = (uint)spi.SDI.Mask;
+			SCKMask = (uint)spi.SCK.Mask;
+			RSMask = (uint)RS.Mask;
+		}
+
+		private TSPIDevice spi;
+		private static uint* set1;
+		private static uint* set0;
+
+		private uint CSMask;
+		private uint RSMask;
+		private uint SCKMask;
+		private uint SDIMask;
+
+		public override void command(uint value) {
+			var SDIMask = this.SDIMask;
+			var SCKMask = this.SCKMask;
+
+			*set0 = RSMask;
+			
+			*set0 = CSMask;
+			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			*set1 = CSMask;
+
+			*set1 = RSMask;
+		}
+
+		public override void data(uint value) {
+			var SDIMask = this.SDIMask;
+			var SCKMask = this.SCKMask;
+
+			*set0 = CSMask;
+			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			*set1 = CSMask;
+		}
+
+		private bool[] tmp8Bits = new bool[8];
+		private bool[] tmp6Bits = new bool[6];
+
+		public override void rgbdot(int r, int g, int b) {
+			var set0 = GPIOMem.ClrAddr;
+			var set1 = GPIOMem.SetAddr;
+
+			var SDIMask = this.SDIMask;
+			var SCKMask = this.SCKMask;
+
+			*set0 = CSMask;
+			if ((r & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((r & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((r & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((r & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((r & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((r & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((r & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((r & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			*set1 = CSMask;
+
+			*set0 = CSMask;
+			if ((g & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((g & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((g & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((g & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((g & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((g & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((g & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((g & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			*set1 = CSMask;
+
+			*set0 = CSMask;
+			if ((b & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((b & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((b & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((b & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((b & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			if ((b & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((b & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			//if ((b & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
+			*set1 = CSMask;
+		}
+
+	}
+
+	public class TOLED9BitDataBus : TOLEDDataBus
+	{
+
+		private GPIO[] pins;
+		private GPIOPinMask mask;
+		private GPIO CS;
+
+		public TOLED9BitDataBus(GPIO RST, GPIO RS, GPIO CS, GPIO[] pins) {
+			this.RS = RS;
+			this.RST = RST;
+			this.CS = CS;
+			this.pins = pins;
+			Array.Reverse(pins);
+		}
+
+		public override void command(uint value) {
+			RS.Write(false);
+
+			CS.Write(false);
+			setBits(IOUtils.getBits((byte)value));
+			CS.Write(true);
+
+			RS.Write(true);
+		}
+
+		public override void data(uint value) {
+			RS.Write(true);
+
+			CS.Write(false);
+			setBits(IOUtils.getBits((byte)value));
+			CS.Write(true);
+		}
+
+		public override void rgbdot(int r, int g, int b) {
+			RS.Write(true);
+
+			CS.Write(false);
+			setBits(IOUtils.getBits((byte)r));
+			CS.Write(true);
+
+			CS.Write(false);
+			setBits(IOUtils.getBits((byte)g));
+			CS.Write(true);
+
+			CS.Write(false);
+			setBits(IOUtils.getBits((byte)b));
+			CS.Write(true);
+		}
+
+		private void setBits(bool[] bits) {  //max. 9 bits
+			Array.Reverse(bits);
+			var len = bits.Length;
+			for (var i = 0; i < len; i++) {
+				pins[i].Write(bits[i]);
+			}
+		}
+
+	}
+
 	public class TOLEDDisplay
 	{
 
-		private TSPIDevice spi;
 
 		private const int _physical_width = 160;
 		private const int _physical_height = 128;
@@ -1296,13 +1543,10 @@ namespace chess.application
 		private int _row, _column, _rows, _columns, _tablength, _foreground, _background, _width, _height, _rotation;
 		private bool _writing_pixels;
 
-		private GPIO RST;
-		private GPIO RS;
+		private TOLEDDataBus bus;
 
-		public TOLEDDisplay(TSPIDevice spi, GPIO RST, GPIO RS) {
-			this.RST = RST;
-			this.RS = RS;
-			this.spi = spi;
+		public TOLEDDisplay(TOLEDDataBus bus) {
+			this.bus = bus;
 
 			_row = 0;
 			_column = 0;
@@ -1448,9 +1692,7 @@ namespace chess.application
         0xFF
     };
 
-			//Initialize interface and reset display driver chip
-			RST.Write(false);
-			RST.Write(true);
+			bus.reset();
 			//_spi.format(8);
 			//_spi.frequency(10000000);
 
@@ -1496,14 +1738,11 @@ namespace chess.application
 
 		public void command(uint value) {
 			_writing_pixels = (value == 0x22);
-			RS.Write(false);
-			spi.writeByte(value);
-			RS.Write(true);
+			bus.command(value);
 		}
 
 		public void data(uint value) {
-			RS.Write(true);
-			spi.writeByte(value);
+			bus.data(value);
 		}
 
 		public void _window(int x, int y, int width, int height) {
@@ -1603,17 +1842,12 @@ namespace chess.application
 			r = (colour & 0xFF0000) >> 16;
 			g = (colour & 0x00FF00) >> 8;
 			b = colour & 0xFF;
-			for (int i = 0; i < width * height; i++) {
-				rgbdot(r, g, b);
+
+			var n = width * height;
+			while (--n >= 0) {
+				bus.rgbdot(r, g, b);
 			}
 			_window(0, 0, _width, _height);
-		}
-
-		public void rgbdot(int r, int g, int b) {
-			RS.Write(true);
-			spi.writeByte(r);
-			spi.writeByte(g);
-			spi.writeByte(b);
 		}
 
 		public void drawImage(Bitmap bmp, Point target, Point source, Size size) {
@@ -1627,7 +1861,7 @@ namespace chess.application
 				for (var x = 0; x < size.Width; x++) {
 					var c = bmp.GetPixel(x + source.X, y + source.Y);
 					//c = Color.FromArgb((int)(255 / width * ix), (int)(255 / height * iy), 0);
-					rgbdot(c.R, c.G, c.B);
+					bus.rgbdot(c.R, c.G, c.B);
 					//pixel(ix, iy, c.ToArgb());
 				}
 			}
@@ -1645,7 +1879,7 @@ namespace chess.application
 				for (var x = 0; x < size.Width; x++) {
 					var c = Color.FromArgb(bmp[x + source.X, y + source.Y]);
 					//c = Color.FromArgb((int)(255 / width * ix), (int)(255 / height * iy), 0);
-					rgbdot(c.R, c.G, c.B);
+					bus.rgbdot(c.R, c.G, c.B);
 					//pixel(ix, iy, c.ToArgb());
 				}
 			}
@@ -1673,7 +1907,7 @@ namespace chess.application
 				static_colour_prev = colour;
 			}
 
-			rgbdot(static_r, static_g, static_b);
+			bus.rgbdot(static_r, static_g, static_b);
 		}
 
 		public int width {

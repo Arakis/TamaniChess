@@ -42,37 +42,88 @@ namespace larne.io.ic
 
 	public static class IOUtils
 	{
+		[DllImport("libbcm2835.so", EntryPoint = "bcm2835_delayMicroseconds ")]
+		public static extern bool microSleep(uint micros);
 
 		public static bool[] getBits(byte b) {
+			//var bits = new bool[8];
+			//for (int i = 0; i < 8; i++) {
+			//	bits[i] = (b & 0x80) != 0;
+			//	b *= 2;
+			//}
+			//return bits;
+
+			//var bits = new bool[8];
+			//for (int i = 0; i < 8; i++) {
+			//	bits[7-i] = (b & 1) == 1;
+			//	b >>= 1;
+			//}
+			//return bits;
+
 			var bits = new bool[8];
-			for (int i = 0; i < 8; i++) {
-				bits[i] = (b & 0x80) != 0;
-				b *= 2;
-			}
+			bits[0] = (b & (1 << 0)) != 0;
+			bits[1] = (b & (1 << 1)) != 0;
+			bits[2] = (b & (1 << 2)) != 0;
+			bits[3] = (b & (1 << 3)) != 0;
+			bits[4] = (b & (1 << 4)) != 0;
+			bits[5] = (b & (1 << 5)) != 0;
+			bits[6] = (b & (1 << 6)) != 0;
+			bits[7] = (b & (1 << 7)) != 0;
 			return bits;
 		}
 
-		public static byte[] ToByteArray(IEnumerable<bool> bits) {
-			var bitArray = bits.ToArray();
-			int numBytes = bitArray.Length / 8;
-			if (bitArray.Length % 8 != 0) numBytes++;
-
-			byte[] bytes = new byte[numBytes];
-			int byteIndex = 0, bitIndex = 0;
-
-			for (int i = 0; i < bitArray.Length; i++) {
-				if (bitArray[i])
-					bytes[byteIndex] |= (byte)(1 << (7 - bitIndex));
-
-				bitIndex++;
-				if (bitIndex == 8) {
-					bitIndex = 0;
-					byteIndex++;
-				}
-			}
-
-			return bytes;
+		public static void getBits(byte b, bool[] bits) {
+			bits[0] = (b & (1 << 0)) != 0;
+			bits[1] = (b & (1 << 1)) != 0;
+			bits[2] = (b & (1 << 2)) != 0;
+			bits[3] = (b & (1 << 3)) != 0;
+			bits[4] = (b & (1 << 4)) != 0;
+			bits[5] = (b & (1 << 5)) != 0;
+			bits[6] = (b & (1 << 6)) != 0;
+			bits[7] = (b & (1 << 7)) != 0;
 		}
+
+		public static bool[] get6Bits(byte b) {
+			var bits = new bool[8];
+			bits[0] = (b & (1 << 0)) != 0;
+			bits[1] = (b & (1 << 1)) != 0;
+			bits[2] = (b & (1 << 2)) != 0;
+			bits[3] = (b & (1 << 3)) != 0;
+			bits[4] = (b & (1 << 4)) != 0;
+			bits[5] = (b & (1 << 5)) != 0;
+			return bits;
+		}
+
+		//public static bool[] getBits(byte b, int count) {
+		//	var bits = new bool[count];
+		//	for (int i = 0; i < count; i++) {
+		//		bits[i] = (b & 1) == 1;
+		//		b >>= 1;
+		//	}
+		//	return bits;
+		//}
+
+		//public static byte[] ToByteArray(IEnumerable<bool> bits) {
+		//	var bitArray = bits.ToArray();
+		//	int numBytes = bitArray.Length / 8;
+		//	if (bitArray.Length % 8 != 0) numBytes++;
+
+		//	byte[] bytes = new byte[numBytes];
+		//	int byteIndex = 0, bitIndex = 0;
+
+		//	for (int i = 0; i < bitArray.Length; i++) {
+		//		if (bitArray[i])
+		//			bytes[byteIndex] |= (byte)(1 << (7 - bitIndex));
+
+		//		bitIndex++;
+		//		if (bitIndex == 8) {
+		//			bitIndex = 0;
+		//			byteIndex++;
+		//		}
+		//	}
+
+		//	return bytes;
+		//}
 
 	}
 
@@ -98,11 +149,11 @@ namespace larne.io.ic
 		public void setBits(IEnumerable<bool> bits, bool flush = true) {
 			if (SRCLR != null) {
 				SRCLR.Write(true);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 			}
 			if (OE != null) {
 				OE.Write(false);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 			}
 
 			foreach (var bit in bits.Reverse()) {
@@ -112,11 +163,11 @@ namespace larne.io.ic
 					lastBit = bit;
 					lastBitUndefined = false;
 				}
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 				SRCLK.Write(true);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 				SRCLK.Write(false);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 			}
 
 			if (flush) this.flush();
@@ -124,9 +175,9 @@ namespace larne.io.ic
 
 		public void flush() {
 			RCLK.Write(true);
-			//System.Threading.Thread.Sleep(1);
+			IOUtils.microSleep(100);
 			RCLK.Write(false);
-			//System.Threading.Thread.Sleep(1);
+			IOUtils.microSleep(100);
 		}
 
 		public void setBits(IEnumerable<int> bits, bool flush = true) {
@@ -333,14 +384,15 @@ namespace larne.io.ic
 		private string device;
 
 		public override void writeBits(bool[] bits) {
-			var bytes = IOUtils.ToByteArray(bits);
-			if (CS != null) CS.Write(false);
-			using (var s = System.IO.File.OpenWrite(device)) {
-				foreach (var b in bytes) {
-					s.WriteByte(b);
-				}
-			}
-			if (CS != null) CS.Write(true);
+			throw new NotImplementedException();
+			//var bytes = IOUtils.ToByteArray(bits);
+			//if (CS != null) CS.Write(false);
+			//using (var s = System.IO.File.OpenWrite(device)) {
+			//	foreach (var b in bytes) {
+			//		s.WriteByte(b);
+			//	}
+			//}
+			//if (CS != null) CS.Write(true);
 		}
 
 		public override IEnumerable<bool> readBits() {
@@ -352,10 +404,10 @@ namespace larne.io.ic
 	public class TSPIEmulator : TSPIDevice
 	{
 
-		private GPIO SDI;
-		private GPIO SDO;
-		private GPIO SCK;
-		private GPIO CS;
+		public GPIO SDI;
+		public GPIO SDO;
+		public GPIO SCK;
+		public GPIO CS;
 
 		public TSPIEmulator(GPIO SDI, GPIO SDO, GPIO SCK, GPIO CS) {
 			this.SDI = SDI;
@@ -367,10 +419,14 @@ namespace larne.io.ic
 		}
 
 		public override void writeBits(bool[] bits) {
+			//testFunc(bits);
+			//testFunc2(bits);
+
 			CS.Write(false);
 
-			foreach (var bit in bits) {
-				SDI.Write(bit);
+			var n = bits.Length;
+			while (--n >= 0) {
+				SDI.Write(bits[n]);
 
 				SCK.Write(true);
 				SCK.Write(false);
