@@ -112,6 +112,19 @@ namespace chess.application
 				var boardHandler = new TUIBoard();
 				boardHandler.install();
 
+				var listHandler = new TUIListHandler(/*new System.Drawing.Rectangle(0, 20, ui.display.width, ui.display.height-20)*/);
+				listHandler.items.Add(new TUIListEntry(listHandler, "1. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "2. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "3. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "4. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "5. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "6. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "7. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "8. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "9. Eintrag"));
+				listHandler.items.Add(new TUIListEntry(listHandler, "10. Eintrag"));
+				listHandler.install();
+
 				ui.drawAll();
 
 				initHandler.uninstall();

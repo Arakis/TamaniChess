@@ -205,9 +205,9 @@ namespace larne.io.ic
 
 		public void load() {
 			PL.Write(true);
-			System.Threading.Thread.Sleep(1);
+			IOUtils.microSleep(100);
 			PL.Write(false);
-			System.Threading.Thread.Sleep(1);
+			IOUtils.microSleep(100);
 		}
 
 		public IEnumerable<bool> readBits(int count, bool load = true) {
@@ -217,11 +217,11 @@ namespace larne.io.ic
 
 			for (var i = 0; i < count; i++) {
 				CP.Write(false);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 				list.Add(O7.Read());
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 				CP.Write(true);
-				//System.Threading.Thread.Sleep(1);
+				IOUtils.microSleep(100);
 			}
 
 			return list;
