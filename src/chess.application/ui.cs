@@ -61,17 +61,15 @@ namespace chess.application
 
 		public void drawAll() {
 			display.gfx.Clear(Color.Black);
-			uiBoard.update();
-			display.gfx.DrawImage(uiBoard.bmp, 0, 0);
+			Program.app.ioController.onUpdateGraphics(new TUpdateGraphicsEvent());
+			Program.app.ioController.onDraw(new TDrawEvent());
 			display.update();
 		}
 
 	}
 
-	public class TUIBoard
+	public class TUIBoard : TUIDrawHandler
 	{
-		public Bitmap bmp;
-		public Graphics gfx;
 		private Bitmap background;
 		private Bitmap pieces;
 
@@ -83,10 +81,17 @@ namespace chess.application
 			pieces = new Bitmap(Config.gfxPath + "pieces16.png");
 		}
 
-		public void update() {
+		public Rectangle getPieceSourceRect(EPiece p) {
+			int idx = (int)p - 1;
+			return new Rectangle(idx * 16, 0, 16, 16);
+		}
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+
 			gfx.DrawImage(background, 0, 0);
 
-			Program.app.ioController.onDrawBoard(new TDrawBoardEvent() { board = this, type = EDrawBoardEventType.backgroundDrawed });
+			Program.app.ioController.onDrawBoard(new TDrawBoardEvent() { board = this, gfx = gfx, type = EDrawBoardEventType.backgroundDrawed });
 
 			for (var y = 0; y < 8; y++) {
 				for (var x = 0; x < 8; x++) {
@@ -98,12 +103,13 @@ namespace chess.application
 				}
 			}
 
-			Program.app.ioController.onDrawBoard(new TDrawBoardEvent() { board = this, type = EDrawBoardEventType.PiecesDrawed });
+			Program.app.ioController.onDrawBoard(new TDrawBoardEvent() { board = this, gfx = gfx, type = EDrawBoardEventType.PiecesDrawed });
 		}
 
-		public Rectangle getPieceSourceRect(EPiece p) {
-			int idx = (int)p - 1;
-			return new Rectangle(idx * 16, 0, 16, 16);
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+
+			e.gfx.DrawImage(bmp, 0, 0);
 		}
 
 	}
@@ -147,6 +153,27 @@ namespace chess.application
 
 		public void update() {
 			adapter.update(bmp, 0, 0, lcd.width, lcd.height);
+		}
+
+	}
+
+	public class TUIDrawHandler : THandler
+	{
+		protected Graphics gfx;
+		protected Bitmap bmp;
+	}
+
+	public class TUIListHandler : TUIDrawHandler
+	{
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+			//e.board.gfx.FillRectangle(new SolidBrush(Color.Red), 0, 0, 30, 30);
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.FillRectangle(new SolidBrush(Color.Red), 0, 0, 30, 30);
 		}
 
 	}

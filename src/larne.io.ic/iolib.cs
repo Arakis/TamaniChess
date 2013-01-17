@@ -42,7 +42,7 @@ namespace larne.io.ic
 
 	public static class IOUtils
 	{
-		[DllImport("libbcm2835.so", EntryPoint = "bcm2835_delayMicroseconds ")]
+		[DllImport("libbcm2835.so", EntryPoint = "bcm2835_delayMicroseconds")]
 		public static extern bool microSleep(uint micros);
 
 		public static bool[] getBits(byte b) {

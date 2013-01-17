@@ -139,7 +139,7 @@ namespace chess.application
 
 		protected void highlightPosition(TDrawBoardEvent e, TPosition pos) {
 			if (pos != null)
-				e.board.gfx.FillRectangle(new SolidBrush(Color.Red), pos.x * 16, pos.y * 16, 16, 16);
+				e.gfx.FillRectangle(new SolidBrush(Color.Red), pos.x * 16, pos.y * 16, 16, 16);
 		}
 
 		public TMove tmpMove;

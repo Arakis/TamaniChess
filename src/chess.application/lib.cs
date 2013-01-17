@@ -113,7 +113,9 @@ namespace chess.application
 
 		public virtual void onConsoleLine(TConsoleLineEvent e) { }
 
+		public virtual void onUpdateGraphics(TUpdateGraphicsEvent e) { }
 		public virtual void onDrawBoard(TDrawBoardEvent e) { }
+		public virtual void onDraw(TDrawEvent e) { }
 
 		public void Dispose() {
 			if (installed) uninstall();
@@ -121,13 +123,25 @@ namespace chess.application
 
 	}
 
+	public class TUpdateGraphicsEvent
+	{
+	}
+
 	public class TDrawEvent
 	{
+
+		public TDrawEvent() {
+			gfx = display.gfx;
+		}
+
 		public TUIDisplay display {
 			get {
 				return Program.app.ui.display;
 			}
 		}
+
+		public Graphics gfx;
+
 	}
 
 	public class TDrawBoardEvent : TDrawEvent
@@ -293,6 +307,18 @@ namespace chess.application
 			foreach (var h in handlers.ToArray())
 				if (h.active)
 					h.onDrawBoard(e);
+		}
+
+		public void onDraw(TDrawEvent e) {
+			foreach (var h in handlers.ToArray())
+				if (h.active)
+					h.onDraw(e);
+		}
+
+		public void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			foreach (var h in handlers.ToArray())
+				if (h.active)
+					h.onUpdateGraphics(e);
 		}
 
 		private TIOHardware ioHardware;

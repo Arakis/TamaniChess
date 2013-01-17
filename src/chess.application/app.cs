@@ -109,6 +109,9 @@ namespace chess.application
 				var dbgHandler = new TDebugHandler();
 				dbgHandler.install();
 
+				var boardHandler = new TUIBoard();
+				boardHandler.install();
+
 				ui.drawAll();
 
 				initHandler.uninstall();
