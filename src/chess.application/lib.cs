@@ -1600,6 +1600,42 @@ namespace chess.application
 			_background = v.ToArgb();
 		}
 
+		public void orientation(int o) {
+			_rotation = o & 3;
+
+			//Set write direction
+			command(0x16);
+			switch (_rotation) {
+				case 0:
+				default:
+					//HC=1, VC=1, HV=0
+					data(0x76);
+					_width = _physical_width;
+					_height = _physical_height;
+					break;
+				case 1:
+					//HC=0, VC=1, HV=1
+					data(0x73);
+					_width = _physical_height;
+					_height = _physical_width;
+					break;
+				case 2:
+					//HC=0, VC=0, HV=0
+					data(0x70);
+					_width = _physical_width;
+					_height = _physical_height;
+					break;
+				case 3:
+					//HC=1, VC=0, HV=1
+					data(0x75);
+					_width = _physical_height;
+					_height = _physical_width;
+					break;
+			}
+			_columns = _width / 8;
+			_rows = _height / 8;
+		}
+
 		public void reset() {
 			uint i = 0, j, k;
 			uint[] init_commands = {

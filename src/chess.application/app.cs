@@ -97,8 +97,8 @@ namespace chess.application
 				engine.start();
 
 				//board.newGame("k7/8/8/8/8/7p/8/K7 w - - 0 1");
-				//board.newGame("k7/7P/8/8/8/8/8/K7 b - - 0 1");
-				board.newGame();
+				board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
+				//board.newGame();
 
 				cmdThread = new TCommandLineThread();
 				cmdThread.start();
@@ -112,19 +112,6 @@ namespace chess.application
 				var boardHandler = new TUIBoard();
 				boardHandler.install();
 
-				var listHandler = new TUIListHandler(/*new System.Drawing.Rectangle(0, 20, ui.display.width, ui.display.height-20)*/);
-				listHandler.items.Add(new TUIListEntry(listHandler, "1. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "2. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "3. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "4. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "5. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "6. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "7. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "8. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "9. Eintrag"));
-				listHandler.items.Add(new TUIListEntry(listHandler, "10. Eintrag"));
-				listHandler.install();
-
 				ui.drawAll();
 
 				initHandler.uninstall();
@@ -137,109 +124,6 @@ namespace chess.application
 				Thread.Sleep(5000);
 			}
 		}
-
-		//public void start() {
-		//	Console.WriteLine("chess application initialization");
-
-		//	boardController = new TIOBoardController();
-		//	boardController.leds[0, 0].on();
-		//	boardController.leds[8, 0].on();
-		//	boardController.leds[0, 8].on();
-		//	boardController.leds[8, 8].on();
-		//	boardController.updateLeds();
-
-		//	System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.AboveNormal;
-
-		//	player = new TAudioPlayer();
-		//	player.load("sound1", "/home/pi/app/chess.application/sounds/sound1.wav");
-		//	player.load("sound2", "/home/pi/app/chess.application/sounds/sound2.wav");
-		//	player.load("sound3", "/home/pi/app/chess.application/sounds/sound3.wav");
-
-		//	var board = new TChessBoard();
-		//	//var boardTemp = new TChessBoard();
-
-		//	engine = new TEngine();
-		//	engine.start();
-
-		//	//new game
-		//	board.newGame();
-		//	//board.copyTo(boardTemp);
-		//	changes.Clear();
-
-		//	TMove calculatedMove = null;
-
-		//	while (true) {
-		//		System.Threading.Thread.Sleep(50);
-
-		//		if (changed) {
-		//			Console.WriteLine();
-		//			Console.WriteLine("--------");
-		//			Console.WriteLine();
-
-		//			//Print switches
-		//			for (var y = 0; y < 8; y++) {
-		//				for (var x = 0; x < 8; x++) {
-		//					Console.Write(ioBoard.figureSwitchesNew[x, y] ? "1" : "0");
-		//				}
-		//				Console.WriteLine();
-		//			}
-		//			Console.WriteLine();
-
-		//			//Print figures
-		//			for (var y = 0; y < 8; y++) {
-		//				for (var x = 0; x < 8; x++) {
-		//					var fig = board.board[x, y];
-		//					Console.Write(TChessBoard.figureToChar(fig));
-		//				}
-		//				Console.WriteLine();
-		//			}
-		//			Console.WriteLine();
-		//		}
-
-		//		//clean up changes
-		//		//beim Schlagen wird ein Stein wieder abgesetzt
-		//		while (changes.Count >= 1 && changes[0].state) changes.RemoveAt(0);
-
-		//		if (changed && changes.Count >= 2) {
-		//			//Console.WriteLine(changes.Count);
-		//			var c = changes[0];
-		//			//Console.WriteLine(c.x.ToString() + " " + c.y.ToString());
-		//			//var fig = boardTemp.board[c.x, c.y];
-		//			//boardTemp.board[c.x, c.y] = EColoredFigure.none;
-		//			var c2 = changes[1];
-		//			//Console.WriteLine(c2.x.ToString() + " " + c2.y.ToString());
-		//			//boardTemp.board[c2.x, c2.y] = fig;
-
-		//			string newFEN;
-		//			if (engine.validateMove(board.FEN, TMove.ToString(c.x, c.y, c2.x, c2.y), out newFEN)) {
-		//				player.play("sound3");
-		//				board.setFEN(newFEN);
-		//				//board.copyTo(boardTemp);
-
-		//				engine.go((m) => {
-		//					Console.WriteLine("MOVE: " + m);
-		//					calculatedMove = new TMove(m);
-		//					player.play("sound2");
-		//				});
-		//			}
-		//			else {
-		//				Console.WriteLine("ERROR");
-		//			}
-
-		//			changes.Clear();
-		//		}
-
-		//		if (calculatedMove != null) {
-		//			ioBoard.setAllFieldLeds(calculatedMove.pos1);
-		//			ioBoard.setAllFieldLeds(calculatedMove.pos2);
-		//		}
-
-		//		foreach (var c in changes) ioBoard.setAllFieldLeds(c.x, c.y);
-
-		//		ioBoard.updateLeds();
-
-		//	}
-		//}
 
 	}
 

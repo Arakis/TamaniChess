@@ -76,11 +76,13 @@ namespace chess.launcher
 
 		private static DateTime time = DateTime.Now;
 		public static void startUpdate() {
+			bool development = true;
+
 			time = DateTime.Now;
 			if (updateThread == null) {
 				updateThread = new Thread(() => {
 					Console.WriteLine("update delayed");
-					while ((DateTime.Now - time).TotalSeconds < 5) {
+					while ((DateTime.Now - time).TotalSeconds < (development ? 2 : 5)) {
 						System.Threading.Thread.Sleep(1000);
 					}
 

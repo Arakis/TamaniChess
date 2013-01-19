@@ -224,11 +224,32 @@ namespace chess.application
 
 		}
 
+		private TUIChoosePawnConversion pawnConvert;
+
 		protected override void moveDone() {
 			base.moveDone();
 
+			if (pawnConvert != null) {
+				pawnConvert.uninstall();
+				pawnConvert = null;
+			}
+
 			string newFEN;
 			bool isCheck;
+
+			var startPiece = app.board[tmpMove.start];
+			if (startPiece.type == EPieceType.pawn && tmpMove.pawnConversion == EPieceType.none) {
+				Console.WriteLine("Pawn conversion needed! ***");
+				if ((startPiece.color == EPieceColor.white && startPiece.pos.y == 1) || (startPiece.color == EPieceColor.black && startPiece.pos.y == 6)) {
+					Console.WriteLine("Pawn conversion needed!");
+					pawnConvert = new TUIChoosePawnConversion((type) => {
+						tmpMove.pawnConversion = type;
+						moveDone();
+					});
+					pawnConvert.install();
+					return;
+				}
+			}
 
 			if (engine.validateMove(app.board.FEN, tmpMove.ToString(), out newFEN, out isCheck)) {
 				app.player.play("sound3");
@@ -248,6 +269,7 @@ namespace chess.application
 			}
 			else {
 				Console.WriteLine("INVALID MOVE");
+				tmpMove.pawnConversion = EPieceType.none;
 			}
 
 		}
@@ -338,7 +360,7 @@ namespace chess.application
 			}
 		}
 
-		
+
 
 	}
 

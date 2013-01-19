@@ -157,7 +157,7 @@ namespace chess.application
 
 			adapter = new TOLEDDisplayAdapter(lcd);
 
-			bmp = new Bitmap(160, 128);
+			bmp = new Bitmap(lcd.width, lcd.height);
 			gfx = Graphics.FromImage(bmp);
 			gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 			gfx.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
@@ -234,6 +234,8 @@ namespace chess.application
 
 		}
 
+		public event Action<TUIListEntry> onSelected;
+
 		public int border = 1;
 
 		public void calculateOffset() {
@@ -284,6 +286,9 @@ namespace chess.application
 					if (!scrollRange.contains(selected.range)) scrollRange.start -= selected.range.count;
 				}
 			}
+			else if (e.button == EButton.ok) {
+				if (onSelected != null && selected != null) onSelected(selected);
+			}
 
 		}
 
@@ -298,6 +303,7 @@ namespace chess.application
 
 		public Bitmap bmp;
 		public Graphics gfx;
+		public object tag;
 
 		public TUIListEntry(TUIListHandler list, string text) {
 			this.text = text;
@@ -399,4 +405,47 @@ namespace chess.application
 		}
 
 	}
+
+	public class TUIChoosePawnConversion : TUIDrawHandler
+	{
+
+		private TUIListHandler list;
+
+		public TUIChoosePawnConversion(Action<EPieceType> cb) {
+			createGraphics();
+			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
+			list.items.Add(new TUIListEntry(list, "Dame") { tag = EPieceType.queen });
+			list.items.Add(new TUIListEntry(list, "Turm") { tag = EPieceType.rock });
+			list.items.Add(new TUIListEntry(list, "Läufer") { tag = EPieceType.bishop });
+			list.items.Add(new TUIListEntry(list, "Springer") { tag = EPieceType.knight });
+
+			list.onSelected += (itm) => {
+				uninstall();
+				cb((EPieceType)itm.tag);
+			};
+		}
+
+		public override void install() {
+			base.install();
+			list.install();
+		}
+
+		public override void uninstall() {
+			base.uninstall();
+			list.uninstall();
+		}
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+			gfx.Clear(Color.Black);
+			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.DrawImage(bmp, 0, 0);
+		}
+
+	}
+
 }
