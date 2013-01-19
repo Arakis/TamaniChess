@@ -420,7 +420,6 @@ namespace chess.application
 			list.items.Add(new TUIListEntry(list, "Springer") { tag = EPieceType.knight });
 
 			list.onSelected += (itm) => {
-				uninstall();
 				cb((EPieceType)itm.tag);
 			};
 		}
