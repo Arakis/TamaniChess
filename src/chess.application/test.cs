@@ -90,17 +90,18 @@ namespace chess.application
 
 			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
 			var lcd = new TOLEDDisplay(bus);
+			//lcd.orientation(2);
 			lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
 
 			var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");
 
 			//lcd.drawImage(bmp, 0, 0, bmp.Width, bmp.Height);
 			lcd.cls();
-
+			 
 			var adapter = new TOLEDDisplayAdapter(lcd);
 			//adapter.update(bg, 0, 0, lcd.width, lcd.height);
 
-			var bmp = new Bitmap(160, 128);
+			var bmp = new Bitmap(lcd.width, lcd.height);
 			var gfx = Graphics.FromImage(bmp);
 			gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 			gfx.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
@@ -132,7 +133,7 @@ namespace chess.application
 				//lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
 				//lcd.cls();
 				Console.WriteLine(watch.ElapsedMilliseconds);
-				System.Threading.Thread.Sleep(2000);
+				System.Threading.Thread.Sleep(400);
 			}
 			Console.ReadLine();
 		}
