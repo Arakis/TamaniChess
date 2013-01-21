@@ -63,8 +63,6 @@ namespace chess.application
 		}
 		public EPieceColor myColor = EPieceColor.white;
 
-		public Queue<string> consoleCommandQueue = new Queue<string>();
-
 		public bool myTurn {
 			get {
 				return currentColor == myColor;
@@ -131,13 +129,14 @@ namespace chess.application
 	{
 
 		private Thread th;
+		public static Queue<string> consoleCommandQueue = new Queue<string>();
 
 		public void start() {
 			th = new Thread(() => {
 				while (true) {
 					var line = Console.ReadLine();
-					lock (Program.app.consoleCommandQueue)
-						Program.app.consoleCommandQueue.Enqueue(line);
+					lock (consoleCommandQueue)
+						consoleCommandQueue.Enqueue(line);
 				}
 			});
 			th.Start();

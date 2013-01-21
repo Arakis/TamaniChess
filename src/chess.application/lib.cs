@@ -406,9 +406,9 @@ namespace chess.application
 				}
 			}
 
-			lock (Program.app.consoleCommandQueue)
-				while (Program.app.consoleCommandQueue.Count > 0) {
-					string line = Program.app.consoleCommandQueue.Dequeue();
+			lock (TCommandLineThread.consoleCommandQueue)
+				while (TCommandLineThread.consoleCommandQueue.Count > 0) {
+					string line = TCommandLineThread.consoleCommandQueue.Dequeue();
 					if (line != null) {
 						var parts = line.Split(' ');
 						var args = new List<string>(parts);
@@ -1258,6 +1258,15 @@ namespace chess.application
 		}
 
 		private int[,] deviceImage;
+
+		public void saveCacheFile(string file) {
+			var bmp = new Bitmap(dsp.width, dsp.height);
+			for (var y = 0; y < dsp.height; y++)
+				for (var x = 0; x < dsp.width; x++)
+					bmp.SetPixel(x, y, Color.FromArgb(deviceImage[x, y]));
+
+			bmp.Save(file, System.Drawing.Imaging.ImageFormat.Png);
+		}
 
 		public void update(Bitmap bmp, int rectX, int rectY, int rectWidth, int rectHeight) {
 			//dsp.drawImage(bmp, new Point(rectX, rectY), new Point(rectX, rectY), new Size(rectWidth, rectHeight));

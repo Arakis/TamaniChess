@@ -60,7 +60,33 @@ namespace chess.application
 			}
 		}
 
+		public void handleConsole() {
+			lock (TCommandLineThread.consoleCommandQueue)
+				while (TCommandLineThread.consoleCommandQueue.Count > 0) {
+					string line = TCommandLineThread.consoleCommandQueue.Dequeue();
+					if (line != null) {
+						var parts = line.Split(' ');
+						var args = new List<string>(parts);
+						args.RemoveAt(0);
+						onConsoleLine(new TConsoleLineEvent() { line = line, command = parts[0], args = args.ToArray() });
+					}
+				}
+		}
+
+		public void onConsoleLine(TConsoleLineEvent e) {
+			Console.WriteLine("cmd:"+e.command);
+			if (e.command == "p") {
+				if (File.Exists("debug.png")) File.Delete("debug.png");
+				adapter.saveCacheFile("debug.png");
+			}
+		}
+
+		TOLEDDisplayAdapter adapter;
+
 		public void start() {
+			var cmdThread = new TCommandLineThread();
+			cmdThread.start();
+
 			Console.WriteLine("starte test");
 			//testFunc();
 			Console.WriteLine("beende test");
@@ -90,7 +116,7 @@ namespace chess.application
 
 			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
 			var lcd = new TOLEDDisplay(bus);
-			//lcd.orientation(2);
+			lcd.orientation(3);
 			lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
 
 			var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");
@@ -98,7 +124,7 @@ namespace chess.application
 			//lcd.drawImage(bmp, 0, 0, bmp.Width, bmp.Height);
 			lcd.cls();
 			 
-			var adapter = new TOLEDDisplayAdapter(lcd);
+			adapter = new TOLEDDisplayAdapter(lcd);
 			//adapter.update(bg, 0, 0, lcd.width, lcd.height);
 
 			var bmp = new Bitmap(lcd.width, lcd.height);
@@ -119,6 +145,7 @@ namespace chess.application
 			st.Add("Zehnter Eintrag");
 
 			while (true) {
+				handleConsole();
 				//gfx.Clear(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
 				gfx.DrawImage(bg, 0, 0);
 
@@ -126,7 +153,7 @@ namespace chess.application
 				st.RemoveAt(0);
 				//gfx.DrawString(string.Join("\n", st.ToArray()), new Font(FontFamily.GenericSansSerif, 11), new SolidBrush(Color.DarkBlue), new PointF(0, 0));
 
-				gfx.DrawString("Schach", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
+				gfx.DrawString("|", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
 
 				watch.Restart();
 				adapter.update(bmp, 0, 0, lcd.width, lcd.height);

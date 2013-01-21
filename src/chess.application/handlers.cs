@@ -84,6 +84,9 @@ namespace chess.application
 							handler.suspend();
 
 					break;
+				case "screenshot":
+					Program.app.ui.saveScreenShot();
+					break;
 				case "clearboard":
 					app.clearBoard();
 					//engine.debug();

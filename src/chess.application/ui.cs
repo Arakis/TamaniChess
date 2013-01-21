@@ -49,6 +49,20 @@ namespace chess.application
 		public TUIBoard uiBoard;
 		public TUIDisplay display;
 
+		public void saveScreenShot() {
+			var destFolder = Path.Combine(Config.applicationPath, "screenshots");
+			if (!Directory.Exists(destFolder)) Directory.CreateDirectory(destFolder);
+			var n = 0;
+			foreach (var fileInfo in new DirectoryInfo(destFolder).GetFiles()) {
+				var ar = fileInfo.Name.Split(new string[] { "-" }, StringSplitOptions.RemoveEmptyEntries);
+				var num = 0;
+				if (ar.Length == 2 && int.TryParse(ar[1], out num)) {
+					n = Math.Max(n, num);
+				}
+			}
+			display.saveScreenshot(Path.Combine(destFolder, "image-" + (n + 1).ToString() + ".png"));
+		}
+
 		public void init() {
 			display = new TUIDisplay();
 			display.init();
@@ -133,6 +147,10 @@ namespace chess.application
 		private TOLEDDisplayAdapter adapter;
 		private Bitmap bmp;
 		private TOLEDDisplay lcd;
+
+		public void saveScreenshot(string file) {
+			bmp.Save(file, System.Drawing.Imaging.ImageFormat.Png);
+		}
 
 		public void init() {
 			var device = new RPI();
