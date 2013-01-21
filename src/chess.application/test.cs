@@ -90,9 +90,6 @@ namespace chess.application
 			Console.WriteLine("starte test");
 			//testFunc();
 			Console.WriteLine("beende test");
-			//unsafe fixed(int* p = &ar) {
-
-			//}
 
 			var bits = larne.io.ic.IOUtils.getBits(1);
 			foreach (var bit in bits) Console.Write(bit ? 1 : 0);
