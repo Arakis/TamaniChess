@@ -96,7 +96,7 @@ namespace chess.application
 			Console.WriteLine();
 			//var bytes = larne.io.ic.IOUtils.ToByteArray(bits);
 			//foreach (var b in bytes) Console.WriteLine(b);
-			//Console.WriteLine();
+			//Console.WriteLine() ;
 
 			var device = new RPI();
 
