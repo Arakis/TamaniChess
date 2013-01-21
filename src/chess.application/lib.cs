@@ -1422,36 +1422,149 @@ namespace chess.application
 			var SDIMask = this.SDIMask;
 			var SCKMask = this.SCKMask;
 
-			*set0 = RSMask;
-			
-			*set0 = CSMask;
-			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			*set1 = CSMask;
+			int d = 0;
 
-			*set1 = RSMask;
+			*set0 = RSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+
+			//var w = new System.Diagnostics.Stopwatch();
+			//w.Restart();
+			//int n;
+			//int wait = 1;
+			//for (var i = 0; i < 1000000; i++) {
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+			//	if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask;
+
+			//}
+			//Console.WriteLine("DDD: " + (((100*1000000)/w.ElapsedMilliseconds)*1000)/1000/1000);
+
+			*set0 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			*set1 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+
+			*set1 = RSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
 		}
 
 		public override void data(uint value) {
 			var SDIMask = this.SDIMask;
 			var SCKMask = this.SCKMask;
 
-			*set0 = CSMask;
-			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			*set1 = CSMask;
+			int d = 0;
+
+			*set0 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((value & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			*set1 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
 		}
 
 		private bool[] tmp8Bits = new bool[8];
@@ -1461,41 +1574,37 @@ namespace chess.application
 			var set0 = GPIOMem.ClrAddr;
 			var set1 = GPIOMem.SetAddr;
 
+			int d = 0;
+
 			var SDIMask = this.SDIMask;
 			var SCKMask = this.SCKMask;
 
-			*set0 = CSMask;
-			if ((r & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((r & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((r & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((r & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((r & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((r & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((r & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((r & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			*set1 = CSMask;
+			*set0 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((r & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			*set1 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
 
 			*set0 = CSMask;
-			if ((g & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((g & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((g & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((g & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((g & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((g & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((g & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((g & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			*set1 = CSMask;
+			if ((g & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((g & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((g & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((g & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((g & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((g & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			*set1 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
 
-			*set0 = CSMask;
-			if ((b & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((b & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((b & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((b & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((b & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			if ((b & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((b & (1 << 1)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			//if ((b & (1 << 0)) != 0) *set1 = SDIMask; else *set0 = SDIMask; *set1 = SCKMask; *set0 = SCKMask;
-			*set1 = CSMask;
+			*set0 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 7)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 6)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 5)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 4)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 3)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			if ((b & (1 << 2)) != 0) *set1 = SDIMask; else *set0 = SDIMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set1 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; *set0 = SCKMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
+			*set1 = CSMask; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++; d++;
 		}
 
 	}
