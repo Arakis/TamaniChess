@@ -167,6 +167,7 @@ namespace chess.application
 
 			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
 			lcd = new TOLEDDisplay(bus);
+			lcd.orientation(3);
 			lcd.background(Color.Black);
 
 			//var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");

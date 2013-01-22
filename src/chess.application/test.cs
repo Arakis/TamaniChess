@@ -84,8 +84,8 @@ namespace chess.application
 		TOLEDDisplayAdapter adapter;
 
 		public void start() {
-			var cmdThread = new TCommandLineThread();
-			cmdThread.start();
+			//var cmdThread = new TCommandLineThread();
+			//cmdThread.start();
 
 			Console.WriteLine("starte test");
 			//testFunc();
@@ -113,8 +113,9 @@ namespace chess.application
 
 			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
 			var lcd = new TOLEDDisplay(bus);
-			lcd.orientation(3);
 			lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
+			
+			lcd.orientation(3);
 
 			var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");
 
@@ -140,6 +141,9 @@ namespace chess.application
 			st.Add("Achter Eintrag");
 			st.Add("Neunter Eintrag");
 			st.Add("Zehnter Eintrag");
+			//lcd.debug();
+			lcd.fill(40, 10, 20, 30, Color.Red.ToArgb());
+			//Console.ReadLine();
 
 			while (true) {
 				handleConsole();
@@ -150,7 +154,7 @@ namespace chess.application
 				st.RemoveAt(0);
 				//gfx.DrawString(string.Join("\n", st.ToArray()), new Font(FontFamily.GenericSansSerif, 11), new SolidBrush(Color.DarkBlue), new PointF(0, 0));
 
-				gfx.DrawString("|", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
+				gfx.DrawString("S", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255))), new PointF(rnd.Next(120) - 10, rnd.Next(130) - 10));
 
 				watch.Restart();
 				adapter.update(bmp, 0, 0, lcd.width, lcd.height);

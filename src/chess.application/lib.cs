@@ -1925,7 +1925,7 @@ namespace chess.application
 			bus.data(value);
 		}
 
-		public void _window(int x, int y, int width, int height) {
+		public void _window(ref int x, ref int y, ref int width, ref int height) {
 			int x1, x2, y1, y2, start_x, start_y;
 			switch (_rotation) {
 				default:
@@ -1952,17 +1952,24 @@ namespace chess.application
 					y1 = _physical_height - x - width;
 					x2 = y + height - 1;
 					y2 = _physical_height - x - 1;
+
+					//x1 = y;
+					//x2 = x1 + height;
+
+					//y2 = _physical_height - x;
+					//y1 = y2 - width;
+
 					break;
 			}
 			//Limit values
-			if (x1 < 0) x1 = 0;
-			if (x1 >= _physical_width) x1 = _physical_width - 1;
-			if (x2 < 0) x2 = 0;
-			if (x2 >= _physical_width) x2 = _physical_width - 1;
-			if (y1 < 0) y1 = 0;
-			if (y1 >= _physical_height) y1 = _physical_height - 1;
-			if (y2 < 0) y2 = 0;
-			if (y2 >= _physical_height) y2 = _physical_height - 1;
+			//if (x1 < 0) x1 = 0;
+			//if (x1 >= _physical_width) x1 = _physical_width - 1;
+			//if (x2 < 0) x2 = 0;
+			//if (x2 >= _physical_width) x2 = _physical_width - 1;
+			//if (y1 < 0) y1 = 0;
+			//if (y1 >= _physical_height) y1 = _physical_height - 1;
+			//if (y2 < 0) y2 = 0;
+			//if (y2 >= _physical_height) y2 = _physical_height - 1;
 
 
 			/*    if ((width > 100) || (height > 100))
@@ -1970,6 +1977,7 @@ namespace chess.application
 							pc1.printf("x=%d\ty=%d\twidth=%d\theight=%d\tx1=%d\tx2=%d\ty1=%d\ty2=%d\n",x,y,width,height,x1,x2,y1,y2);
 					}
 			*/
+
 			command(0x19);  // Y start
 			data(y1);
 			command(0x1A);  // Y end
@@ -1994,8 +2002,12 @@ namespace chess.application
 					start_y = y2;
 					break;
 				case 3:
-					start_x = x2;
-					start_y = y1;
+					//start_x = x2;
+					//start_y = y1;
+
+					start_x = x1;
+					start_y = y2;
+
 					break;
 			}
 
@@ -2003,7 +2015,68 @@ namespace chess.application
 			data(start_x);
 			command(0x21);  // memory accesspointer y
 			data(start_y);
+
+			//Console.WriteLine("x1:{0} x2:{1} y1:{2} y2:{3} w:{4} h:{5} sx:{6} sy:{7}", x1, x2, y1, y2, x2 - x1, y2 - y1, start_x, start_y);
 		}
+
+		//public int _x1, _x2, _y1, _y2, _start_x, _start_y;
+
+		//public void debug() {
+		//	while (true) {
+		//		cls();
+		//		fillDebug(2, 1, 20, 30, Color.Red.ToArgb());
+		//		try {
+		//			var line = Console.ReadLine();
+		//			var ar = line.Split(new char[] { ' ' });
+		//			var num = int.Parse(ar[1]);
+		//			if (ar[0] == "x1") _x1 = num;
+		//			if (ar[0] == "x2") _x2 = num;
+		//			if (ar[0] == "y1") _y1 = num;
+		//			if (ar[0] == "y2") _y2 = num;
+		//			if (ar[0] == "sx") _start_x = num;
+		//			if (ar[0] == "sy") _start_y = num;
+		//		}
+		//		catch { }
+		//	}
+		//}
+
+		//public void fillDebug(int x, int y, int width, int height, int colour) {
+		//	int r, g, b;
+
+		//	_windowDebug(_x1, _x2, _y1, _y2, _start_x, _start_y);
+		//	//Start "write data" command if not done already
+		//	if (!_writing_pixels) {
+		//		command(0x22);
+		//	}
+		//	r = (colour & 0xFF0000) >> 16;
+		//	g = (colour & 0x00FF00) >> 8;
+		//	b = colour & 0xFF;
+
+		//	var n = width * height;
+		//	while (--n >= 0) {
+		//		bus.rgbdot(r, g, b);
+		//	}
+		//	//_window(0, 0, _width, _height);
+		//}
+
+		//public void _windowDebug(int x1, int x2, int y1, int y2, int start_x, int start_y) {
+
+		//	command(0x19);  // Y start
+		//	data(y1);
+		//	command(0x1A);  // Y end
+		//	data(y2);
+		//	command(0x17);  // X start
+		//	data(x1);
+		//	command(0x18);  // x end
+		//	data(x2);
+
+		//	command(0x20);  // memory accesspointer x
+		//	data(start_x);
+		//	command(0x21);  // memory accesspointer y
+		//	data(start_y);
+
+		//	Console.WriteLine("x1:{0} x2:{1} y1:{2} y2:{3} w:{4} h:{5} sx:{6} sy:{7}", x1, x2, y1, y2, x2 - x1, y2 - y1, start_x, start_y);
+		//}
 
 		public void cls() {
 			fill(0, 0, _width, _height, _background);
@@ -2014,7 +2087,7 @@ namespace chess.application
 		public void fill(int x, int y, int width, int height, int colour) {
 			int r, g, b;
 
-			_window(x, y, width, height);
+			_window(ref x, ref y, ref width, ref height);
 			//Start "write data" command if not done already
 			if (!_writing_pixels) {
 				command(0x22);
@@ -2027,19 +2100,24 @@ namespace chess.application
 			while (--n >= 0) {
 				bus.rgbdot(r, g, b);
 			}
-			_window(0, 0, _width, _height);
+			var xx = 0; var yy = 0; var ww = _width; var hh = _height;
+			_window(ref xx, ref yy, ref ww, ref hh);
 		}
 
 		public void drawImage(Bitmap bmp, Point target, Point source, Size size) {
-			_window(target.X, target.Y, size.Width, size.Height);
+			drawImage(bmp, target.X, target.Y, source.X, source.Y, size.Width, size.Height);
+		}
+
+		public void drawImage(Bitmap bmp, int targetX, int targetY, int sourceX, int sourceY, int sizeWidth, int sizeHeight) {
+			_window(ref targetX, ref targetY, ref sizeWidth, ref sizeHeight);
 
 			if (!_writing_pixels) {
 				command(0x22);
 			}
 
-			for (var y = 0; y < size.Height; y++) {
-				for (var x = 0; x < size.Width; x++) {
-					var c = bmp.GetPixel(x + source.X, y + source.Y);
+			for (var y = 0; y < sizeHeight; y++) {
+				for (var x = 0; x < sizeWidth; x++) {
+					var c = bmp.GetPixel(x + sourceX, y + sourceY);
 					//c = Color.FromArgb((int)(255 / width * ix), (int)(255 / height * iy), 0);
 					bus.rgbdot(c.R, c.G, c.B);
 					//pixel(ix, iy, c.ToArgb());
@@ -2049,15 +2127,19 @@ namespace chess.application
 		}
 
 		public void drawImage(int[,] bmp, Point target, Point source, Size size) {
-			_window(target.X, target.Y, size.Width, size.Height);
+			drawImage(bmp, target.X, target.Y, source.X, source.Y, size.Width, size.Height);
+		}
+
+		public void drawImage(int[,] bmp, int targetX, int targetY, int sourceX, int sourceY, int sizeWidth, int sizeHeight) {
+			_window(ref targetX, ref targetY, ref sizeWidth, ref sizeHeight);
 
 			if (!_writing_pixels) {
 				command(0x22);
 			}
 
-			for (var y = 0; y < size.Height; y++) {
-				for (var x = 0; x < size.Width; x++) {
-					var c = Color.FromArgb(bmp[x + source.X, y + source.Y]);
+			for (var y = 0; y < sizeHeight; y++) {
+				for (var x = 0; x < sizeWidth; x++) {
+					var c = Color.FromArgb(bmp[x + sourceX, y + sourceY]);
 					//c = Color.FromArgb((int)(255 / width * ix), (int)(255 / height * iy), 0);
 					bus.rgbdot(c.R, c.G, c.B);
 					//pixel(ix, iy, c.ToArgb());
@@ -2067,7 +2149,9 @@ namespace chess.application
 		}
 
 		public void pixel(int x, int y, int colour) {
-			_window(x, y, 1, 1);
+			var sizeWidth = 1;
+			var sizeHeight = 1;
+			_window(ref x, ref y, ref sizeWidth, ref sizeHeight);
 			_putp(colour);
 		}
 
