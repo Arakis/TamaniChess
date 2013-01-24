@@ -95,8 +95,8 @@ namespace chess.application
 				engine.start();
 
 				//board.newGame("k7/8/8/8/8/7p/8/K7 w - - 0 1");
-				board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
-				//board.newGame();
+				//board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
+				board.newGame();
 
 				cmdThread = new TCommandLineThread();
 				cmdThread.start();
@@ -109,6 +109,9 @@ namespace chess.application
 
 				var boardHandler = new TUIBoard();
 				boardHandler.install();
+
+				var screenSaver = new TScreenSaverHandler();
+				screenSaver.install();
 
 				ui.drawAll();
 

@@ -112,6 +112,7 @@ namespace chess.application
 		public virtual void onButtonsChanged(TButtonsChangesEvent e) { }
 
 		public virtual void onConsoleLine(TConsoleLineEvent e) { }
+		public virtual void onTick() { }
 
 		public virtual void onUpdateGraphics(TUpdateGraphicsEvent e) { }
 		public virtual void onDrawBoard(TDrawBoardEvent e) { }
@@ -192,6 +193,7 @@ namespace chess.application
 
 	public delegate void DButtonChanged(TButtonChangeEvent e);
 	public delegate void DButtonsChanged(TButtonsChangesEvent e);
+	public delegate void DTick();
 
 	public delegate void DConsoleLine(TConsoleLineEvent e);
 
@@ -227,6 +229,7 @@ namespace chess.application
 		public event DButtonsChanged onButtonsChangedDelay;
 		public event DButtonChanged onButtonChanged;
 		public event DButtonsChanged onButtonsChanged;
+		public event DTick onTick;
 
 		public event DConsoleLine onConsoleLine;
 		public event Action onProcessEvents;
@@ -299,6 +302,12 @@ namespace chess.application
 						h.onConsoleLine(e);
 			};
 
+			onTick += () => {
+				foreach (var h in handlers.ToArray())
+					if (h.active)
+						h.onTick();
+			};
+
 			ioHardware.updateSwitches();
 			ioHardware.updateDelaySwitches();
 		}
@@ -359,6 +368,8 @@ namespace chess.application
 		private System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 		private void processEvents() {
 			ioHardware.updateSwitches();
+
+			if (onTick != null) onTick();
 
 			bool changed = false;
 			bool buttonsChanged = false;

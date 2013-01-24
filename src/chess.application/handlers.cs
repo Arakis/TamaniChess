@@ -367,4 +367,61 @@ namespace chess.application
 
 	}
 
+	public class TScreenSaverHandler : THandler
+	{
+
+		public DateTime lastActivity = DateTime.Now;
+		public DateTime lastPositionChanged = DateTime.Now;
+
+		public override void onButtonChanged(TButtonChangeEvent e) {
+			base.onButtonChanged(e);
+			disable();
+		}
+
+		public override void onPieceChanged(TSwitchChangeEvent e) {
+			base.onPieceChanged(e);
+			disable();
+		}
+
+		public override void onTick() {
+			base.onTick();
+
+			if ((DateTime.Now - lastActivity).TotalSeconds >= 10) {
+				enable();
+			}
+		}
+
+		private bool _enabled = false;
+		public void enable() {
+			if (_enabled) return;
+			_enabled = true;
+		}
+
+		public void disable() {
+			lastActivity = DateTime.Now;
+			if (!_enabled) return;
+			_enabled = false;
+		}
+
+		private Random rnd = new Random();
+		private Point pos;
+		private Color color;
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			if (_enabled) {
+				e.gfx.Clear(Color.Black);
+
+				if ((DateTime.Now - lastPositionChanged).TotalSeconds >= 5) {
+					color = Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255));
+					pos = new Point(rnd.Next(60) - 10, rnd.Next(160) - 10);
+					lastPositionChanged = DateTime.Now;
+				}
+
+				e.gfx.DrawString("Schach", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(color), pos);
+			}
+		}
+
+	}
+
 }
