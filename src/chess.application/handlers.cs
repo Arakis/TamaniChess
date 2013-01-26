@@ -242,7 +242,6 @@ namespace chess.application
 
 			var startPiece = app.board[tmpMove.start];
 			if (startPiece.type == EPieceType.pawn && tmpMove.pawnConversion == EPieceType.none) {
-				Console.WriteLine("Pawn conversion needed! ***");
 				if ((startPiece.color == EPieceColor.white && startPiece.pos.y == 1) || (startPiece.color == EPieceColor.black && startPiece.pos.y == 6)) {
 					Console.WriteLine("Pawn conversion needed!");
 					pawnConvert = new TUIChoosePawnConversion((type) => {
@@ -363,8 +362,6 @@ namespace chess.application
 			}
 		}
 
-
-
 	}
 
 	public class TScreenSaverHandler : THandler
@@ -386,7 +383,7 @@ namespace chess.application
 		public override void onTick() {
 			base.onTick();
 
-			if ((DateTime.Now - lastActivity).TotalSeconds >= 10) {
+			if ((DateTime.Now - lastActivity).TotalSeconds >= timeout) {
 				enable();
 			}
 		}
@@ -403,6 +400,9 @@ namespace chess.application
 			_enabled = false;
 		}
 
+		public int timeout = 120;
+		public int interval = 6;
+
 		private Random rnd = new Random();
 		private Point pos;
 		private Color color;
@@ -412,7 +412,7 @@ namespace chess.application
 			if (_enabled) {
 				e.gfx.Clear(Color.Black);
 
-				if ((DateTime.Now - lastPositionChanged).TotalSeconds >= 5) {
+				if ((DateTime.Now - lastPositionChanged).TotalSeconds >= interval) {
 					color = Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255));
 					pos = new Point(rnd.Next(60) - 10, rnd.Next(160) - 10);
 					lastPositionChanged = DateTime.Now;

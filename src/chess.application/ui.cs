@@ -68,8 +68,10 @@ namespace chess.application
 			display.init();
 			uiBoard = new TUIBoard();
 
-			display.gfx.Clear(Color.Black);
-			display.gfx.DrawString("Bitte warten...", new Font(FontFamily.GenericSansSerif, 11), new SolidBrush(Color.White), new Point(0, 0));
+			using (var bmp = Bitmap.FromFile(Path.Combine(Config.gfxPath, "init.png"))) {
+				display.gfx.DrawImage(bmp, 0, 0);
+			}
+			display.gfx.DrawString("Lade Daten...", new Font(FontFamily.GenericSansSerif, 8), new SolidBrush(Color.White), new Point(0, 140));
 			display.update();
 		}
 

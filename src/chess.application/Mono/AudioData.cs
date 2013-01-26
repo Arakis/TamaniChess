@@ -129,20 +129,23 @@ namespace Mono.Audio
 			// Read SubChunk 2 ID + Size => Could be 'fact' or 'data' !
 			c = stream.Read(buffer, 0, 8);
 			if (c == 8) {
-				// If SubChunk 2 ID = fact
-				if (buffer[0] == 'f' && buffer[1] == 'a' && buffer[2] == 'c' && buffer[3] == 't') {
+
+				// Skip all other chunks, for example 'fact' or 'LIST'
+				while (!(buffer[0] == 'd' && buffer[1] == 'a' && buffer[2] == 't' && buffer[3] == 'a')) {
 					// Read Data
 					int sub_chunk_2_size = buffer[4];
 					sub_chunk_2_size |= buffer[5] << 8;
 					sub_chunk_2_size |= buffer[6] << 16;
 					sub_chunk_2_size |= buffer[7] << 24;
 
-					c = stream.Read(buffer, 0, sub_chunk_2_size);
-
+					//c = stream.Read(buffer, 0, sub_chunk_2_size);
+					for (var i = 0; i < sub_chunk_2_size; i++)
+						stream.ReadByte();
 					// Don't care about this data !
 
 					// If there is a fact Chunck, read the next subChunk Id and size (should be data !)
 					c = stream.Read(buffer, 0, 8);
+					if (c != 8) throw new Exception("Unexpected end of stream");
 				}
 
 				if (buffer[0] == 'd' && buffer[1] == 'a' && buffer[2] == 't' && buffer[3] == 'a') {
@@ -176,9 +179,11 @@ namespace Mono.Audio
 			while (!IsStopped && count >= 0) {
 				//Console.WriteLine(stream.Position + " - " + DateTime.Now.ToString());
 				// Copy one chunk from buffer
-				Buffer.BlockCopy(buffer, total_data_played, chunk_to_play, 0, chunk_size);
+				var readSize = buffer.Length - total_data_played < chunk_size ? buffer.Length - total_data_played : chunk_size;
+				if (readSize == 0) return;
+				Buffer.BlockCopy(buffer, total_data_played, chunk_to_play, 0, readSize);
 				// play that chunk, !!! the size pass to alsa the number of fragment, a fragment is a sample per channel !!!
-				fragment_played = dev.PlaySample(chunk_to_play, chunk_size / (frame_divider * channels));
+				fragment_played = dev.PlaySample(chunk_to_play, readSize / (frame_divider * channels));
 
 				// If alsa played something, inc the total data played and dec the data to be played
 				if (fragment_played > 0) {

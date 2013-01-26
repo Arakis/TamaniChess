@@ -90,6 +90,10 @@ namespace chess.application
 				player.load("sound1", Config.soundPath + "sound1.wav");
 				player.load("sound2", Config.soundPath + "sound2.wav");
 				player.load("sound3", Config.soundPath + "sound3.wav");
+				player.load("silence", Config.soundPath + "silence.wav");
+				player.load("loaded", Config.soundPath + "loaded.wav");
+				player.load("silence500ms", Config.soundPath + "silence500ms.wav");
+				player.play("silence500ms");
 
 				engine = new TEngine();
 				engine.start();
@@ -118,6 +122,7 @@ namespace chess.application
 				initHandler.uninstall();
 
 				Console.WriteLine("ready");
+				player.play("loaded");
 				ioController.eventLoop();
 			}
 			catch (Exception ex) {

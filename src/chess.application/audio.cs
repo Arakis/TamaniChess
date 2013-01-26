@@ -48,8 +48,32 @@ namespace chess.application
 		private AudioDevice adev;
 		private Dictionary<string, AudioData> files = new Dictionary<string, AudioData>();
 
+		private Thread th;
+
 		public TAudioPlayer() {
 			adev = Mono.Audio.AudioDevice.CreateDevice(null);
+			th = new Thread(mainLoop);
+			th.Start();
+		}
+
+		private AutoResetEvent waiter = new AutoResetEvent(false);
+
+		private Action action;
+
+		private void mainLoop() {
+			while (true) {
+				try {
+					waiter.WaitOne();
+					if (action != null) {
+						var act = action;
+						action = null;
+						act();
+					}
+				}
+				catch (Exception ex) {
+					Console.WriteLine(ex.ToString());
+				}
+			}
 		}
 
 		private bool setupDone = false;
@@ -83,15 +107,25 @@ namespace chess.application
 		}
 
 		public void play(string name) {
+			action = () => {
+				playInternal(name);
+				playInternal("silence500ms");
+			};
+			waiter.Set();
+		}
+
+		private void playInternal(string name) {
 			var data = files[name];
 			//data.Setup(adev);
 			try {
 				data.Play(adev);
 			}
-			catch {
-				//Console.WriteLine(ex.ToString());
+			catch(Exception ex) {
+				Console.WriteLine(ex.ToString());
+				//adev.Wait();
 			} //TODO
 		}
+
 
 	}
 
