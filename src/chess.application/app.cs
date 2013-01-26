@@ -114,6 +114,9 @@ namespace chess.application
 				var boardHandler = new TUIBoard();
 				boardHandler.install();
 
+				var acthandler = new TUIDefaultButtonActions();
+				acthandler.install();
+
 				var screenSaver = new TScreenSaverHandler();
 				screenSaver.install();
 

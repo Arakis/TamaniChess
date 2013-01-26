@@ -468,4 +468,60 @@ namespace chess.application
 
 	}
 
+	public class TUIMainMenu : TUIDrawHandler
+	{
+
+		private TUIListHandler list;
+
+		public TUIMainMenu(Action<EPieceType> cb) {
+			createGraphics();
+			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
+			list.items.Add(new TUIListEntry(list, "Neues Spiel") { tag = EPieceType.queen });
+			list.items.Add(new TUIListEntry(list, "Tipp") { tag = EPieceType.rock });
+			list.items.Add(new TUIListEntry(list, "Spiel bearbeiten") { tag = EPieceType.bishop });
+
+			list.onSelected += (itm) => {
+				cb((EPieceType)itm.tag);
+			};
+		}
+
+		public override void install() {
+			base.install();
+			list.install();
+		}
+
+		public override void uninstall() {
+			base.uninstall();
+			list.uninstall();
+		}
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+			gfx.Clear(Color.Black);
+			gfx.DrawString("Hauptmenü", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.DrawImage(bmp, 0, 0);
+		}
+
+	}
+
+	public class TUIDefaultButtonActions : THandler
+	{
+
+		private TUIListHandler list;
+
+		public override void onButtonChanged(TButtonChangeEvent e) {
+			base.onButtonChanged(e);
+
+			if (e.button == EButton.ok && e.state) {
+				var menu = new TUIMainMenu(null);
+				menu.install();
+			}
+		}
+
+	}
+
 }
