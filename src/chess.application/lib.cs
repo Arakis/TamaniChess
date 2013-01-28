@@ -161,6 +161,11 @@ namespace chess.application
 	{
 		public bool state;
 		public EButton button;
+		internal bool stopped = false;
+
+		public void stop() {
+			stopped = true;
+		}
 	}
 
 	public class TButtonsChangesEvent
@@ -278,9 +283,14 @@ namespace chess.application
 			};
 
 			onButtonChanged += (e) => {
-				foreach (var h in handlers.ToArray())
-					if (h.active)
+				foreach (var h in handlers.ToArray().Reverse())
+					if (h.active) {
 						h.onButtonChanged(e);
+						if (e.stopped) {
+							Console.WriteLine(h.GetType().ToString());
+							return;
+						}
+					}
 			};
 
 			onButtonsChanged += (e) => {

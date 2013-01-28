@@ -372,6 +372,7 @@ namespace chess.application
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
 			base.onButtonChanged(e);
+			if (_enabled) e.stop();
 			disable();
 		}
 
@@ -400,8 +401,8 @@ namespace chess.application
 			_enabled = false;
 		}
 
-		public int timeout = 120;
-		public int interval = 6;
+		public int timeout = 30; // 120;
+		public int interval = 1;
 
 		private Random rnd = new Random();
 		private Point pos;

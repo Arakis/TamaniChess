@@ -218,6 +218,7 @@ namespace chess.application
 		}
 
 		public TUIListHandler(Rectangle rect) {
+			currentItems = items;
 			createGraphics(rect.Size);
 			this.rect = rect;
 			screenRange = new TRange(0, rect.Height);
@@ -225,6 +226,8 @@ namespace chess.application
 		}
 
 		public TUIListEntryCollection items = new TUIListEntryCollection();
+		private TUIListEntryCollection currentItems = null;
+
 		public Rectangle rect;
 		public int scroll = 0;
 
@@ -240,15 +243,15 @@ namespace chess.application
 
 			calculateOffset();
 
-			if (selected == null && items.Count != 0) selected = items[0];
+			if (selected == null && currentItems.Count != 0) selected = currentItems[0];
 
 			var offset = 0;
-			for (var i = 0; i < items.Count; i++) {
-				var itm = items[i];
+			for (var i = 0; i < currentItems.Count; i++) {
+				var itm = currentItems[i];
 				if (scrollRange.contains(itm.range)) {
 					itm.updateGraphics();
 					gfx.DrawImage(itm.bmp, 0, offset);
-					gfx.DrawLine(Pens.DarkGray, 0.5f, (float)offset + (float)itm.height, (float)rect.Width, (float)offset + (float)itm.height);
+					gfx.DrawLine(new Pen(Color.FromArgb(70, 70, 70)), 0.5f, (float)offset + (float)itm.height, (float)rect.Width, (float)offset + (float)itm.height);
 					offset += itm.range.count;
 				}
 			}
@@ -261,7 +264,7 @@ namespace chess.application
 
 		public void calculateOffset() {
 			var offset = 0;
-			foreach (var itm in items) {
+			foreach (var itm in currentItems) {
 				itm.range.start = offset;
 				itm.range.count = itm.height + border;
 				offset += itm.range.count;
@@ -285,14 +288,20 @@ namespace chess.application
 			}
 		}
 
+		public void setCurrnetItems(TUIListEntryCollection items) {
+			if (items == this.currentItems) return;
+			currentItems = items;
+		}
+
 		public override void onButtonChanged(TButtonChangeEvent e) {
 			base.onButtonChanged(e);
+			e.stop();
 			if (!e.state) return;
 
 			if (e.button == EButton.down) {
-				var idx = items.IndexOf(selected) + 1;
-				if (idx < items.Count) {
-					selected = items[idx];
+				var idx = currentItems.IndexOf(selected) + 1;
+				if (idx < currentItems.Count) {
+					selected = currentItems[idx];
 					if (!scrollRange.contains(selected.range)) {
 						Console.WriteLine("scroll");
 						scrollRange.start += selected.range.count;
@@ -301,16 +310,20 @@ namespace chess.application
 				}
 			}
 			else if (e.button == EButton.up) {
-				var idx = items.IndexOf(selected) - 1;
+				var idx = currentItems.IndexOf(selected) - 1;
 				if (idx >= 0) {
-					selected = items[idx];
+					selected = currentItems[idx];
 					if (!scrollRange.contains(selected.range)) scrollRange.start -= selected.range.count;
 				}
 			}
 			else if (e.button == EButton.ok) {
-				if (onSelected != null && selected != null) onSelected(selected);
+				if (selected != null) selected.selectedEvent();
 			}
 
+		}
+
+		public void selectedEvent(TUIListEntry itm) {
+			if (onSelected != null) onSelected(itm);
 		}
 
 	}
@@ -325,9 +338,13 @@ namespace chess.application
 		public Bitmap bmp;
 		public Graphics gfx;
 		public object tag;
+		protected TUIListHandler list;
+		public Action onSelected;
 
-		public TUIListEntry(TUIListHandler list, string text) {
+		public TUIListEntry(TUIListHandler list, string text, Action onSelected = null) {
+			this.list = list;
 			this.text = text;
+			this.onSelected = onSelected;
 			bmp = new Bitmap(list.rect.Width, height);
 			gfx = Graphics.FromImage(bmp);
 		}
@@ -338,7 +355,7 @@ namespace chess.application
 
 		public TRange range = new TRange();
 
-		public void updateGraphics() {
+		public virtual void updateGraphics() {
 			var bgColor = Color.Transparent;
 			var foreColor = Color.White;
 
@@ -350,6 +367,34 @@ namespace chess.application
 			gfx.Clear(bgColor);
 			gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 12), new SolidBrush(foreColor), new Point(0, 0));
 		}
+
+		public virtual void selectedEvent() {
+			if (onSelected != null) onSelected();
+			list.selectedEvent(this);
+		}
+
+	}
+
+	public class TUIListSubEntry : TUIListEntry
+	{
+
+		public TUIListSubEntry(TUIListHandler list, string text, Action onSelected = null)
+			: base(list, text, onSelected) {
+		}
+
+		public TUIListEntryCollection items = new TUIListEntryCollection();
+
+		public override void updateGraphics() {
+			base.updateGraphics();
+
+			gfx.DrawRectangle(Pens.Red, 0, 0, 10, 10);
+		}
+
+		public override void selectedEvent() {
+			list.setCurrnetItems(items);
+			base.selectedEvent();
+		}
+
 	}
 
 	public class TRange
@@ -473,16 +518,34 @@ namespace chess.application
 
 		private TUIListHandler list;
 
-		public TUIMainMenu(Action<EPieceType> cb) {
+		public TUIMainMenu() {
 			createGraphics();
 			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
-			list.items.Add(new TUIListEntry(list, "Neues Spiel") { tag = EPieceType.queen });
-			list.items.Add(new TUIListEntry(list, "Tipp") { tag = EPieceType.rock });
-			list.items.Add(new TUIListEntry(list, "Spiel bearbeiten") { tag = EPieceType.bishop });
+			list.items.Add(new TUIListEntry(list, "Neues Spiel", () => {
+				app.board.newGame();
+				app.engine.newGame();
+				uninstall();
+			}));
+			list.items.Add(new TUIListEntry(list, "Tipp"));
 
-			list.onSelected += (itm) => {
-				cb((EPieceType)itm.tag);
-			};
+			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
+			list.items.Add(subEntry);
+
+			subEntry.items.Add(new TUIListEntry(list, "Figuren hinzufügen", () => {
+				uninstall();
+
+				foreach (var oldHandler in ioController.handlers.findByType(typeof(TChangeBoardHandler)))
+					oldHandler.uninstall();
+
+				var h = new TSetPieceHandler(EPiece.bPawn);
+				h.install();
+
+				foreach (var handler in app.ioController.handlers)
+					if (handler is TMoveHandler)
+						handler.suspend();
+
+			}));
+
 		}
 
 		public override void install() {
@@ -495,10 +558,11 @@ namespace chess.application
 			list.uninstall();
 		}
 
+		private string title = "Hauptmenü";
 		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
 			base.onUpdateGraphics(e);
 			gfx.Clear(Color.Black);
-			gfx.DrawString("Hauptmenü", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+			gfx.DrawString(title, new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
 		}
 
 		public override void onDraw(TDrawEvent e) {
@@ -515,11 +579,13 @@ namespace chess.application
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
 			base.onButtonChanged(e);
+			e.stop();
 
 			if (e.button == EButton.ok && e.state) {
-				var menu = new TUIMainMenu(null);
+				var menu = new TUIMainMenu();
 				menu.install();
 			}
+
 		}
 
 	}
