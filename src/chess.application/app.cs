@@ -97,7 +97,7 @@ namespace chess.application
 
 				engine = new TEngine();
 				engine.start();
-
+				//return;
 				//board.newGame("k7/8/8/8/8/7p/8/K7 w - - 0 1");
 				//board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
 				board.newGame();

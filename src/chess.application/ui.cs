@@ -513,6 +513,68 @@ namespace chess.application
 
 	}
 
+	public class TUIChooseFigure : TUIDrawHandler
+	{
+
+		private TUIListHandler list;
+		public EPieceColor color = EPieceColor.white;
+
+		private TUIListEntry colorItem;
+
+		public TUIChooseFigure(Action<EPiece> cb) {
+			createGraphics();
+			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
+
+			list.items.Add(colorItem = new TUIListEntry(list, "") { tag = EPieceType.pawn });
+
+			list.items.Add(new TUIListEntry(list, "Bauer") { tag = EPieceType.pawn });
+			list.items.Add(new TUIListEntry(list, "Springer") { tag = EPieceType.knight });
+			list.items.Add(new TUIListEntry(list, "Läufer") { tag = EPieceType.bishop });
+			list.items.Add(new TUIListEntry(list, "Turm") { tag = EPieceType.rock });
+			list.items.Add(new TUIListEntry(list, "Dame") { tag = EPieceType.queen });
+			list.items.Add(new TUIListEntry(list, "König") { tag = EPieceType.king });
+
+			setColor(color);
+
+			list.onSelected += (itm) => {
+				if (itm == colorItem) {
+					setColor(color.getOtherColor());
+				}
+				else {
+					var pt = (EPieceType)itm.tag;
+					cb(pt.getPiece(color));
+				}
+			};
+		}
+
+		public void setColor(EPieceColor color) {
+			this.color = color;
+			colorItem.text = "Farbe: " + (color == EPieceColor.white ? "weiss" : "schwarz");
+		}
+
+		public override void install() {
+			base.install();
+			list.install();
+		}
+
+		public override void uninstall() {
+			base.uninstall();
+			list.uninstall();
+		}
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+			gfx.Clear(Color.Black);
+			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.DrawImage(bmp, 0, 0);
+		}
+
+	}
+
 	public class TUIMainMenu : TUIDrawHandler
 	{
 
@@ -531,21 +593,35 @@ namespace chess.application
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
 			list.items.Add(subEntry);
 
-			subEntry.items.Add(new TUIListEntry(list, "Figuren hinzufügen", () => {
-				uninstall();
+			subEntry.items.Add(new TUIListEntry(list, "Figuren hinzufügen", editBoard));
 
-				foreach (var oldHandler in ioController.handlers.findByType(typeof(TChangeBoardHandler)))
-					oldHandler.uninstall();
+		}
 
-				var h = new TSetPieceHandler(EPiece.bPawn);
-				h.install();
+		private void editBoard() {
+			uninstall();
 
-				foreach (var handler in app.ioController.handlers)
-					if (handler is TMoveHandler)
-						handler.suspend();
+			foreach (var oldHandler in ioController.handlers.findByType(typeof(TChangeBoardHandler)))
+				oldHandler.uninstall();
 
-			}));
+			TUIChooseFigure chooseHandler = null;
+			chooseHandler = new TUIChooseFigure((p) => {
+				var setHandler = new TSetPieceHandler(p);
+				setHandler.install();
+				chooseHandler.uninstall();
 
+				setHandler.buttonChanged += (e) => {
+					if (e.state && e.button == EButton.ok) {
+						e.stop();
+						setHandler.uninstall();
+						chooseHandler.install();
+					}
+				};
+			});
+			chooseHandler.install();
+
+			foreach (var handler in app.ioController.handlers)
+				if (handler is TMoveHandler)
+					handler.suspend();
 		}
 
 		public override void install() {

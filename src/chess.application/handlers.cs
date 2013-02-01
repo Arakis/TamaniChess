@@ -47,10 +47,11 @@ namespace chess.application
 
 		public override void install() {
 			base.install();
-			boardLeds[0, 0].on(EPriority.high);
-			boardLeds[8, 0].on(EPriority.high);
-			boardLeds[0, 8].on(EPriority.high);
-			boardLeds[8, 8].on(EPriority.high);
+			//boardLeds[0, 0].on(EPriority.high);
+			//boardLeds[8, 0].on(EPriority.high);
+			//boardLeds[0, 8].on(EPriority.high);
+			//boardLeds[8, 8].on(EPriority.high);
+			foreach (var led in boardLeds.getAllLeds()) led.on(EPriority.high);
 			ioController.updateLeds();
 		}
 
@@ -414,12 +415,12 @@ namespace chess.application
 				e.gfx.Clear(Color.Black);
 
 				if ((DateTime.Now - lastPositionChanged).TotalSeconds >= interval) {
-					color = Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255));
-					pos = new Point(rnd.Next(60) - 10, rnd.Next(160) - 10);
+					color = Color.FromArgb(rnd.Next(30, 255), rnd.Next(30, 255), rnd.Next(30, 255));
+					pos = new Point(rnd.Next(-10, 30), rnd.Next(-10, 150));
 					lastPositionChanged = DateTime.Now;
 				}
 
-				e.gfx.DrawString("Schach", new Font(FontFamily.GenericSansSerif, 18), new SolidBrush(color), pos);
+				e.gfx.DrawString("TamaniChess", new Font(FontFamily.GenericSansSerif, 13), new SolidBrush(color), pos);
 			}
 		}
 

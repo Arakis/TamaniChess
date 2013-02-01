@@ -100,23 +100,70 @@ namespace chess.application
 			installed = true;
 		}
 
-		public void onProcessEvents() { }
-		public virtual void onPieceChangedDelay(TSwitchChangeEvent e) { }
-		public virtual void onPiecesChangedDelay(TSwitchesChangesEvent e) { }
-		public virtual void onPieceChanged(TSwitchChangeEvent e) { }
-		public virtual void onPiecesChanged(TSwitchesChangesEvent e) { }
+		public event DPieceChanged pieceChanged;
+		public event DPiecesChanged piecesChanged;
+		public event DPieceChanged pieceChangedDelay;
+		public event DPiecesChanged piecesChangedDelay;
 
-		public virtual void onButtonChangedDelay(TButtonChangeEvent e) { }
-		public virtual void onButtonsChangedDelay(TButtonsChangesEvent e) { }
-		public virtual void onButtonChanged(TButtonChangeEvent e) { }
-		public virtual void onButtonsChanged(TButtonsChangesEvent e) { }
+		public event DButtonChanged buttonChanged;
+		public event DButtonsChanged buttonsChanged;
+		public event DButtonChanged buttonChangedDelay;
+		public event DButtonsChanged buttonsChangedDelay;
 
-		public virtual void onConsoleLine(TConsoleLineEvent e) { }
-		public virtual void onTick() { }
+		public event Action processEvents;
+		public event Action tick;
 
-		public virtual void onUpdateGraphics(TUpdateGraphicsEvent e) { }
-		public virtual void onDrawBoard(TDrawBoardEvent e) { }
-		public virtual void onDraw(TDrawEvent e) { }
+		public event Action<TUpdateGraphicsEvent> updateGraphics;
+		public event Action<TDrawBoardEvent> drawBoard;
+		public event Action<TDrawEvent> draw;
+		public event Action<TConsoleLineEvent> consoleLine;
+
+		public void onProcessEvents() {
+			if (processEvents != null) processEvents();
+		}
+
+		public virtual void onPieceChangedDelay(TSwitchChangeEvent e) {
+			if (pieceChangedDelay != null) pieceChangedDelay(e);
+		}
+		public virtual void onPiecesChangedDelay(TSwitchesChangesEvent e) {
+			if (piecesChangedDelay != null) piecesChangedDelay(e);
+		}
+		public virtual void onPieceChanged(TSwitchChangeEvent e) {
+			if (pieceChanged != null) pieceChanged(e);
+		}
+		public virtual void onPiecesChanged(TSwitchesChangesEvent e) {
+			if (piecesChanged != null) piecesChanged(e);
+		}
+
+		public virtual void onButtonChangedDelay(TButtonChangeEvent e) {
+			if (buttonChangedDelay != null) buttonChangedDelay(e);
+		}
+		public virtual void onButtonsChangedDelay(TButtonsChangesEvent e) {
+			if (buttonsChangedDelay != null) buttonsChangedDelay(e);
+		}
+		public virtual void onButtonChanged(TButtonChangeEvent e) {
+			if (buttonChanged != null) buttonChanged(e);
+		}
+		public virtual void onButtonsChanged(TButtonsChangesEvent e) {
+			if (buttonsChanged != null) buttonsChanged(e);
+		}
+
+		public virtual void onConsoleLine(TConsoleLineEvent e) {
+			if (consoleLine != null) consoleLine(e);
+		}
+		public virtual void onTick() {
+			if (tick != null) tick();
+		}
+
+		public virtual void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			if (updateGraphics != null) updateGraphics(e);
+		}
+		public virtual void onDrawBoard(TDrawBoardEvent e) {
+			if (drawBoard != null) drawBoard(e);
+		}
+		public virtual void onDraw(TDrawEvent e) {
+			if (draw != null) draw(e);
+		}
 
 		public void Dispose() {
 			if (installed) uninstall();
@@ -474,6 +521,14 @@ namespace chess.application
 			yield return this[x + 1, y];
 			yield return this[x, y + 1];
 			yield return this[x + 1, y + 1];
+		}
+
+		public IEnumerable<TLed> getAllLeds() {
+			for (var y = 0; y < 9; y++) {
+				for (var x = 0; x < 9; x++) {
+					yield return this[x, y];
+				}
+			}
 		}
 
 		public void clear() {
@@ -969,6 +1024,17 @@ namespace chess.application
 			if (piece == EPiece.none) return EPieceType.none;
 			if (piece >= EPiece.wPawn && piece <= EPiece.wKing) return (EPieceType)piece;
 			return (EPieceType)piece - 6;
+		}
+
+		public static EPiece getPiece(this EPieceType pieceType, EPieceColor color) {
+			if (pieceType == EPieceType.none) return EPiece.none;
+			if (color == EPieceColor.white) return (EPiece)pieceType;
+			return (EPiece)pieceType + 6;
+		}
+
+		public static EPieceColor getOtherColor(this EPieceColor color) {
+			if (color == EPieceColor.none) return EPieceColor.none;
+			return color == EPieceColor.white ? EPieceColor.black : EPieceColor.white;
 		}
 
 	}
