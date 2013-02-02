@@ -415,9 +415,10 @@ namespace chess.application
 
 		private EButton getButtonBySwitchIndex(int index) {
 			switch (index) {
-				case 0: return EButton.down;
-				case 1: return EButton.ok;
-				case 2: return EButton.up;
+				case 0: return EButton.up;
+				case 1: return EButton.back;
+				case 2: return EButton.down;
+				case 6: return EButton.ok;
 				default: return EButton.none;
 			}
 		}
@@ -617,6 +618,7 @@ namespace chess.application
 		ok = 1,
 		up = 2,
 		down = 4,
+		back = 8,
 	}
 
 	public class TIOHardware
@@ -1107,12 +1109,19 @@ namespace chess.application
 		public void newGame(string FEN) {
 			setFEN(FEN);
 
-			foreach (var h in Program.app.ioController.handlers.ToArray()) {
-				if (h is TMoveHandler) h.uninstall();
-			}
+			uninstallMoveHandler();
+			installMoveHandler();
+		}
 
+		public void installMoveHandler() {
 			var ownHandler = new TOwnMoveHandler();
 			ownHandler.install();
+		}
+
+		public void uninstallMoveHandler() {
+			foreach (var handler in Program.app.ioController.handlers.ToArray())
+				if (handler is TMoveHandler)
+					handler.uninstall();
 		}
 
 		public void copyTo(TChessBoard board) {

@@ -291,14 +291,15 @@ namespace chess.application
 		public void setCurrnetItems(TUIListEntryCollection items) {
 			if (items == this.currentItems) return;
 			currentItems = items;
+			selected = (items.Count == 0 ? null : items[0]);
 		}
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
 			base.onButtonChanged(e);
-			e.stop();
 			if (!e.state) return;
 
 			if (e.button == EButton.down) {
+				e.stop();
 				var idx = currentItems.IndexOf(selected) + 1;
 				if (idx < currentItems.Count) {
 					selected = currentItems[idx];
@@ -310,6 +311,7 @@ namespace chess.application
 				}
 			}
 			else if (e.button == EButton.up) {
+				e.stop();
 				var idx = currentItems.IndexOf(selected) - 1;
 				if (idx >= 0) {
 					selected = currentItems[idx];
@@ -317,6 +319,7 @@ namespace chess.application
 				}
 			}
 			else if (e.button == EButton.ok) {
+				e.stop();
 				if (selected != null) selected.selectedEvent();
 			}
 
@@ -597,6 +600,11 @@ namespace chess.application
 
 		}
 
+		public override void onButtonChanged(TButtonChangeEvent e) {
+			base.onButtonChanged(e);
+			if (e.state && e.button == EButton.back) uninstall();
+		}
+
 		private void editBoard() {
 			uninstall();
 
@@ -610,18 +618,22 @@ namespace chess.application
 				chooseHandler.uninstall();
 
 				setHandler.buttonChanged += (e) => {
-					if (e.state && e.button == EButton.ok) {
+					if (e.state && (e.button == EButton.ok || e.button == EButton.back)) {
 						e.stop();
 						setHandler.uninstall();
 						chooseHandler.install();
 					}
 				};
 			});
+			chooseHandler.buttonChanged += (e) => {
+				if (e.state && e.button == EButton.back) {
+					chooseHandler.uninstall();
+					app.board.installMoveHandler();
+				}
+			};
 			chooseHandler.install();
 
-			foreach (var handler in app.ioController.handlers)
-				if (handler is TMoveHandler)
-					handler.suspend();
+			app.board.uninstallMoveHandler();
 		}
 
 		public override void install() {

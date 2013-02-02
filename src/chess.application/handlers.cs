@@ -99,9 +99,43 @@ namespace chess.application
 
 	public class TChangeBoardHandler : THandler { }
 
-	public class TRemovePieceHandler : TChangeBoardHandler { }
+	public class TRemovePieceHandler : TChangeBoardHandler
+	{
 
-	public class TMovePieceHandler : TChangeBoardHandler { }
+		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
+			base.onPieceChangedDelay(e);
+			if (!e.state) {
+				app.board[e.pos].piece = EPiece.none;
+			}
+
+			if (app.board.canSendToEngine()) {
+				app.engine.position(app.board.toFEN());
+				engine.debug();
+			}
+		}
+
+	}
+
+	public class TMovePieceHandler : TChangeBoardHandler
+	{
+		private EPiece piece;
+
+		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
+			base.onPieceChangedDelay(e);
+			if (e.state)
+				app.board[e.pos].piece = piece;
+			else {
+				piece = app.board[e.pos].piece;
+				app.board[e.pos].piece = EPiece.none;
+			}
+
+			if (app.board.canSendToEngine()) {
+				app.engine.position(app.board.toFEN());
+				engine.debug();
+			}
+		}
+
+	}
 
 	public class TSetPieceHandler : TChangeBoardHandler
 	{
@@ -114,12 +148,18 @@ namespace chess.application
 
 		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
 			base.onPieceChangedDelay(e);
-			app.board[e.pos].piece = piece;
-
-			if (app.board.canSendToEngine()) {
-				app.engine.position(app.board.toFEN());
-				engine.debug();
+			if (e.state)
+				app.board[e.pos].piece = piece;
+			else {
+				app.board[e.pos].piece = EPiece.none;
 			}
+
+			//if (app.board.canSendToEngine()) {
+			//	string newFEN;
+			//	bool isCheck;
+			//if (app.engine.validate(app.board.toFEN(), out newFEN, out isCheck))
+			app.board.setFEN(app.board.toFEN());
+			//}
 		}
 
 		public override void onConsoleLine(TConsoleLineEvent e) {
@@ -134,7 +174,6 @@ namespace chess.application
 
 			}
 		}
-
 
 	}
 
@@ -254,7 +293,7 @@ namespace chess.application
 				}
 			}
 
-			if (engine.validateMove(app.board.FEN, tmpMove.ToString(), out newFEN, out isCheck)) {
+			if (engine.validate(app.board.FEN, out newFEN, out isCheck, tmpMove.ToString())) {
 				app.player.play("sound3");
 				app.board.setFEN(newFEN);
 				//board.copyTo(boardTemp);
@@ -322,7 +361,7 @@ namespace chess.application
 				string newFEN;
 				bool isCheck;
 
-				if (engine.validateMove(app.board.FEN, move.ToString(), out newFEN, out isCheck)) {
+				if (engine.validate(app.board.FEN, out newFEN, out isCheck, move.ToString())) {
 					if (isCheck) Console.WriteLine("CHECK!");
 					app.player.play("sound3");
 					app.board.setFEN(newFEN);

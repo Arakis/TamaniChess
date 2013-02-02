@@ -168,7 +168,7 @@ namespace chess.application
 			position(TChessBoard.startFEN);
 		}
 
-		public bool validateMove(string oldFEN, string move, out string newFEN, out bool isCheck) {
+		public bool validate(string oldFEN, out string newFEN, out bool isCheck, string move = "") {
 			var foundFen = "";
 			var tmpIsCheck = false;
 			bool wait = true;
@@ -181,7 +181,7 @@ namespace chess.application
 			});
 			try {
 				onNewLine += func;
-				send("position fen " + oldFEN + " moves " + move);
+				send("position fen " + oldFEN + (move == "" ? "" : " moves " + move));
 				send("d");
 
 				while (wait) System.Threading.Thread.Sleep(10);
@@ -230,7 +230,7 @@ namespace chess.application
 				});
 				try {
 					onNewLine += func;
-					send("go movetime 5000");
+					send("go movetime 5000 depth 2");
 					while (wait) Thread.Sleep(50);
 				}
 				finally {
