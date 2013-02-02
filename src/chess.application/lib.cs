@@ -1109,11 +1109,11 @@ namespace chess.application
 		public void newGame(string FEN) {
 			setFEN(FEN);
 
-			uninstallMoveHandler();
 			installMoveHandler();
 		}
 
 		public void installMoveHandler() {
+			uninstallMoveHandler();
 			var ownHandler = new TOwnMoveHandler();
 			ownHandler.install();
 		}

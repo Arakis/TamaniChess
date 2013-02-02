@@ -47,11 +47,11 @@ namespace chess.application
 
 		public override void install() {
 			base.install();
-			//boardLeds[0, 0].on(EPriority.high);
-			//boardLeds[8, 0].on(EPriority.high);
-			//boardLeds[0, 8].on(EPriority.high);
-			//boardLeds[8, 8].on(EPriority.high);
-			foreach (var led in boardLeds.getAllLeds()) led.on(EPriority.high);
+			boardLeds[0, 0].on(EPriority.high);
+			boardLeds[8, 0].on(EPriority.high);
+			boardLeds[0, 8].on(EPriority.high);
+			boardLeds[8, 8].on(EPriority.high);
+			//foreach (var led in boardLeds.getAllLeds()) led.on(EPriority.high);
 			ioController.updateLeds();
 		}
 
@@ -120,19 +120,35 @@ namespace chess.application
 	{
 		private EPiece piece;
 
-		public override void onPieceChangedDelay(TSwitchChangeEvent e) {
-			base.onPieceChangedDelay(e);
-			if (e.state)
-				app.board[e.pos].piece = piece;
-			else {
-				piece = app.board[e.pos].piece;
-				app.board[e.pos].piece = EPiece.none;
-			}
+		public override void onPiecesChangedDelay(TSwitchesChangesEvent e) {
+			base.onPiecesChangedDelay(e);
 
-			if (app.board.canSendToEngine()) {
-				app.engine.position(app.board.toFEN());
-				engine.debug();
-			}
+			for (var y = 0; y < 8; y++)
+				for (var x = 0; x < 8; x++)
+					if (e.oldSwitches[x, y] != e.newSwitches[x, y] && !e.newSwitches[x, y]) {
+						piece = app.board[x, y].piece;
+						app.board[x, y].piece = EPiece.none;
+					}
+
+			for (var y = 0; y < 8; y++)
+				for (var x = 0; x < 8; x++)
+					if (e.oldSwitches[x, y] != e.newSwitches[x, y] && e.newSwitches[x, y]) {
+						app.board[x, y].piece = piece;
+					}
+
+			//if (e.state)
+			//	app.board[e.pos].piece = piece;
+			//else {
+			//	piece = app.board[e.pos].piece;
+			//	app.board[e.pos].piece = EPiece.none;
+			//}
+
+			//if (app.board.canSendToEngine()) {
+			//	app.engine.position(app.board.toFEN());
+			//	engine.debug();
+			//}
+
+			app.board.setFEN(app.board.toFEN());
 		}
 
 	}

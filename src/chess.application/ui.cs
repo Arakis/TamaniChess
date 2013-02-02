@@ -37,6 +37,7 @@ using System.IO;
 using chess.shared;
 using System.Threading;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using RaspberryPiDotNet;
 using larne.io.ic;
 
@@ -352,7 +353,7 @@ namespace chess.application
 			gfx = Graphics.FromImage(bmp);
 		}
 
-		public int height = 20;
+		public int height = 18;
 		public string text;
 		public bool selected = false;
 
@@ -368,7 +369,7 @@ namespace chess.application
 			}
 
 			gfx.Clear(bgColor);
-			gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 12), new SolidBrush(foreColor), new Point(0, 0));
+			gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(foreColor), new Point(0, 0));
 		}
 
 		public virtual void selectedEvent() {
@@ -390,7 +391,13 @@ namespace chess.application
 		public override void updateGraphics() {
 			base.updateGraphics();
 
-			gfx.DrawRectangle(Pens.Red, 0, 0, 10, 10);
+			//gfx.DrawRectangle(Pens.Red, 0, 0, 10, 10);
+			//gfx.FillPath(Brushes.Red, new GraphicsPath(new Point()
+			var x = list.rect.Width - 5 - 1;
+			var y = 5;
+			gfx.FillPolygon(Brushes.Red, new Point[] { new Point(0 + x, 0 + y), new Point(5 + x, 5 + y), new Point(0 + x, 10 + y) });
+			//gfx.DrawString("\u25B6", new Font(FontFamily.GenericSansSerif, 11,), new SolidBrush(Color.Red), new Point(list.rect.Width - 10, 0));
+
 		}
 
 		public override void selectedEvent() {
@@ -506,7 +513,7 @@ namespace chess.application
 		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
 			base.onUpdateGraphics(e);
 			gfx.Clear(Color.Black);
-			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
 		}
 
 		public override void onDraw(TDrawEvent e) {
@@ -526,7 +533,7 @@ namespace chess.application
 
 		public TUIChooseFigure(Action<EPiece> cb) {
 			createGraphics();
-			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
+			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
 
 			list.items.Add(colorItem = new TUIListEntry(list, "") { tag = EPieceType.pawn });
 
@@ -568,7 +575,7 @@ namespace chess.application
 		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
 			base.onUpdateGraphics(e);
 			gfx.Clear(Color.Black);
-			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+			gfx.DrawString("Bitte wählen:", new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
 		}
 
 		public override void onDraw(TDrawEvent e) {
@@ -585,7 +592,7 @@ namespace chess.application
 
 		public TUIMainMenu() {
 			createGraphics();
-			list = new TUIListHandler(new Rectangle(0, 20, Program.app.ui.display.width, Program.app.ui.display.height - 20));
+			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
 			list.items.Add(new TUIListEntry(list, "Neues Spiel", () => {
 				app.board.newGame();
 				app.engine.newGame();
@@ -596,7 +603,8 @@ namespace chess.application
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
 			list.items.Add(subEntry);
 
-			subEntry.items.Add(new TUIListEntry(list, "Figuren hinzufügen", editBoard));
+			subEntry.items.Add(new TUIListEntry(list, "Verschieben/Entf.", movePieces));
+			subEntry.items.Add(new TUIListEntry(list, "Hinzufügen", setPieces));
 
 		}
 
@@ -605,7 +613,7 @@ namespace chess.application
 			if (e.state && e.button == EButton.back) uninstall();
 		}
 
-		private void editBoard() {
+		private void setPieces() {
 			uninstall();
 
 			foreach (var oldHandler in ioController.handlers.findByType(typeof(TChangeBoardHandler)))
@@ -636,6 +644,26 @@ namespace chess.application
 			app.board.uninstallMoveHandler();
 		}
 
+		private void movePieces() {
+			uninstall();
+
+			foreach (var oldHandler in ioController.handlers.findByType(typeof(TChangeBoardHandler)))
+				oldHandler.uninstall();
+
+			var setHandler = new TMovePieceHandler();
+			setHandler.install();
+
+			setHandler.buttonChanged += (e) => {
+				if (e.state && (e.button == EButton.ok || e.button == EButton.back)) {
+					e.stop();
+					setHandler.uninstall();
+					app.board.installMoveHandler();
+				}
+			};
+
+			app.board.uninstallMoveHandler();
+		}
+
 		public override void install() {
 			base.install();
 			list.install();
@@ -650,7 +678,7 @@ namespace chess.application
 		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
 			base.onUpdateGraphics(e);
 			gfx.Clear(Color.Black);
-			gfx.DrawString(title, new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+			gfx.DrawString(title, new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
 		}
 
 		public override void onDraw(TDrawEvent e) {
