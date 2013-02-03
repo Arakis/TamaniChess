@@ -83,6 +83,11 @@ namespace chess.application
 			display.update();
 		}
 
+		public void powerOff() {
+			display.gfx.Clear(Color.Black);
+			display.update();
+		}
+
 	}
 
 	public class TUIBoard : TUIDrawHandler
@@ -598,6 +603,7 @@ namespace chess.application
 				app.engine.newGame();
 				uninstall();
 			}));
+			list.items.Add(new TUIListEntry(list, "Rückgängig"));
 			list.items.Add(new TUIListEntry(list, "Tipp"));
 
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
@@ -684,6 +690,37 @@ namespace chess.application
 		public override void onDraw(TDrawEvent e) {
 			base.onDraw(e);
 			e.gfx.DrawImage(bmp, 0, 0);
+		}
+
+	}
+
+	public class TUIBoardStatusHandler : TUIDrawHandler
+	{
+
+		public TUIBoardStatusHandler() {
+			//current = this;
+			createGraphics(new Size(this.app.ui.display.width, 32));
+		}
+
+		//public static TUIBoardStatusHandler current;
+
+		//public string text;
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+
+			gfx.Clear(Color.Transparent);
+
+
+			//foreach(var h in ioController.handlers)
+			//	if(h is tui
+
+			//gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.DrawImage(bmp, 0, 128);
 		}
 
 	}

@@ -36,6 +36,7 @@ using System.Text;
 using System.IO;
 using chess.shared;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 //using Gst;
 //using Gst.GLib;
@@ -78,6 +79,11 @@ namespace chess.application
 			try {
 				Console.WriteLine("chess application initialization");
 
+				Console.CancelKeyPress += (sender, e) => {
+					e.Cancel = true;
+					//quit();
+				};
+
 				ioController = new TEventController();
 
 				var initHandler = new TInitHandler();
@@ -100,7 +106,10 @@ namespace chess.application
 				//return;
 				//board.newGame("k7/8/8/8/8/7p/8/K7 w - - 0 1");
 				//board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
-				board.newGame();
+				//board.newGame();
+				if (!loadAutoSave()) {
+					board.newGame();
+				}
 
 				cmdThread = new TCommandLineThread();
 				cmdThread.start();
@@ -113,6 +122,9 @@ namespace chess.application
 
 				var boardHandler = new TUIBoard();
 				boardHandler.install();
+
+				var statusHandler = new TUIBoardStatusHandler();
+				statusHandler.install();
 
 				var acthandler = new TUIDefaultButtonActions();
 				acthandler.install();
@@ -132,6 +144,24 @@ namespace chess.application
 				Console.WriteLine(ex.ToString());
 				Thread.Sleep(5000);
 			}
+		}
+
+		public void quit() {
+			Console.WriteLine("quit");
+			saveAutoSave();
+			ui.powerOff();
+			System.Diagnostics.Process.GetCurrentProcess().Kill();
+		}
+
+		public static string saveDirectory = Path.Combine(Config.applicationPath, "save");
+		public static string autosaveFile = Path.Combine(saveDirectory, "autosave.json");
+
+		public bool loadAutoSave() {
+			return board.load(autosaveFile);
+		}
+
+		public void saveAutoSave() {
+			board.save(autosaveFile);
 		}
 
 	}

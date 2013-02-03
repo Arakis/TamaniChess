@@ -38,6 +38,8 @@ using larne.io.ic;
 using System.IO;
 using System.Threading;
 using System.Drawing;
+using Newtonsoft.Json.Linq;
+using chess.shared;
 
 namespace chess.application
 {
@@ -1039,6 +1041,11 @@ namespace chess.application
 			return color == EPieceColor.white ? EPieceColor.black : EPieceColor.white;
 		}
 
+		public static string toChar(this EPieceColor color) {
+			if (color == EPieceColor.none) return "";
+			return color == EPieceColor.white ? "b" : "w";
+		}
+
 	}
 
 	public class TChessBoard
@@ -1103,10 +1110,36 @@ namespace chess.application
 		public const string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 		public void newGame() {
-			newGame(startFEN);
+			newGame(startFEN, Program.app.myColor);
 		}
 
-		public void newGame(string FEN) {
+		public void save(string file) {
+			var dir = Path.GetDirectoryName(file);
+			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+			var js = new JObject();
+			js["fen"] = toFEN();
+			js["color"] = Program.app.myColor.toChar();
+			var str = js.ToString();
+			shared.Tools.StringSaveToFileSecure(file, str);
+		}
+
+		public bool load(string file) {
+			if (!File.Exists(file)) return false;
+			try {
+				var str = shared.Tools.StringLoadFromFile(file);
+				var js = JObject.Parse(str);
+				var fen = (string)js["fen"];
+				var colorStr = (string)js["color"];
+				var color = (colorStr == "b" ? EPieceColor.black : EPieceColor.white);
+				newGame(fen, color);
+				return true;
+			}
+			catch {
+				return false;
+			}
+		}
+
+		public void newGame(string FEN, EPieceColor myColor) {
 			setFEN(FEN);
 
 			installMoveHandler();
@@ -1114,8 +1147,17 @@ namespace chess.application
 
 		public void installMoveHandler() {
 			uninstallMoveHandler();
-			var ownHandler = new TOwnMoveHandler();
-			ownHandler.install();
+
+			Console.WriteLine("{0} {1} {2}", Program.app.myTurn, this.currentColor.ToString(), Program.app.myColor.ToString());
+
+			if (Program.app.myTurn) {
+				var ownHandler = new TOwnMoveHandler();
+				ownHandler.install();
+			}
+			else {
+				var calcHandler = new TCaluclateMoveHandler();
+				calcHandler.install();
+			}
 		}
 
 		public void uninstallMoveHandler() {

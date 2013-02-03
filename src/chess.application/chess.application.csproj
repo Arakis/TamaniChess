@@ -77,6 +77,10 @@
       <Project>{033A23F4-BAAB-43E0-9AA8-5FF60B13FC68}</Project>
       <Name>larne.io.ic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\thirdparty\Json\Source\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{a9ae40ff-1a21-414a-9fe7-3be13644cc6d}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

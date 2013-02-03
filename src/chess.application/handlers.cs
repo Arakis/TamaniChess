@@ -92,6 +92,9 @@ namespace chess.application
 					app.clearBoard();
 					//engine.debug();
 					break;
+				case "quit":
+					app.quit();
+					break;
 			}
 		}
 
@@ -210,7 +213,7 @@ namespace chess.application
 		public override void onDrawBoard(TDrawBoardEvent e) {
 			base.onDrawBoard(e);
 
-			if (e.type == EDrawBoardEventType.backgroundDrawed) {
+			if (e.type == EDrawBoardEventType.backgroundDrawed && showMove != null) {
 				highlightPosition(e, showMove.start);
 				highlightPosition(e, showMove.target);
 			}
@@ -316,20 +319,36 @@ namespace chess.application
 
 				boardLeds.clear();
 
-				engine.go((m) => {
-					Console.WriteLine("MOVE: " + m);
-					uninstall();
-
-					var handler = new TComputerMoveHandler(new TMove(m));
-					handler.install();
-					app.player.play("sound2");
-				});
+				uninstall();
+				var h = new TCaluclateMoveHandler();
+				h.install();
 			}
 			else {
 				Console.WriteLine("INVALID MOVE");
 				tmpMove.pawnConversion = EPieceType.none;
 			}
 
+		}
+
+	}
+
+	public class TCaluclateMoveHandler : TMoveHandler
+	{
+
+		public TCaluclateMoveHandler() {
+		}
+
+		public override void install() {
+			base.install();
+
+			engine.go((m) => {
+				Console.WriteLine("MOVE: " + m);
+				uninstall();
+
+				var handler = new TComputerMoveHandler(new TMove(m));
+				handler.install();
+				app.player.play("sound2");
+			});
 		}
 
 	}
@@ -457,8 +476,8 @@ namespace chess.application
 			_enabled = false;
 		}
 
-		public int timeout = 30; // 120;
-		public int interval = 1;
+		public int timeout = 120;
+		public int interval = 6;
 
 		private Random rnd = new Random();
 		private Point pos;

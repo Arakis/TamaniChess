@@ -230,7 +230,7 @@ namespace chess.application
 				});
 				try {
 					onNewLine += func;
-					send("go movetime 5000 depth 2");
+					send("go movetime 5000 depth 1");
 					while (wait) Thread.Sleep(50);
 				}
 				finally {

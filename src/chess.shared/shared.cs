@@ -90,6 +90,139 @@ namespace chess.shared
 			}
 		}
 
+		public static void StringSaveToFileSecure(string File, string Text) {
+			StringSaveToFileSecure(File, Text, CVert.DefaultEncoding);
+		}
+
+		public static void StringSaveToFileSecure(string File, string Text, System.Text.Encoding Enc) {
+			string d = Path.GetDirectoryName(File) + "\\";
+			string BaseName = Path.GetFileNameWithoutExtension(File);
+			string Ext = Path.GetExtension(BaseName);
+
+			string DnlFile = File;
+			string BakFile = File + ".bak";
+			string TmpFile = File + ".tmp";
+
+			if (!Directory.Exists(d)) {
+				Directory.CreateDirectory(d);
+			}
+			if (System.IO.File.Exists(TmpFile)) {
+				System.IO.File.Delete(TmpFile);
+			}
+
+			FileStream fs = System.IO.File.Open(TmpFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+			try {
+				byte[] buf = CVert.StringToBuffer(Text, Enc);
+				fs.Write(buf, 0, buf.Length);
+			}
+			finally {
+				fs.Flush();
+				fs.Close();
+			}
+
+			if (System.IO.File.Exists(BakFile)) {
+				if (System.IO.File.Exists(File)) {
+					System.IO.File.Delete(BakFile); //Backup nur löschen, wenn original existiert
+				}
+				else {
+					System.IO.File.Move(BakFile, File); //Wenn original nicht existiert, dann altes Backup als Original speichern
+				}
+			}
+
+			if (System.IO.File.Exists(DnlFile)) {
+				System.IO.File.Move(DnlFile, BakFile);
+			}
+			System.IO.File.Move(TmpFile, DnlFile);
+			System.IO.File.Delete(BakFile);
+		}
+
+		public static string StringLoadFromFile(string File, bool IgnoreIfFileNotExists = false) {
+			return StringLoadFromFile(File, CVert.DefaultEncoding, IgnoreIfFileNotExists);
+		}
+
+		public static string StringLoadFromFile(string File, System.Text.Encoding Enc, bool IgnoreIfFileNotExists = false) {
+			if (File == "" || !System.IO.File.Exists(File)) {
+				if (File != "" && System.IO.File.Exists(File + ".bak")) {
+					File = File + ".bak";
+				}
+				else {
+					if (IgnoreIfFileNotExists) {
+						return "";
+					}
+					else {
+						throw new Exception("file " + File + " doesn't exists!");
+					}
+				}
+			}
+			using (FileStream fs = System.IO.File.Open(File, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+				byte[] buf = new byte[(int)fs.Length];
+				fs.Read(buf, 0, Convert.ToInt32(fs.Length));
+				fs.Close();
+				return CVert.BufferToString(buf, Enc);
+			}
+		}
+
+		public static void StringSaveToFile(string File, string Text) {
+			StringSaveToFile(File, Text, CVert.DefaultEncoding);
+		}
+
+		public static void StringSaveToFile(string File, string Text, System.Text.Encoding Enc) {
+			if (System.IO.File.Exists(File)) {
+				System.IO.File.Delete(File);
+			}
+			using (FileStream fs = System.IO.File.Open(File, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite)) {
+				try {
+					byte[] buf = CVert.StringToBuffer(Text, Enc);
+					fs.Write(buf, 0, buf.Length);
+				}
+				finally {
+					fs.Flush();
+				}
+			}
+		}
+
+	}
+
+	public static class CVert
+	{
+
+		public static byte[] StringToBuffer(string Str) {
+			if (Str == null || Str == "") {
+				return new byte[0];
+			}
+			else {
+				return DefaultEncoding.GetBytes(Str);
+			}
+		}
+
+		public static byte[] StringToBuffer(string Str, System.Text.Encoding Encoding) {
+			if (Str == null || Str == "") {
+				return new byte[0];
+			}
+			else {
+				return Encoding.GetBytes(Str);
+			}
+		}
+
+		private static System.Text.Encoding _DefaultEncoding = System.Text.Encoding.UTF8;
+		public static System.Text.Encoding DefaultEncoding {
+			get {
+				return _DefaultEncoding;
+			}
+			set {
+				_DefaultEncoding = value;
+			}
+		}
+
+		public static string BufferToString(byte[] Buffer) {
+			return BufferToString(Buffer, DefaultEncoding);
+		}
+
+		public static string BufferToString(byte[] Buffer, System.Text.Encoding Encoding) {
+			return Encoding.GetString(Buffer);
+		}
+
+
 	}
 
 }

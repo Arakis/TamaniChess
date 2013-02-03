@@ -152,10 +152,16 @@ namespace chess.launcher
 			appThread.Start();
 		}
 
-		public static void stop() {
+		public static void stop() { 
 			if (process != null) {
 				Console.WriteLine("application stopped");
 				try {
+					if (!process.HasExited) {
+						Console.WriteLine("send quit signal");
+						process.StandardInput.WriteLine("quit");
+						process.WaitForExit(5000);
+						Console.WriteLine("terminate child process");
+					}
 					process.Kill();
 					process = null;
 				}
