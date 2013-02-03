@@ -117,6 +117,7 @@ namespace chess.application
 
 		public event Action<TUpdateGraphicsEvent> updateGraphics;
 		public event Action<TDrawBoardEvent> drawBoard;
+		public event Action<TDrawBoardStatusEvent> drawBoardStatus;
 		public event Action<TDrawEvent> draw;
 		public event Action<TConsoleLineEvent> consoleLine;
 
@@ -163,6 +164,9 @@ namespace chess.application
 		public virtual void onDrawBoard(TDrawBoardEvent e) {
 			if (drawBoard != null) drawBoard(e);
 		}
+		public virtual void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			if (drawBoardStatus != null) drawBoardStatus(e);
+		}
 		public virtual void onDraw(TDrawEvent e) {
 			if (draw != null) draw(e);
 		}
@@ -198,6 +202,10 @@ namespace chess.application
 	{
 		public TUIBoard board;
 		public EDrawBoardEventType type;
+	}
+
+	public class TDrawBoardStatusEvent : TDrawEvent
+	{
 	}
 
 	public enum EDrawBoardEventType
@@ -375,6 +383,12 @@ namespace chess.application
 			foreach (var h in handlers.ToArray())
 				if (h.active)
 					h.onDrawBoard(e);
+		}
+
+		public void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			foreach (var h in handlers.ToArray())
+				if (h.active)
+					h.onDrawBoardStatus(e);
 		}
 
 		public void onDraw(TDrawEvent e) {

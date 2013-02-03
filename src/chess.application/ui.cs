@@ -698,24 +698,14 @@ namespace chess.application
 	{
 
 		public TUIBoardStatusHandler() {
-			//current = this;
 			createGraphics(new Size(this.app.ui.display.width, 32));
 		}
-
-		//public static TUIBoardStatusHandler current;
-
-		//public string text;
 
 		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
 			base.onUpdateGraphics(e);
 
 			gfx.Clear(Color.Transparent);
-
-
-			//foreach(var h in ioController.handlers)
-			//	if(h is tui
-
-			//gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+			Program.app.ioController.onDrawBoardStatus(new TDrawBoardStatusEvent() { gfx = gfx });
 		}
 
 		public override void onDraw(TDrawEvent e) {
