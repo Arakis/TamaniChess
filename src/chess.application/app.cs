@@ -50,28 +50,37 @@ namespace chess.application
 		public TEngine engine;
 
 		public void clearBoard() {
-			board.clearBoard();
+			game.board.clearBoard();
 			//engine.position(board.toFEN());
 		}
 
 		public EPieceColor currentColor {
 			get {
-				return board.currentColor;
-			}
-			set {
-				board.currentColor = value;
+				return game.currentColor;
 			}
 		}
-		public EPieceColor myColor = EPieceColor.white;
+
+		public EPieceColor myColor {
+			get {
+				return game.myColor;
+			}
+		}
 
 		public bool myTurn {
 			get {
-				return currentColor == myColor;
+				return game.myTurn;
 			}
 		}
 
 		public TAudioPlayer player;
-		public TChessBoard board = new TChessBoard();
+		public TGame game = new TGame();
+
+		public TChessBoard board {
+			get {
+				return game.board;
+			}
+		}
+
 		public TCommandLineThread cmdThread;
 		public TUIController ui;
 
@@ -108,7 +117,7 @@ namespace chess.application
 				//board.newGame("k7/7P/8/8/8/8/8/K7 w - - 0 1");
 				//board.newGame();
 				if (!loadAutoSave()) {
-					board.newGame();
+					game.newGame();
 				}
 
 				cmdThread = new TCommandLineThread();
@@ -148,8 +157,11 @@ namespace chess.application
 
 		public void quit() {
 			Console.WriteLine("quit");
+			ioController.handlers.Clear();
 			saveAutoSave();
 			ui.powerOff();
+			ioController.loadingLED = true;
+			ioController.updateLeds();
 			System.Diagnostics.Process.GetCurrentProcess().Kill();
 		}
 
@@ -157,11 +169,11 @@ namespace chess.application
 		public static string autosaveFile = Path.Combine(saveDirectory, "autosave.json");
 
 		public bool loadAutoSave() {
-			return board.load(autosaveFile);
+			return game.load(autosaveFile);
 		}
 
 		public void saveAutoSave() {
-			board.save(autosaveFile);
+			game.save(autosaveFile);
 		}
 
 	}

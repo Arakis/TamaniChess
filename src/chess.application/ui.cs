@@ -599,7 +599,7 @@ namespace chess.application
 			createGraphics();
 			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
 			list.items.Add(new TUIListEntry(list, "Neues Spiel", () => {
-				app.board.newGame();
+				app.game.newGame();
 				app.engine.newGame();
 				uninstall();
 			}));
@@ -642,12 +642,12 @@ namespace chess.application
 			chooseHandler.buttonChanged += (e) => {
 				if (e.state && e.button == EButton.back) {
 					chooseHandler.uninstall();
-					app.board.installMoveHandler();
+					app.game.installMoveHandler();
 				}
 			};
 			chooseHandler.install();
 
-			app.board.uninstallMoveHandler();
+			app.game.uninstallMoveHandler();
 		}
 
 		private void movePieces() {
@@ -663,11 +663,11 @@ namespace chess.application
 				if (e.state && (e.button == EButton.ok || e.button == EButton.back)) {
 					e.stop();
 					setHandler.uninstall();
-					app.board.installMoveHandler();
+					app.game.installMoveHandler();
 				}
 			};
 
-			app.board.uninstallMoveHandler();
+			app.game.uninstallMoveHandler();
 		}
 
 		public override void install() {

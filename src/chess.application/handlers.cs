@@ -52,7 +52,12 @@ namespace chess.application
 			boardLeds[0, 8].on(EPriority.high);
 			boardLeds[8, 8].on(EPriority.high);
 			//foreach (var led in boardLeds.getAllLeds()) led.on(EPriority.high);
+			ioController.loadingLED = false;
 			ioController.updateLeds();
+		}
+
+		public override void uninstall() {
+			base.uninstall();
 		}
 
 	}
@@ -64,7 +69,7 @@ namespace chess.application
 			base.onConsoleLine(e);
 			switch (e.command) {
 				case "newgame":
-					app.board.newGame();
+					app.game.newGame();
 					app.engine.newGame();
 					break;
 				case "d":
@@ -301,7 +306,7 @@ namespace chess.application
 
 			var startPiece = app.board[tmpMove.start];
 			if (startPiece.type == EPieceType.pawn && tmpMove.pawnConversion == EPieceType.none) {
-				if ((startPiece.color == EPieceColor.white && startPiece.pos.y == 1) || (startPiece.color == EPieceColor.black && startPiece.pos.y == 6)) {
+				if ((startPiece.color == EPieceColor.white && startPiece.pos.row == EBoardRow.r7) || (startPiece.color == EPieceColor.black && startPiece.pos.row == EBoardRow.r2)) {
 					Console.WriteLine("Pawn conversion needed!");
 					pawnConvert = new TUIChoosePawnConversion((type) => {
 						tmpMove.pawnConversion = type;

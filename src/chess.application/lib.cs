@@ -405,6 +405,15 @@ namespace chess.application
 
 		private TIOHardware ioHardware;
 
+		public bool loadingLED {
+			get {
+				return ioHardware.loadingLED;
+			}
+			set {
+				ioHardware.loadingLED = value;
+			}
+		}
+
 		public void updateLeds() {
 			for (var y = 0; y < 9; y++) {
 				for (var x = 0; x < 9; x++) {
@@ -762,6 +771,8 @@ namespace chess.application
 			readSideSwitchBits(0, 8, sideSwitchesNew);
 		}
 
+		public bool loadingLED = true;
+
 		private List<bool> oldLedBits = new List<bool>();
 		public void updateLeds() {
 			var tmpBits = new bool[8];
@@ -769,6 +780,7 @@ namespace chess.application
 			//set led-pins
 			var bitList = new List<bool>();
 			if (ledBitArray[8, 8]) tmpBits[0] = true;
+			tmpBits[3] = !loadingLED;
 			bitList.InsertRange(0, ledMappingBottom.convert(tmpBits));
 
 			tmpBits = new bool[8];
@@ -959,6 +971,18 @@ namespace chess.application
 			return ToString(x, y);
 		}
 
+		public EBoardRow row {
+			get {
+				return (EBoardRow)7 - y;
+			}
+		}
+
+		public EBoardColumn column {
+			get {
+				return (EBoardColumn)x;
+			}
+		}
+
 	}
 
 	public class TPiece
@@ -1062,6 +1086,89 @@ namespace chess.application
 
 	}
 
+	public class TGame
+	{
+		public TChessBoard board = new TChessBoard();
+
+		public TBoardHistoryMoveList history = new TBoardHistoryMoveList();
+
+		public void save(string file) {
+			var dir = Path.GetDirectoryName(file);
+			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+			var js = new JObject();
+			js["fen"] = board.toFEN();
+			js["color"] = Program.app.myColor.toChar();
+			var str = js.ToString();
+			shared.Tools.StringSaveToFileSecure(file, str);
+		}
+
+		public bool load(string file) {
+			if (!File.Exists(file)) return false;
+			try {
+				var str = shared.Tools.StringLoadFromFile(file);
+				var js = JObject.Parse(str);
+				var fen = (string)js["fen"];
+				var colorStr = (string)js["color"];
+				var color = (colorStr == "b" ? EPieceColor.black : EPieceColor.white);
+				newGame(fen, color);
+				return true;
+			}
+			catch {
+				return false;
+			}
+		}
+
+		public void newGame(string FEN, EPieceColor myColor) {
+			board.setFEN(FEN);
+
+			installMoveHandler();
+		}
+
+		public void newGame() {
+			newGame(TChessBoard.startFEN, Program.app.myColor);
+		}
+
+		public EPieceColor currentColor {
+			get {
+				return board.currentColor;
+			}
+		}
+
+		public bool myTurn {
+			get {
+				return board.myTurn;
+			}
+		}
+
+		public EPieceColor myColor {
+			get {
+				return board.myColor;
+			}
+		}
+
+		public void installMoveHandler() {
+			uninstallMoveHandler();
+
+			Console.WriteLine("{0} {1} {2}", Program.app.myTurn, this.currentColor.ToString(), Program.app.myColor.ToString());
+
+			if (Program.app.myTurn) {
+				var ownHandler = new TOwnMoveHandler();
+				ownHandler.install();
+			}
+			else {
+				var calcHandler = new TCaluclateMoveHandler();
+				calcHandler.install();
+			}
+		}
+
+		public void uninstallMoveHandler() {
+			foreach (var handler in Program.app.ioController.handlers.ToArray())
+				if (handler is TMoveHandler)
+					handler.uninstall();
+		}
+
+	}
+
 	public class TChessBoard
 	{
 
@@ -1085,6 +1192,14 @@ namespace chess.application
 		}
 
 		public EPieceColor currentColor;
+
+		public EPieceColor myColor = EPieceColor.white;
+
+		public bool myTurn {
+			get {
+				return currentColor == myColor;
+			}
+		}
 
 		private TPiece[,] board = new TPiece[8, 8];
 
@@ -1122,63 +1237,6 @@ namespace chess.application
 
 		// FEN string of the initial position, normal chess
 		public const string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-		public void newGame() {
-			newGame(startFEN, Program.app.myColor);
-		}
-
-		public void save(string file) {
-			var dir = Path.GetDirectoryName(file);
-			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-			var js = new JObject();
-			js["fen"] = toFEN();
-			js["color"] = Program.app.myColor.toChar();
-			var str = js.ToString();
-			shared.Tools.StringSaveToFileSecure(file, str);
-		}
-
-		public bool load(string file) {
-			if (!File.Exists(file)) return false;
-			try {
-				var str = shared.Tools.StringLoadFromFile(file);
-				var js = JObject.Parse(str);
-				var fen = (string)js["fen"];
-				var colorStr = (string)js["color"];
-				var color = (colorStr == "b" ? EPieceColor.black : EPieceColor.white);
-				newGame(fen, color);
-				return true;
-			}
-			catch {
-				return false;
-			}
-		}
-
-		public void newGame(string FEN, EPieceColor myColor) {
-			setFEN(FEN);
-
-			installMoveHandler();
-		}
-
-		public void installMoveHandler() {
-			uninstallMoveHandler();
-
-			Console.WriteLine("{0} {1} {2}", Program.app.myTurn, this.currentColor.ToString(), Program.app.myColor.ToString());
-
-			if (Program.app.myTurn) {
-				var ownHandler = new TOwnMoveHandler();
-				ownHandler.install();
-			}
-			else {
-				var calcHandler = new TCaluclateMoveHandler();
-				calcHandler.install();
-			}
-		}
-
-		public void uninstallMoveHandler() {
-			foreach (var handler in Program.app.ioController.handlers.ToArray())
-				if (handler is TMoveHandler)
-					handler.uninstall();
-		}
 
 		public void copyTo(TChessBoard board) {
 			throw new NotImplementedException();
@@ -1362,6 +1420,20 @@ namespace chess.application
 
 	}
 
+	public class TBoardHistoryMove
+	{
+		public string oldFen;
+		public string newFen;
+		public string move;
+		public bool check;
+		public bool checkMate;
+	}
+
+	public class TBoardHistoryMoveList : List<TBoardHistoryMove>
+	{
+
+	}
+
 	public enum EPieceType
 	{
 		none = 0,
@@ -1391,6 +1463,43 @@ namespace chess.application
 		bRock = 10, //Turm
 		bQueen = 11, //Königin
 		bKing = 12, //König
+	}
+
+	public enum EBoardPosition
+	{
+		a1 = 0, b1 = 1, c1 = 2, d1 = 3, e1 = 4, f1 = 5, g1 = 6, h1 = 7,
+		a2 = 8, b2 = 9, c2 = 10, d2 = 11, e2 = 12, f2 = 13, g2 = 14, h2 = 15,
+		a3 = 16, b3 = 17, c3 = 18, d3 = 19, e3 = 20, f3 = 21, g3 = 22, h3 = 23,
+		a4 = 24, b4 = 25, c4 = 26, d4 = 27, e4 = 28, f4 = 29, g4 = 30, h4 = 31,
+		a5 = 32, b5 = 33, c5 = 34, d5 = 35, e5 = 36, f5 = 37, g5 = 38, h5 = 39,
+		a6 = 40, b6 = 41, c6 = 42, d6 = 43, e6 = 44, f6 = 45, g6 = 46, h6 = 47,
+		a7 = 48, b7 = 49, c7 = 50, d7 = 51, e7 = 52, f7 = 53, g7 = 54, h7 = 55,
+		a8 = 56, b8 = 57, c8 = 58, d8 = 59, e8 = 60, f8 = 61, g8 = 62, h8 = 63,
+	}
+
+	public enum EBoardColumn
+	{
+		a = 0,
+		b = 1,
+		c = 2,
+		d = 3,
+		e = 4,
+		f = 5,
+		g = 6,
+		h = 7
+	}
+
+
+	public enum EBoardRow
+	{
+		r1 = 0,
+		r2 = 1,
+		r3 = 2,
+		r4 = 3,
+		r5 = 4,
+		r6 = 5,
+		r7 = 6,
+		r8 = 7
 	}
 
 	public enum EPieceColor
