@@ -1090,7 +1090,7 @@ namespace chess.application
 	{
 		public TChessBoard board = new TChessBoard();
 
-		public TBoardHistoryMoveList history = new TBoardHistoryMoveList();
+		public TChessBoardList history = new TChessBoardList();
 
 		public void save(string file) {
 			var dir = Path.GetDirectoryName(file);
@@ -1110,22 +1110,42 @@ namespace chess.application
 				var fen = (string)js["fen"];
 				var colorStr = (string)js["color"];
 				var color = (colorStr == "b" ? EPieceColor.black : EPieceColor.white);
-				newGame(fen, color);
-				return true;
+				return newGame(fen, color);
 			}
 			catch {
 				return false;
 			}
 		}
 
-		public void newGame(string FEN, EPieceColor myColor) {
-			board.setFEN(FEN);
+		public bool newGame(string FEN, EPieceColor myColor) {
+			history.Clear();
+			if (!setBoard(FEN)) return false;
 
 			installMoveHandler();
+			return true;
 		}
 
 		public void newGame() {
-			newGame(TChessBoard.startFEN, Program.app.myColor);
+			newGame(TChessBoard.startFEN, myColor);
+		}
+
+		public bool setBoard(string fen) {
+			return set(fen);
+		}
+
+		public bool makeMove(TMove move) {
+			return set(board.FEN, move);
+		}
+
+		private bool set(string fen, TMove move = null) {
+			return board.setFEN(fen, move);
+
+			//var b = new TChessBoard();
+			//if (b.setFEN(fen, move)) {
+			//	board = b;
+			//	return true;
+			//}
+			//return false;
 		}
 
 		public EPieceColor currentColor {
@@ -1238,6 +1258,10 @@ namespace chess.application
 		// FEN string of the initial position, normal chess
 		public const string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+		public TMove lastMove;
+		public bool check = false;
+		public bool checkMate = false;
+
 		public void copyTo(TChessBoard board) {
 			throw new NotImplementedException();
 			//TODO: Copy piece instance!
@@ -1250,7 +1274,7 @@ namespace chess.application
 			board.FEN = FEN;
 		}
 
-		public void setFEN(string fenStr) {
+		public void setFENNoValidate(string fenStr) {
 			/*
 				 A FEN string defines a particular position using only the ASCII character set.
 
@@ -1287,7 +1311,6 @@ namespace chess.application
 
 			clearBoard();
 			this.FEN = fenStr;
-
 			var parts = fenStr.Split(' ');
 			var lines = parts[0].Split('/');
 			for (var lineIdx = 0; lineIdx < 8; lineIdx++) {
@@ -1318,6 +1341,29 @@ namespace chess.application
 			enPassant = parts[3];
 			halfmoveClock = int.Parse(parts[4]);
 			fullMoveNumber = int.Parse(parts[5]);
+		}
+
+		public bool setFEN(string fenStr, TMove move = null) {
+			string tmpFEN;
+			bool tmpCheck;
+
+			var tmpBoard = new TChessBoard();
+			tmpBoard.setFENNoValidate(fenStr);
+			if (!tmpBoard.canSendToEngine()) {
+				return false;
+			}
+
+			var moveStr = "";
+			if (move != null) moveStr = move.ToString();
+			var valid = Program.app.engine.validate(fenStr, out tmpFEN, out tmpCheck, moveStr);
+			if (!valid) {
+				return false;
+			}
+
+			setFENNoValidate(tmpFEN);
+			this.check = tmpCheck;
+
+			return true;
 		}
 
 		public List<EPiece> castingAvailability = new List<EPiece>();
@@ -1420,16 +1466,7 @@ namespace chess.application
 
 	}
 
-	public class TBoardHistoryMove
-	{
-		public string oldFen;
-		public string newFen;
-		public string move;
-		public bool check;
-		public bool checkMate;
-	}
-
-	public class TBoardHistoryMoveList : List<TBoardHistoryMove>
+	public class TChessBoardList : List<TChessBoard>
 	{
 
 	}

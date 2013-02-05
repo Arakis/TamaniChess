@@ -156,7 +156,7 @@ namespace chess.application
 			//	engine.debug();
 			//}
 
-			app.board.setFEN(app.board.toFEN());
+			app.game.setBoard(app.board.toFEN());
 		}
 
 	}
@@ -182,7 +182,7 @@ namespace chess.application
 			//	string newFEN;
 			//	bool isCheck;
 			//if (app.engine.validate(app.board.toFEN(), out newFEN, out isCheck))
-			app.board.setFEN(app.board.toFEN());
+			app.game.setBoard(app.board.toFEN());
 			//}
 		}
 
@@ -301,9 +301,6 @@ namespace chess.application
 				pawnConvert = null;
 			}
 
-			string newFEN;
-			bool isCheck;
-
 			var startPiece = app.board[tmpMove.start];
 			if (startPiece.type == EPieceType.pawn && tmpMove.pawnConversion == EPieceType.none) {
 				if ((startPiece.color == EPieceColor.white && startPiece.pos.row == EBoardRow.r7) || (startPiece.color == EPieceColor.black && startPiece.pos.row == EBoardRow.r2)) {
@@ -317,9 +314,8 @@ namespace chess.application
 				}
 			}
 
-			if (engine.validate(app.board.FEN, out newFEN, out isCheck, tmpMove.ToString())) {
+			if (app.game.makeMove(tmpMove)) {
 				app.player.play("sound3");
-				app.board.setFEN(newFEN);
 
 				boardLeds.clear();
 
@@ -409,13 +405,8 @@ namespace chess.application
 
 			if (tmpMove.start != null && tmpMove.target != null) {
 
-				string newFEN;
-				bool isCheck;
-
-				if (engine.validate(app.board.FEN, out newFEN, out isCheck, move.ToString())) {
-					if (isCheck) Console.WriteLine("CHECK!");
+				if (app.game.makeMove (move)) {
 					app.player.play("sound3");
-					app.board.setFEN(newFEN);
 
 					Console.WriteLine("computer move done");
 					uninstall();

@@ -59,6 +59,20 @@ namespace chess.application
 			test.start();
 		}
 
+		public static void printStack() {
+			//try {
+			//	throw new Exception();
+			//}
+			//catch (Exception e) {
+			//	Console.WriteLine(e.ToString());
+			//}
+			var s = new System.Diagnostics.StackTrace(true);
+			Console.WriteLine("### STACK ###");
+			foreach (var f in s.GetFrames()) {
+				Console.WriteLine("  at {0} in {1}:{2}", f.GetMethod().ToString(), f.GetFileName(), f.GetFileLineNumber());
+			}
+		}
+
 	}
 
 }

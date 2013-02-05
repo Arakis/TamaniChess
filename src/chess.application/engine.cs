@@ -173,7 +173,7 @@ namespace chess.application
 			var tmpIsCheck = false;
 			bool wait = true;
 			var func = new Action<string>((s) => {
-				if (s.Contains("Checkers: ")) tmpIsCheck = true;
+				if (s.Contains("Checkers: ") && s.Length > "Checkers: ".Length) tmpIsCheck = true;
 				if (s.Contains("Fen: ")) {
 					foundFen = s.Replace("Fen: ", "");
 					wait = false;
@@ -192,7 +192,7 @@ namespace chess.application
 			newFEN = foundFen;
 			Console.WriteLine("Parsed FEN: " + foundFen);
 			isCheck = tmpIsCheck;
-			return oldFEN != newFEN;
+			return oldFEN != newFEN || move == ""; //TODO
 		}
 
 		public void position(string fenStr) {
