@@ -1081,7 +1081,7 @@ namespace chess.application
 
 		public static string toChar(this EPieceColor color) {
 			if (color == EPieceColor.none) return "";
-			return color == EPieceColor.white ? "b" : "w";
+			return color == EPieceColor.white ? "w" : "b";
 		}
 
 	}
@@ -1090,15 +1090,26 @@ namespace chess.application
 	{
 		public TChessBoard board = new TChessBoard();
 
-		public TChessBoardList history = new TChessBoardList();
+		public THistoryList history = new THistoryList();
 
 		public void save(string file) {
 			var dir = Path.GetDirectoryName(file);
 			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-			var js = new JObject();
-			js["fen"] = board.toFEN();
-			js["color"] = Program.app.myColor.toChar();
-			var str = js.ToString();
+
+			var jsFile = new JObject();
+
+			var jsHistory = new JArray();
+			foreach (var b in history) {
+				var js = new JObject();
+				js["fen"] = b.fen;
+				if (b.lastMove != null) js["lastMove"] = b.lastMove.ToString();
+				js["myColor"] = b.myColor.toChar();
+				jsHistory.Add(js);
+			}
+
+			jsFile["history"] = jsHistory;
+
+			var str = jsFile.ToString();
 			shared.Tools.StringSaveToFileSecure(file, str);
 		}
 
@@ -1108,7 +1119,7 @@ namespace chess.application
 				var str = shared.Tools.StringLoadFromFile(file);
 				var js = JObject.Parse(str);
 				var fen = (string)js["fen"];
-				var colorStr = (string)js["color"];
+				var colorStr = (string)js["myColor"];
 				var color = (colorStr == "b" ? EPieceColor.black : EPieceColor.white);
 				return newGame(fen, color);
 			}
@@ -1138,14 +1149,15 @@ namespace chess.application
 		}
 
 		private bool set(string fen, TMove move = null) {
-			return board.setFEN(fen, move);
+			//return board.setFEN(fen, move);
 
-			//var b = new TChessBoard();
-			//if (b.setFEN(fen, move)) {
-			//	board = b;
-			//	return true;
-			//}
-			//return false;
+			var b = new TChessBoard();
+			if (b.setFEN(fen, move)) {
+				board = b;
+				history.Add(THistoryEntry.fromChessBoard(b));
+				return true;
+			}
+			return false;
 		}
 
 		public EPieceColor currentColor {
@@ -1361,6 +1373,7 @@ namespace chess.application
 			}
 
 			setFENNoValidate(tmpFEN);
+			lastMove = move;
 			this.check = tmpCheck;
 
 			return true;
@@ -1466,7 +1479,31 @@ namespace chess.application
 
 	}
 
-	public class TChessBoardList : List<TChessBoard>
+	public class THistoryEntry
+	{
+
+		public string fen;
+		public string lastMove = "";
+		public EPieceColor myColor;
+
+		public TChessBoard toChessBoard() {
+			var b = new TChessBoard();
+			b.setFEN(fen, lastMove == "" ? null : new TMove(lastMove));
+			b.myColor = myColor;
+			return b;
+		}
+
+		public static THistoryEntry fromChessBoard(TChessBoard board) {
+			var entry = new THistoryEntry();
+			entry.fen = board.toFEN();
+			if (board.lastMove != null) entry.lastMove = board.lastMove.ToString();
+			entry.myColor = board.myColor;
+			return entry;
+		}
+
+	}
+
+	public class THistoryList : List<THistoryEntry>
 	{
 
 	}
