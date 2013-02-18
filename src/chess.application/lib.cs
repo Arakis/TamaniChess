@@ -420,7 +420,7 @@ namespace chess.application
 					ioHardware.ledBitArray[x, y] = false;
 					for (var i = (int)EPriority.none; i < (int)EPriority.high; i++) {
 						var currPrio = (EPriority)i;
-						foreach (var h in handlers) {
+						foreach (var h in handlers.ToArray()) {
 							if (h.active && h.boardLeds[x, y].prio >= currPrio) {
 								ioHardware.ledBitArray[x, y] = h.boardLeds[x, y].state;
 							}

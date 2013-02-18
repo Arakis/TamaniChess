@@ -183,16 +183,20 @@ namespace chess.application
 		public static void processEvents(DConsoleLine cb) {
 			if (th == null) start();
 
-			lock (consoleCommandQueue)
-				while (consoleCommandQueue.Count > 0) {
-					string line = consoleCommandQueue.Dequeue();
-					if (line != null) {
-						var parts = line.Split(' ');
-						var args = new List<string>(parts);
-						args.RemoveAt(0);
-						cb(new TConsoleLineEvent() { line = line, command = parts[0], args = args.ToArray() });
-					}
+			List<string> commands;
+			lock (consoleCommandQueue) {
+				commands = new List<string>(consoleCommandQueue);
+				consoleCommandQueue.Clear();
+			}
+
+			foreach (var line in commands) {
+				if (line != null) {
+					var parts = line.Split(' ');
+					var args = new List<string>(parts);
+					args.RemoveAt(0);
+					cb(new TConsoleLineEvent() { line = line, command = parts[0], args = args.ToArray() });
 				}
+			}
 		}
 
 		public static void start() {

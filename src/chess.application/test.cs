@@ -44,10 +44,122 @@ using System.Runtime.InteropServices;
 namespace chess.application
 {
 
-	public class TIOTest {
+	public class TIOTest
+	{
 
-		public void start() { 
-		
+		public void start() {
+			try {
+				while (true) {
+					CommandLineThread.processEvents(onConsoleLine);
+
+					Thread.Sleep(10);
+				}
+			}
+			catch (Exception e) {
+				Console.WriteLine(e);
+			}
+		}
+
+		public void onConsoleLine(TConsoleLineEvent e) {
+			GC.Collect(2);
+
+			var notFound = false;
+
+			switch (e.command) {
+				case "all-pins-on":
+					allPinsOn();
+					break;
+				case "all-leds-on":
+					allLEDsOn();
+					break;
+				case "switches":
+					switchTest();
+					break;
+				default:
+					notFound = true;
+					break;
+			}
+
+			if (notFound)
+				Console.WriteLine("invalid command");
+			else
+				Console.WriteLine("command processed");
+		}
+
+		public void allLEDsOn() {
+			var hw = new TIOHardware();
+			hw.init();
+			hw.loadingLED = false;
+			for (var y = 0; y < 9; y++) {
+				for (var x = 0; x < 9; x++) {
+					hw.ledBitArray[x, y] = true;
+				}
+			}
+			hw.updateLeds();
+		}
+
+		public void switchTest() {
+			Console.WriteLine("switch test");
+			var hw = new TIOHardware();
+			hw.init();
+
+			while (true) {
+				hw.updateSwitches();
+				hw.clearBoardLeds();
+
+				for (var y = 0; y < 8; y++) {
+					for (var x = 0; x < 8; x++) {
+						if (hw.figureSwitchesNew[x, y]) {
+							hw.ledBitArray[x, y] = true;
+							hw.ledBitArray[x + 1, y] = true;
+							hw.ledBitArray[x, y + 1] = true;
+							hw.ledBitArray[x + 1, y + 1] = true;
+						}
+					}
+				}
+
+				var ret = false;
+				CommandLineThread.processEvents((e) => {
+					ret = true;
+					onConsoleLine(e);
+				});
+				if (ret) return;
+
+				hw.updateLeds();
+			}
+
+		}
+
+		public void allPinsOn() {
+			var namedPins = new TNamedPins();
+			var device = new RPI();
+
+			namedPins.Add("LOW", device.createPin(GPIOPins.V2_GPIO_03, GPIODirection.Out, true));
+			namedPins.Add("HI", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, true));
+
+			namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_02, GPIODirection.Out, true));
+			namedPins.Add("OE", null);
+			namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_04, GPIODirection.Out, true));
+			namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, true));
+			namedPins.Add("SRCLR", null);
+
+			namedPins.Add("O7", device.createPin(GPIOPins.V2_GPIO_10, GPIODirection.Out));
+			namedPins.Add("CP", device.createPin(GPIOPins.V2_GPIO_09, GPIODirection.Out, true));
+			namedPins.Add("PL", device.createPin(GPIOPins.V2_GPIO_11, GPIODirection.Out, true));
+
+			namedPins.Add("D16_SDI", device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, true));
+			namedPins.Add("D17_CLK", device.createPin(GPIOPins.V2_GPIO_08, GPIODirection.Out, true));
+			namedPins.Add("CS", device.createPin(GPIOPins.V2_GPIO_07, GPIODirection.Out, true));
+
+			namedPins.Add("RST", device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, true));
+			namedPins.Add("RS", device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, true));
+
+			foreach (var entry in namedPins) {
+				if (entry.Value != null) {
+					entry.Value.PinDirection = GPIODirection.Out;
+					entry.Value.Write(true);
+				}
+			}
 		}
 
 	}
