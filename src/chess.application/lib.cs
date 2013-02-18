@@ -500,16 +500,8 @@ namespace chess.application
 				}
 			}
 
-			lock (TCommandLineThread.consoleCommandQueue)
-				while (TCommandLineThread.consoleCommandQueue.Count > 0) {
-					string line = TCommandLineThread.consoleCommandQueue.Dequeue();
-					if (line != null) {
-						var parts = line.Split(' ');
-						var args = new List<string>(parts);
-						args.RemoveAt(0);
-						onConsoleLine(new TConsoleLineEvent() { line = line, command = parts[0], args = args.ToArray() });
-					}
-				}
+			if (onConsoleLine != null)
+				CommandLineThread.processEvents((e) => { onConsoleLine(e); });
 
 			updateLeds();
 

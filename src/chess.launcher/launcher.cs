@@ -121,7 +121,9 @@ namespace chess.launcher
 		public static void start() {
 			stop();
 			appThread = new Thread(() => {
-				var psi = new ProcessStartInfo("mono", "--debug " + Config.applicationExe);
+				var args = new List<string>(Environment.GetCommandLineArgs());
+				args.RemoveAt(0);
+				var psi = new ProcessStartInfo("mono", "--debug " + Config.applicationExe + " " + string.Join(" ", args));
 				psi.UseShellExecute = false;
 				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardInput = true;
@@ -152,7 +154,7 @@ namespace chess.launcher
 			appThread.Start();
 		}
 
-		public static void stop() { 
+		public static void stop() {
 			if (process != null) {
 				Console.WriteLine("application stopped");
 				try {

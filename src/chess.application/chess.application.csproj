@@ -60,6 +60,7 @@
     <Compile Include="lib.cs" />
     <Compile Include="programm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="temp.cs" />
     <Compile Include="test.cs" />
     <Compile Include="uci.cs" />
     <Compile Include="ui.cs" />
@@ -80,6 +81,10 @@
     <ProjectReference Include="..\thirdparty\Json\Source\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{a9ae40ff-1a21-414a-9fe7-3be13644cc6d}</Project>
       <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\thirdparty\plossum-commandline\src\Plossum\Plossum.csproj">
+      <Project>{156bf637-7f50-4ec8-8476-d4e162335364}</Project>
+      <Name>Plossum</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

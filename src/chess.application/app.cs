@@ -81,7 +81,6 @@ namespace chess.application
 			}
 		}
 
-		public TCommandLineThread cmdThread;
 		public TUIController ui;
 
 		public void start() {
@@ -119,9 +118,6 @@ namespace chess.application
 				if (!loadAutoSave()) {
 					game.newGame();
 				}
-
-				cmdThread = new TCommandLineThread();
-				cmdThread.start();
 
 				var cmdHandler = new TConsoleHandler();
 				cmdHandler.install();
@@ -178,13 +174,28 @@ namespace chess.application
 
 	}
 
-	public class TCommandLineThread
+	public static class CommandLineThread
 	{
 
-		private Thread th;
+		private static Thread th;
 		public static Queue<string> consoleCommandQueue = new Queue<string>();
 
-		public void start() {
+		public static void processEvents(DConsoleLine cb) {
+			if (th == null) start();
+
+			lock (consoleCommandQueue)
+				while (consoleCommandQueue.Count > 0) {
+					string line = consoleCommandQueue.Dequeue();
+					if (line != null) {
+						var parts = line.Split(' ');
+						var args = new List<string>(parts);
+						args.RemoveAt(0);
+						cb(new TConsoleLineEvent() { line = line, command = parts[0], args = args.ToArray() });
+					}
+				}
+		}
+
+		public static void start() {
 			th = new Thread(() => {
 				while (true) {
 					var line = Console.ReadLine();

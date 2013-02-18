@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using RaspberryPiDotNet;
 using larne.io.ic;
+using Plossum.CommandLine;
 
 namespace chess.application
 {
@@ -43,15 +44,46 @@ namespace chess.application
 	{
 
 		public static TApplication app;
+		public static TProgrammOptions options;
 
 		static void Main(string[] args) {
-			startApp();
-			//startTest();
+			options = new TProgrammOptions();
+			var parser = new CommandLineParser(options);
+			parser.Parse();
+
+			CommandLineThread.start();
+
+			if (options.help) {
+				Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
+				Environment.Exit(0);
+			}
+			else if (parser.HasErrors) {
+				Console.WriteLine(parser.UsageInfo.GetErrorsAsString(78));
+				Environment.Exit(0);
+			}
+			else if (options.temp) {
+				startTemp();
+				Environment.Exit(0);
+			}
+			else if (options.test) {
+				startTest();
+				Environment.Exit(0);
+			}
+			else {
+				startApp();
+				Environment.Exit(0);
+			}
+
 		}
 
 		private static void startApp() {
 			app = new TApplication();
 			app.start();
+		}
+
+		private static void startTemp() {
+			var test = new TTempClass() { };
+			test.start();
 		}
 
 		private static void startTest() {
@@ -72,6 +104,21 @@ namespace chess.application
 				Console.WriteLine("  at {0} in {1}:{2}", f.GetMethod().ToString(), f.GetFileName(), f.GetFileLineNumber());
 			}
 		}
+
+	}
+
+	[CommandLineManager(ApplicationName = "Tamani Chess", Copyright = "Copyright (c) Tamani UG")]
+	public class TProgrammOptions
+	{
+
+		[CommandLineOption(Description = "Displays this help text")]
+		public bool help;
+
+		[CommandLineOption(Description = "Starts test routine (for internal use only)")]
+		public bool test;
+
+		[CommandLineOption(Description = "Starts a temporary method (for internal use only)")]
+		public bool temp;
 
 	}
 
