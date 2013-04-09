@@ -170,7 +170,7 @@ namespace chess.launcher
 				catch { }
 			}
 
-			Process.Start("sudo", "pkill -f \"chess.application.exe\"");
+			Process.Start("sudo", "pkill -KILL -f \"chess.application.exe\"");
 		}
 
 	}

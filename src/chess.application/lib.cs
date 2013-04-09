@@ -704,21 +704,33 @@ namespace chess.application
 
 			var namedPins = new TNamedPins();
 
-			namedPins.Add("LOW", device.createPin(GPIOPins.V2_GPIO_03, GPIODirection.Out, false));
-			namedPins.Add("HI", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, true));
+			//namedPins.Add("LOW", device.createPin(GPIOPins.V2_GPIO_03, GPIODirection.Out, false));
+			//namedPins.Add("HI", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, true));
 
-			namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_02, GPIODirection.Out, false));
+			//namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_02, GPIODirection.Out, false));
+			//namedPins.Add("OE", null);
+			//namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_04, GPIODirection.Out, false));
+			//namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, false));
+			//namedPins.Add("SRCLR", null);
+
+			//namedPins.Add("O7", device.createPin(GPIOPins.V2_GPIO_10, GPIODirection.In));
+			//namedPins.Add("CP", device.createPin(GPIOPins.V2_GPIO_09, GPIODirection.Out, false));
+			//namedPins.Add("PL", device.createPin(GPIOPins.V2_GPIO_11, GPIODirection.Out, false));
+
+			//---
+
+			namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, false));
 			namedPins.Add("OE", null);
-			namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_04, GPIODirection.Out, false));
-			namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, false));
+			namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_22, GPIODirection.Out, false));
+			namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, false));
 			namedPins.Add("SRCLR", null);
 
-			namedPins.Add("O7", device.createPin(GPIOPins.V2_GPIO_10, GPIODirection.In));
-			namedPins.Add("CP", device.createPin(GPIOPins.V2_GPIO_09, GPIODirection.Out, false));
-			namedPins.Add("PL", device.createPin(GPIOPins.V2_GPIO_11, GPIODirection.Out, false));
+			namedPins.Add("O7", device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.In));
+			namedPins.Add("CP", device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, false));
+			namedPins.Add("PL", device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, false));
 
 			sipo = new TSIPO(namedPins["SER"], namedPins["OE"], namedPins["RCLK"], namedPins["SRCLK"], namedPins["SRCLR"]);
-			sipo.setBits(new int[200]); //clear all
+			//sipo.setBits(new int[200]); //clear all //WARNING: CAN DESTROY SCREEN! USE POWER UP / DOWN SEQUENCE!!
 			piso = new TPISO(namedPins["O7"], namedPins["PL"], namedPins["CP"]);
 
 			ledMapping = new TBitMapping(8);
@@ -742,6 +754,22 @@ namespace chess.application
 			sideSwitchesNew = new bool[sideSwitchCount];
 			sideSwitchesOldDelay = new bool[sideSwitchCount];
 			sideSwitchesNewDelay = new bool[sideSwitchCount];
+
+			ScreenICOn = true; //Because we do not know, if it's on or off
+			ScreenLightOn = false;
+
+			displayOff();
+		}
+
+		public void displayOff() {
+			ScreenICOn = true;
+			ScreenLightOn = false;
+			updateLeds();
+
+			Thread.Sleep(2000); //TODO: Measure real time
+			ScreenICOn = false;
+			updateLeds();
+			Thread.Sleep(200); //TODO: Measure real time
 		}
 
 		public void updateSwitches() {
@@ -764,6 +792,8 @@ namespace chess.application
 		}
 
 		public bool loadingLED = true;
+		public bool ScreenICOn ;
+		public bool ScreenLightOn ;
 
 		private List<bool> oldLedBits = new List<bool>();
 		public void updateLeds() {
@@ -772,7 +802,6 @@ namespace chess.application
 			//set led-pins
 			var bitList = new List<bool>();
 			if (ledBitArray[8, 8]) tmpBits[0] = true;
-			tmpBits[3] = !loadingLED;
 			bitList.InsertRange(0, ledMappingBottom.convert(tmpBits));
 
 			tmpBits = new bool[8];
@@ -797,6 +826,20 @@ namespace chess.application
 			addLedBits(0, 2, ledBitArray, bitList);
 			addLedBits(0, 0, ledBitArray, bitList);
 
+			tmpBits = new bool[8];
+			tmpBits[0] = ScreenICOn;
+			tmpBits[1] = ScreenLightOn;
+			tmpBits[2] = !loadingLED;
+			//tmpBits[0] = true;
+			//tmpBits[1] = true;
+			//tmpBits[2] = true;
+			//tmpBits[3] = true;
+			//tmpBits[4] = true;
+			//tmpBits[5] = true;
+			//tmpBits[6] = true;
+			//tmpBits[7] = true;
+			bitList.InsertRange(0, tmpBits);
+
 			bool changed = false;
 			if (oldLedBits.Count != bitList.Count) changed = true;
 			else {
@@ -810,6 +853,7 @@ namespace chess.application
 			if (changed) {
 				oldLedBits = bitList;
 				sipo.setBits(bitList);
+				System.Threading.Thread.Sleep(3000);
 			}
 		}
 
@@ -2030,7 +2074,7 @@ namespace chess.application
 			_writing_pixels = false;
 			foreground(0x00FFFFFF);
 			background(0x00000000);
-			reset();
+			init();
 		}
 
 		public void foreground(int v) {
@@ -2081,7 +2125,7 @@ namespace chess.application
 			_rows = _height / 8;
 		}
 
-		public void reset() {
+		public void init() {
 			uint i = 0, j, k;
 			uint[] init_commands = {
         0x06, // Display off
@@ -2190,10 +2234,6 @@ namespace chess.application
         0x36,  //Screen saver row end
         _physical_height-1,
  
-        //Display ON
-        0x06,
-        0x01,
- 
         //End of commands
         0xFF,
         0xFF
@@ -2233,6 +2273,16 @@ namespace chess.application
 
 			//command(0x42);
 			//data(255);
+		}
+
+		public void screenOn() {
+			command(0x06);
+			data(0x01);
+		}
+
+		public void screenOff() {
+			command(0x06);
+			data(0x00);
 		}
 
 		public void command(int value) {

@@ -163,14 +163,23 @@ namespace chess.application
 		public void init() {
 			var device = new RPI();
 
-			var SDI = device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
-			var CLK = device.createPin(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
-			var CS = device.createPin(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
+			//var D16_SDI = device.createPin(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
+			//var D17_CLK = device.createPin(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			//var CS = device.createPin(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
-			var RS = device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
+			//var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
+			//var RS = device.createPin(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
 
-			var spi = new TSPIEmulator(SDI, null, CLK, CS);
+			//---
+
+			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
+			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
+			var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+
+			var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
+
+			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
 			var watch = new System.Diagnostics.Stopwatch();
 
 			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);

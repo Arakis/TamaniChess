@@ -69,11 +69,23 @@ namespace chess.application
 				case "all-pins-on":
 					allPinsOn();
 					break;
+				case "pin-on":
+					setPin(int.Parse(e.args[0]),true);
+					break;
+				case "pin-off":
+					setPin(int.Parse(e.args[0]), false);
+					break;
 				case "all-leds-on":
 					allLEDsOn();
 					break;
 				case "switches":
 					switchTest();
+					break;
+				case "all-sipo-on":
+					setAllSipo(true);
+					break;
+				case "all-sipo-off":
+					setAllSipo(false);
 					break;
 				default:
 					notFound = true;
@@ -96,6 +108,25 @@ namespace chess.application
 				}
 			}
 			hw.updateLeds();
+		}
+
+		public void setAllSipo(bool state) {
+			var device = new RPI();
+			var namedPins = new TNamedPins();
+
+			namedPins.Add("SER", device.createPin(GPIOPins.V2_GPIO_17, GPIODirection.Out, false));
+			namedPins.Add("OE", null);
+			namedPins.Add("RCLK", device.createPin(GPIOPins.V2_GPIO_22, GPIODirection.Out, false));
+			namedPins.Add("SRCLK", device.createPin(GPIOPins.V2_GPIO_27, GPIODirection.Out, false));
+			namedPins.Add("SRCLR", null);
+
+			var sipo = new TSIPO(namedPins["SER"], namedPins["OE"], namedPins["RCLK"], namedPins["SRCLK"], namedPins["SRCLR"]);
+
+			var bits = new List<bool>();
+			for (var i = 128 - 1; i >= 0; i--)
+				bits.Add(state);
+
+			sipo.setBits(bits);
 		}
 
 		public void switchTest() {
@@ -159,6 +190,13 @@ namespace chess.application
 					entry.Value.PinDirection = GPIODirection.Out;
 					entry.Value.Write(true);
 				}
+			}
+		}
+
+		public void setPin(int gpio, bool state) {
+			var device = new RPI();
+			using (var pin = device.createPin((GPIOPins)gpio, GPIODirection.Out)) {
+				pin.Write(state);
 			}
 		}
 

@@ -87,12 +87,21 @@ namespace chess.application
 
 			var device = new RPI();
 
-			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
-			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
-			var CS = new GPIOMem(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
+			//var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_25, GPIODirection.Out, false);
+			//var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			//var CS = new GPIOMem(GPIOPins.V2_GPIO_07, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
-			var RS = new GPIOMem(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
+			//var RST = device.createPin(GPIOPins.V2_GPIO_23, GPIODirection.Out, false);
+			//var RS = new GPIOMem(GPIOPins.V2_GPIO_24, GPIODirection.Out, false);
+
+			//---
+
+			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
+			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
+			var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+
+			var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
 
 			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
 			var rnd = new Random();
