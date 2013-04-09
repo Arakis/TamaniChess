@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="app.cs" />
     <Compile Include="audio.cs" />
+    <Compile Include="hardware.cs" />
     <Compile Include="Mono\AudioData.cs" />
     <Compile Include="Mono\AudoDevice.cs" />
     <Compile Include="engine.cs" />
