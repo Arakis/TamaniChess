@@ -445,9 +445,10 @@ namespace chess.application
 		private EButton getButtonBySwitchIndex(int index) {
 			switch (index) {
 				case 0: return EButton.up;
-				case 1: return EButton.back;
-				case 2: return EButton.down;
-				case 6: return EButton.ok;
+				case 1: return EButton.forward;
+				case 3: return EButton.down;
+				case 4: return EButton.back;
+				case 5: return EButton.ok;
 				default: return EButton.none;
 			}
 		}
@@ -472,6 +473,7 @@ namespace chess.application
 			for (var i = 0; i < ioHardware.sideSwitchCount; i++) {
 				if (ioHardware.sideSwitchesNew[i] != ioHardware.sideSwitchesOld[i]) {
 					buttonsChanged = true;
+					//Console.Write("#" + i.ToString() + "#");
 					if (onButtonChanged != null) onButtonChanged(new TButtonChangeEvent() { state = ioHardware.sideSwitchesNew[i], button = getButtonBySwitchIndex(i) });
 				}
 			}
@@ -640,6 +642,7 @@ namespace chess.application
 		up = 2,
 		down = 4,
 		back = 8,
+		forward = 16,
 	}
 
 	public class TIOHardware : IOLEDDisplayPowerUpDown
@@ -661,7 +664,7 @@ namespace chess.application
 		public bool[,] figureSwitchesOldDelay = new bool[8, 8];
 		public bool[,] figureSwitchesNewDelay = new bool[8, 8];
 
-		public int sideSwitchCount = 16;
+		public int sideSwitchCount = 8;
 
 		public bool[] sideSwitchesOld;
 		public bool[] sideSwitchesNew;
@@ -753,7 +756,8 @@ namespace chess.application
 			outMappingBugFix.setMapping(4, 0, 1, 2, 5, 7, 6, 3);
 
 			sideMapping = new TBitMapping(8);
-			sideMapping.setMapping(7, 0, 1, 2, 3, 4, 5, 6);
+			//sideMapping.setMapping(7, 0, 1, 2, 3, 4, 5, 6);
+			sideMapping.setMapping(0, 1, 2, 3, 4, 5, 6, 7);
 
 			sideSwitchesOld = new bool[sideSwitchCount];
 			sideSwitchesNew = new bool[sideSwitchCount];
@@ -860,7 +864,6 @@ namespace chess.application
 			if (changed) {
 				oldLedBits = bitList;
 				sipo.setBits(bitList);
-				System.Threading.Thread.Sleep(3000);
 			}
 		}
 
