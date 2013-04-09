@@ -96,19 +96,25 @@ namespace chess.application
 
 			//---
 
-			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
-			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
-			var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			//var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
+			//var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
+			//var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
-			var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
+			//var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			//var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
 
-			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
+			//var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
 			var rnd = new Random();
 			var watch = new System.Diagnostics.Stopwatch();
 
-			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
-			var lcd = new TOLEDDisplay(bus);
+			//var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
+			//var lcd = new TOLEDDisplay(bus);
+
+			var hw = new TIOHardware();
+			hw.init();
+			hw.displayPowerOn();
+
+			var lcd = hw.lcd;
 			lcd.background(Color.FromArgb(rnd.Next(255), rnd.Next(255), rnd.Next(255)));
 
 			lcd.orientation(3);

@@ -65,7 +65,7 @@ namespace chess.application
 		}
 
 		public void init() {
-			display = new TUIDisplay();
+			display = new TUIDisplay(Program.app.ioController.getDisplay());
 			display.init();
 			uiBoard = new TUIBoard();
 
@@ -139,6 +139,10 @@ namespace chess.application
 	public class TUIDisplay
 	{
 
+		public TUIDisplay(TOLEDDisplay lcd) {
+			this.lcd = lcd;
+		}
+
 		public int width {
 			get {
 				return lcd.width;
@@ -172,24 +176,28 @@ namespace chess.application
 
 			//---
 
-			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
-			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
-			var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
+			//var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
+			//var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
+			//var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
 
-			var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
-			var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
+			//var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			//var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
 
-			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
-			var watch = new System.Diagnostics.Stopwatch();
+			//var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
+			//var watch = new System.Diagnostics.Stopwatch();
 
-			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
-			lcd = new TOLEDDisplay(bus);
-			lcd.orientation(3);
-			lcd.background(Color.Black);
+			//var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
+			//lcd = new TOLEDDisplay(bus);
+			//lcd.orientation(3);
+			//lcd.background(Color.Black);
 
 			//var bg = (Bitmap)Image.FromFile(chess.shared.Config.applicationPath + "tmp/test.bmp");
 
 			//lcd.cls();
+
+			lcd.powerOn();
+			lcd.orientation(3);
+			lcd.background(Color.Black);
 
 			adapter = new TOLEDDisplayAdapter(lcd);
 

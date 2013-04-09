@@ -405,6 +405,10 @@ namespace chess.application
 
 		private TIOHardware ioHardware;
 
+		public TOLEDDisplay getDisplay() {
+			return ioHardware.lcd;
+		}
+
 		public bool loadingLED {
 			get {
 				return ioHardware.loadingLED;
@@ -638,7 +642,7 @@ namespace chess.application
 		back = 8,
 	}
 
-	public class TIOHardware
+	public class TIOHardware : IOLEDDisplayPowerUpDown
 	{
 
 		private TPISO piso;
@@ -664,6 +668,7 @@ namespace chess.application
 
 		public bool[] sideSwitchesOldDelay;
 		public bool[] sideSwitchesNewDelay;
+		public TOLEDDisplay lcd;
 
 		//public bool[,] copySwitches() {
 		//	var bits = new bool[8, 8];
@@ -755,28 +760,34 @@ namespace chess.application
 			sideSwitchesOldDelay = new bool[sideSwitchCount];
 			sideSwitchesNewDelay = new bool[sideSwitchCount];
 
-			ScreenICOn = true; //Because we do not know, if it's on or off
-			ScreenLightOn = false;
+			//screen
+			var D16_SDI = new GPIOMem(GPIOPins.V2_GPIO_10, GPIODirection.Out, false);
+			var D17_CLK = new GPIOMem(GPIOPins.V2_GPIO_11, GPIODirection.Out, false);
+			var CS = new GPIOMem(GPIOPins.V2_GPIO_08, GPIODirection.Out, false);
 
-			displayOff();
-		}
+			var RST = device.createPin(GPIOPins.V2_GPIO_18, GPIODirection.Out, false);
+			var RS = new GPIOMem(GPIOPins.V2_GPIO_04, GPIODirection.Out, false);
 
-		public void displayOff() {
-			ScreenICOn = true;
-			ScreenLightOn = false;
-			updateLeds();
+			var spi = new TSPIEmulator(D16_SDI, null, D17_CLK, CS);
+			var watch = new System.Diagnostics.Stopwatch();
 
-			Thread.Sleep(2000); //TODO: Measure real time
-			ScreenICOn = false;
-			updateLeds();
-			Thread.Sleep(200); //TODO: Measure real time
+			var bus = new TOLEDSPIFastDataBus(spi, RST, RS);
+			lcd = new TOLEDDisplay(bus, this);
+			lcd.orientation(3);
+			lcd.background(Color.Black);
+
+			displayPowerOff();
 		}
 
 		public void updateSwitches() {
+			piso.load();
+
+			sideSwitchesOld = sideSwitchesNew;
+			sideSwitchesNew = new bool[sideSwitchCount];
+			readSideSwitchBits(0, 8, sideSwitchesNew);
+
 			figureSwitchesOld = figureSwitchesNew;
 			figureSwitchesNew = new bool[8, 8];
-
-			piso.load();
 			readFieldSwitchBits(0, 0, figureSwitchesNew);
 			readFieldSwitchBits(0, 2, figureSwitchesNew);
 			readFieldSwitchBits(0, 4, figureSwitchesNew, outMappingBugFix);
@@ -785,15 +796,11 @@ namespace chess.application
 			readFieldSwitchBits(4, 4, figureSwitchesNew);
 			readFieldSwitchBits(4, 2, figureSwitchesNew);
 			readFieldSwitchBits(4, 0, figureSwitchesNew);
-
-			sideSwitchesOld = sideSwitchesNew;
-			sideSwitchesNew = new bool[sideSwitchCount];
-			readSideSwitchBits(0, 8, sideSwitchesNew);
 		}
 
 		public bool loadingLED = true;
-		public bool ScreenICOn ;
-		public bool ScreenLightOn ;
+		public bool ScreenICOn;
+		public bool ScreenLightOn;
 
 		private List<bool> oldLedBits = new List<bool>();
 		public void updateLeds() {
@@ -879,6 +886,42 @@ namespace chess.application
 				tempBits[i + 4] = ledBits[x + i, y + 1];
 			}
 			bitList.InsertRange(0, ledMapping.convert(tempBits));
+		}
+
+
+		public void displayPowerOn() {
+			Console.WriteLine("Display power up");
+			//IC on
+			if (ScreenLightOn) return;
+			ScreenICOn = true; //enable IC
+			ScreenLightOn = false; //ensure, it's off
+			updateLeds();
+			Thread.Sleep(100);
+
+			Thread.Sleep(1);
+			lcd.init();
+
+			ScreenLightOn = true;
+			updateLeds();
+			Thread.Sleep(1000);
+
+			lcd.screenOn();
+			Console.WriteLine("Display enabled");
+		}
+
+		public void displayPowerOff() {
+			Console.WriteLine("Display power down");
+			lcd.screenOff();
+
+			ScreenICOn = true;
+			ScreenLightOn = false;
+			updateLeds();
+
+			Thread.Sleep(2000);
+			ScreenICOn = false;
+			updateLeds();
+			Thread.Sleep(100);
+			Console.WriteLine("Display disabled");
 		}
 
 	}
@@ -2048,10 +2091,16 @@ namespace chess.application
 
 	}
 
+	public interface IOLEDDisplayPowerUpDown
+	{
+		void displayPowerOn();
+		void displayPowerOff();
+	}
+
 	public class TOLEDDisplay
 	{
 
-
+		private IOLEDDisplayPowerUpDown hw;
 		private const int _physical_width = 160;
 		private const int _physical_height = 128;
 
@@ -2060,8 +2109,9 @@ namespace chess.application
 
 		private TOLEDDataBus bus;
 
-		public TOLEDDisplay(TOLEDDataBus bus) {
+		public TOLEDDisplay(TOLEDDataBus bus, IOLEDDisplayPowerUpDown hw) {
 			this.bus = bus;
+			this.hw = hw;
 
 			_row = 0;
 			_column = 0;
@@ -2273,11 +2323,21 @@ namespace chess.application
 
 			//command(0x42);
 			//data(255);
+
+			screenOn();
 		}
 
 		public void screenOn() {
 			command(0x06);
 			data(0x01);
+		}
+
+		public void powerOn() {
+			hw.displayPowerOn();
+		}
+
+		public void powerOf() {
+			hw.displayPowerOff();
 		}
 
 		public void screenOff() {
