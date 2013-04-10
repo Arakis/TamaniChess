@@ -252,7 +252,6 @@ namespace chess.application
 		private TUIListEntryCollection currentItems = null;
 
 		public Rectangle rect;
-		public int scroll = 0;
 
 		public TRange screenRange;
 		public TRange scrollRange;
@@ -265,6 +264,7 @@ namespace chess.application
 			gfx.Clear(Color.Black);
 
 			calculateOffset();
+			scrollIntoView();
 
 			if (selected == null && currentItems.Count != 0) selected = currentItems[0];
 
@@ -281,7 +281,8 @@ namespace chess.application
 
 		}
 
-		public event Action<TUIListEntry> onSelected;
+		public event Action<TUIListEntry> onChoosed;
+		public event Action<TUIListEntry> onSelectionChanged;
 
 		public int border = 1;
 
@@ -300,21 +301,28 @@ namespace chess.application
 		}
 
 		private TUIListEntry _selected;
-		private TUIListEntry selected {
+		public TUIListEntry selected {
 			get {
+				if (_selected == null && currentItems.Count != 0) return currentItems[0];
 				return _selected;
 			}
 			set {
-				if (_selected != null) _selected.selected = false;
 				_selected = value;
-				if (value != null) value.selected = true;
 			}
 		}
 
-		public void setCurrnetItems(TUIListEntryCollection items) {
+		public void setCurrentItems(TUIListEntryCollection items) {
 			if (items == this.currentItems) return;
 			currentItems = items;
-			selected = (items.Count == 0 ? null : items[0]);
+			selected = null;
+		}
+
+		public void scrollIntoView() {
+			if (selected == null) return;
+			calculateOffset();
+			if (scrollRange.contains(selected.range)) return;
+			if (selected.range.start < scrollRange.start) scrollRange.start = selected.range.start;
+			else scrollRange.start = selected.range.start - scrollRange.count + selected.range.count;
 		}
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
@@ -326,11 +334,13 @@ namespace chess.application
 				var idx = currentItems.IndexOf(selected) + 1;
 				if (idx < currentItems.Count) {
 					selected = currentItems[idx];
-					if (!scrollRange.contains(selected.range)) {
-						Console.WriteLine("scroll");
-						scrollRange.start += selected.range.count;
-					}
-					Console.WriteLine(selected.range.start + " " + scrollRange.end);
+					//if (!scrollRange.contains(selected.range)) {
+					//	Console.WriteLine("scroll");
+					//	scrollRange.start += selected.range.count;
+					//}
+					//Console.WriteLine(selected.range.start + " " + scrollRange.end);
+					scrollIntoView();
+					selectionChangedEvent();
 				}
 			}
 			else if (e.button == EButton.up) {
@@ -338,7 +348,9 @@ namespace chess.application
 				var idx = currentItems.IndexOf(selected) - 1;
 				if (idx >= 0) {
 					selected = currentItems[idx];
-					if (!scrollRange.contains(selected.range)) scrollRange.start -= selected.range.count;
+					//if (!scrollRange.contains(selected.range)) scrollRange.start -= selected.range.count;
+					scrollIntoView();
+					selectionChangedEvent();
 				}
 			}
 			else if (e.button == EButton.ok) {
@@ -348,12 +360,22 @@ namespace chess.application
 
 		}
 
-		public void select(TUIListEntry entry ) {
-			//
+		public void select(int index) {
+			if (index < 0 || index >= currentItems.Count) select(null);
+			select(currentItems[index]);
 		}
 
-		public void selectedEvent(TUIListEntry itm) {
-			if (onSelected != null) onSelected(itm);
+		public void select(TUIListEntry entry) {
+			selected = entry;
+			scrollIntoView();
+		}
+
+		public void choosedEvent(TUIListEntry itm) {
+			if (onChoosed != null) onChoosed(itm);
+		}
+
+		public void selectionChangedEvent() {
+			if (onSelectionChanged != null) onSelectionChanged(selected);
 		}
 
 	}
@@ -381,7 +403,11 @@ namespace chess.application
 
 		public int height = 18;
 		public string text;
-		public bool selected = false;
+		public bool selected {
+			get {
+				return list.selected == this;
+			}
+		}
 
 		public TRange range = new TRange();
 
@@ -400,7 +426,7 @@ namespace chess.application
 
 		public virtual void selectedEvent() {
 			if (onSelected != null) onSelected();
-			list.selectedEvent(this);
+			list.choosedEvent(this);
 		}
 
 	}
@@ -427,7 +453,7 @@ namespace chess.application
 		}
 
 		public override void selectedEvent() {
-			list.setCurrnetItems(items);
+			list.setCurrentItems(items);
 			base.selectedEvent();
 		}
 
@@ -521,7 +547,7 @@ namespace chess.application
 			list.items.Add(new TUIListEntry(list, "Läufer") { tag = EPieceType.bishop });
 			list.items.Add(new TUIListEntry(list, "Springer") { tag = EPieceType.knight });
 
-			list.onSelected += (itm) => {
+			list.onChoosed += (itm) => {
 				cb((EPieceType)itm.tag);
 			};
 		}
@@ -572,7 +598,7 @@ namespace chess.application
 
 			setColor(color);
 
-			list.onSelected += (itm) => {
+			list.onChoosed += (itm) => {
 				if (itm == colorItem) {
 					setColor(color.getOtherColor());
 				}
@@ -615,13 +641,13 @@ namespace chess.application
 	{
 
 		private TUIListHandler list;
-		private static int lastIndex=0;
+		private static int lastIndex = 0;
 
 		public TUIMainMenu() {
 			createGraphics();
 			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
 
-			list.onSelected += (entry) => {
+			list.onSelectionChanged += (entry) => {
 				lastIndex = list.items.IndexOf(entry);
 			};
 
@@ -640,12 +666,23 @@ namespace chess.application
 				uninstall();
 			}));
 
+			list.items.Add(new TUIListEntry(list, "a"));
+			list.items.Add(new TUIListEntry(list, "b"));
+			list.items.Add(new TUIListEntry(list, "c"));
+			list.items.Add(new TUIListEntry(list, "d"));
+			list.items.Add(new TUIListEntry(list, "e"));
+			list.items.Add(new TUIListEntry(list, "f"));
+			list.items.Add(new TUIListEntry(list, "g"));
+			list.items.Add(new TUIListEntry(list, "h"));
+			list.items.Add(new TUIListEntry(list, "i"));
+
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
 			list.items.Add(subEntry);
 
 			subEntry.items.Add(new TUIListEntry(list, "Verschieben/Entf.", movePieces));
 			subEntry.items.Add(new TUIListEntry(list, "Hinzufügen", setPieces));
 
+			list.select(lastIndex);
 		}
 
 		public override void onButtonChanged(TButtonChangeEvent e) {
