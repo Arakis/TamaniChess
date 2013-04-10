@@ -348,6 +348,10 @@ namespace chess.application
 
 		}
 
+		public void select(TUIListEntry entry ) {
+			//
+		}
+
 		public void selectedEvent(TUIListEntry itm) {
 			if (onSelected != null) onSelected(itm);
 		}
@@ -611,10 +615,16 @@ namespace chess.application
 	{
 
 		private TUIListHandler list;
+		private static int lastIndex=0;
 
 		public TUIMainMenu() {
 			createGraphics();
 			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
+
+			list.onSelected += (entry) => {
+				lastIndex = list.items.IndexOf(entry);
+			};
+
 			list.items.Add(new TUIListEntry(list, "Neues Spiel", () => {
 				app.game.newGame();
 				//app.engine.newGame();
@@ -624,7 +634,11 @@ namespace chess.application
 				app.game.undo();
 				uninstall();
 			}));
-			list.items.Add(new TUIListEntry(list, "Tipp"));
+			list.items.Add(new TUIListEntry(list, "Tipp", () => {
+				var h = new TCaluclateOwnMoveHandler();
+				h.install();
+				uninstall();
+			}));
 
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
 			list.items.Add(subEntry);

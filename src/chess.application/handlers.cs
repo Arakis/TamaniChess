@@ -204,11 +204,6 @@ namespace chess.application
 	public abstract class TMoveHandler : THandler
 	{
 
-		protected void highlightPosition(TDrawBoardEvent e, TPosition pos) {
-			if (pos != null)
-				e.gfx.FillRectangle(new SolidBrush(Color.Red), pos.x * 16, pos.y * 16, 16, 16);
-		}
-
 		public TMove tmpMove;
 		public TMove showMove;
 
@@ -223,6 +218,11 @@ namespace chess.application
 				highlightPosition(e, showMove.target);
 			}
 
+		}
+
+		protected void highlightPosition(TDrawBoardEvent e, TPosition pos) {
+			if (pos != null)
+				e.gfx.FillRectangle(new SolidBrush(Color.Red), pos.x * 16, pos.y * 16, 16, 16);
 		}
 
 		protected virtual void moveDone() { }
@@ -249,6 +249,7 @@ namespace chess.application
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
+			showMove = tmpMove;
 			Console.WriteLine(e.pos.ToString() + e.state.ToString());
 			base.onPieceChanged(e);
 			boardLeds.clear();
@@ -320,7 +321,7 @@ namespace chess.application
 				boardLeds.clear();
 
 				uninstall();
-				var h = new TCaluclateMoveHandler();
+				var h = new TCaluclateComputerMoveHandler();
 				h.install();
 			}
 			else {
@@ -338,11 +339,8 @@ namespace chess.application
 
 	}
 
-	public class TCaluclateMoveHandler : TMoveHandler
+	public class TCaluclateComputerMoveHandler : TMoveHandler
 	{
-
-		public TCaluclateMoveHandler() {
-		}
 
 		public override void install() {
 			base.install();
@@ -356,6 +354,32 @@ namespace chess.application
 				app.player.play("sound2");
 			});
 		}
+	
+	}
+
+	public class TCaluclateOwnMoveHandler : TMoveHandler
+	{
+
+		public override void install() {
+			base.install();
+
+			engine.go((m) => {
+				Console.WriteLine("MOVE: " + m);
+				uninstall();
+
+				foreach (var h in app.ioController.handlers) {
+					if (h is TOwnMoveHandler) {
+						var own = (TOwnMoveHandler)h;
+						own.showMove = new TMove(m);
+					}
+				}
+			});
+		}
+	
+	}
+
+	abstract public class TCaluclateMoveHandler : TMoveHandler
+	{
 
 		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
 			base.onDrawBoardStatus(e);

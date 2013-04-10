@@ -1012,7 +1012,7 @@ namespace chess.application
 				ownHandler.install();
 			}
 			else {
-				var calcHandler = new TCaluclateMoveHandler();
+				var calcHandler = new TCaluclateComputerMoveHandler();
 				calcHandler.install();
 			}
 		}
