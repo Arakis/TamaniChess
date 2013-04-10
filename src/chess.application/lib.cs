@@ -956,6 +956,14 @@ namespace chess.application
 			newGame(TChessBoard.startFEN, myColor);
 		}
 
+		public void undo() {
+			if (history.Count == 1) return;
+			var histList = new THistoryList();
+			histList.AddRange(history);
+			histList.RemoveAt(histList.Count - 1);
+			newGame(histList);
+		}
+
 		public bool setBoard(string fen) {
 			return set(fen);
 		}

@@ -617,10 +617,13 @@ namespace chess.application
 			list = new TUIListHandler(new Rectangle(0, 18, Program.app.ui.display.width, Program.app.ui.display.height - 18));
 			list.items.Add(new TUIListEntry(list, "Neues Spiel", () => {
 				app.game.newGame();
-				app.engine.newGame();
+				//app.engine.newGame();
 				uninstall();
 			}));
-			list.items.Add(new TUIListEntry(list, "Rückgängig"));
+			list.items.Add(new TUIListEntry(list, "Rückgängig", () => {
+				app.game.undo();
+				uninstall();
+			}));
 			list.items.Add(new TUIListEntry(list, "Tipp"));
 
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });

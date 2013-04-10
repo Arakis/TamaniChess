@@ -70,7 +70,7 @@ namespace chess.application
 			switch (e.command) {
 				case "newgame":
 					app.game.newGame();
-					app.engine.newGame();
+					//app.engine.newGame();
 					break;
 				case "d":
 					app.engine.debug();
