@@ -220,6 +220,10 @@ namespace chess.application
 
 		}
 
+		public void checkSound() { 
+		
+		}
+
 		protected void highlightPosition(TDrawBoardEvent e, TPosition pos) {
 			if (pos != null)
 				e.gfx.FillRectangle(new SolidBrush(Color.Red), pos.x * 16, pos.y * 16, 16, 16);
@@ -316,7 +320,13 @@ namespace chess.application
 			}
 
 			if (app.game.makeMove(tmpMove)) {
-				app.player.play("sound3");
+				if (app.game.board.check) {
+					Console.WriteLine("CHECK");
+					app.player.play("check");
+				}
+				else {
+					app.player.play("sound3");
+				}
 
 				boardLeds.clear();
 
@@ -326,6 +336,7 @@ namespace chess.application
 			}
 			else {
 				Console.WriteLine("INVALID MOVE");
+				app.player.play("error");
 				tmpMove.pawnConversion = EPieceType.none;
 			}
 
@@ -426,11 +437,16 @@ namespace chess.application
 				foreach (var led in boardLeds.getAllFieldLeds(move.target)) led.on();
 			}
 
-
 			if (tmpMove.start != null && tmpMove.target != null) {
 
 				if (app.game.makeMove (move)) {
-					app.player.play("sound3");
+					if (app.game.board.check) {
+						app.player.play("check");
+					}
+					else {
+						app.player.play("sound3");
+					}
+
 
 					Console.WriteLine("computer move done");
 					uninstall();

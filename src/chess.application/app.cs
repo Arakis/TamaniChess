@@ -104,6 +104,8 @@ namespace chess.application
 				player.load("sound1", Config.soundPath + "sound1.wav");
 				player.load("sound2", Config.soundPath + "sound2.wav");
 				player.load("sound3", Config.soundPath + "sound3.wav");
+				player.load("check", Config.soundPath + "check.wav");
+				player.load("error", Config.soundPath + "error.wav");
 				player.load("silence", Config.soundPath + "silence.wav");
 				player.load("loaded", Config.soundPath + "loaded.wav");
 				player.load("silence500ms", Config.soundPath + "silence500ms.wav");

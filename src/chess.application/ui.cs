@@ -362,7 +362,7 @@ namespace chess.application
 
 		public void select(int index) {
 			if (index < 0 || index >= currentItems.Count) select(null);
-			select(currentItems[index]);
+			else select(currentItems[index]);
 		}
 
 		public void select(TUIListEntry entry) {
@@ -665,16 +665,6 @@ namespace chess.application
 				h.install();
 				uninstall();
 			}));
-
-			list.items.Add(new TUIListEntry(list, "a"));
-			list.items.Add(new TUIListEntry(list, "b"));
-			list.items.Add(new TUIListEntry(list, "c"));
-			list.items.Add(new TUIListEntry(list, "d"));
-			list.items.Add(new TUIListEntry(list, "e"));
-			list.items.Add(new TUIListEntry(list, "f"));
-			list.items.Add(new TUIListEntry(list, "g"));
-			list.items.Add(new TUIListEntry(list, "h"));
-			list.items.Add(new TUIListEntry(list, "i"));
 
 			var subEntry = new TUIListSubEntry(list, "Spiel bearbeiten", () => { title = "Spiel bearbeiten"; });
 			list.items.Add(subEntry);

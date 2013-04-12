@@ -990,6 +990,7 @@ namespace chess.application
 			//command(0x42);
 			//data(255);
 
+			cls();
 			screenOn();
 		}
 
