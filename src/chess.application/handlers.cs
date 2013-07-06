@@ -220,8 +220,8 @@ namespace chess.application
 
 		}
 
-		public void checkSound() { 
-		
+		public void checkSound() {
+
 		}
 
 		protected void highlightPosition(TDrawBoardEvent e, TPosition pos) {
@@ -320,7 +320,7 @@ namespace chess.application
 			}
 
 			if (app.game.makeMove(tmpMove)) {
-				if (app.game.board.check) {
+				if (app.game.board.checkState == ECheckState.check) {
 					Console.WriteLine("CHECK");
 					app.player.play("check");
 				}
@@ -360,12 +360,19 @@ namespace chess.application
 				Console.WriteLine("MOVE: " + m);
 				uninstall();
 
-				var handler = new TComputerMoveHandler(new TMove(m));
+				var move = new TMove(m);
+				if (move.isNone) {
+					Console.WriteLine("CHECK MATE!");
+					app.player.play("mate");
+					Thread.Sleep(10000);
+					return;
+				}
+				var handler = new TComputerMoveHandler(move);
 				handler.install();
 				app.player.play("sound2");
 			});
 		}
-	
+
 	}
 
 	public class TCaluclateOwnMoveHandler : TMoveHandler
@@ -386,7 +393,7 @@ namespace chess.application
 				}
 			});
 		}
-	
+
 	}
 
 	abstract public class TCaluclateMoveHandler : TMoveHandler
@@ -439,8 +446,8 @@ namespace chess.application
 
 			if (tmpMove.start != null && tmpMove.target != null) {
 
-				if (app.game.makeMove (move)) {
-					if (app.game.board.check) {
+				if (app.game.makeMove(move)) {
+					if (app.game.board.checkState == ECheckState.check) {
 						app.player.play("check");
 					}
 					else {

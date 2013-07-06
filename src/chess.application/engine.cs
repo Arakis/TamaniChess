@@ -168,12 +168,13 @@ namespace chess.application
 			position(TChessBoard.startFEN);
 		}
 
-		public bool validate(string oldFEN, out string newFEN, out bool isCheck, string move = "") {
+		public bool validate(string oldFEN, out string newFEN, out ECheckState checkState, string move = "") {
 			var foundFen = "";
-			var tmpIsCheck = false;
+			var tmpCheckState = ECheckState.none;
 			bool wait = true;
 			var func = new Action<string>((s) => {
-				if (s.Contains("Checkers: ") && s.Length > "Checkers: ".Length) tmpIsCheck = true;
+				if (s.Contains("Checkers: ") && s.Length > "Checkers: ".Length) tmpCheckState = ECheckState.check;
+				if (s.Contains("Legal moves: ") && s.Length == "Legal moves: ".Length) tmpCheckState = ECheckState.mate;
 				if (s.Contains("Fen: ")) {
 					foundFen = s.Replace("Fen: ", "");
 					wait = false;
@@ -191,7 +192,7 @@ namespace chess.application
 			}
 			newFEN = foundFen;
 			Console.WriteLine("Parsed FEN: " + foundFen);
-			isCheck = tmpIsCheck;
+			checkState = tmpCheckState;
 			return oldFEN != newFEN || move == ""; //TODO
 		}
 

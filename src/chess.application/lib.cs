@@ -664,9 +664,16 @@ namespace chess.application
 		}
 
 		public TMove(string move) {
+			if (move == "(none)") return;
 			start = new TPosition(move.Substring(0, 2));
 			target = new TPosition(move.Substring(2, 2));
 			if (move.Length > 4) pawnConversion = TChessBoard.getPieceFromChar(move.Substring(4, 1)[0]).getPieceType();
+		}
+
+		public bool isNone {
+			get {
+				return start == null || target == null;
+			}
 		}
 
 		#region comparison
@@ -1095,8 +1102,7 @@ namespace chess.application
 		public const string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 		public TMove lastMove;
-		public bool check = false;
-		public bool checkMate = false;
+		public ECheckState checkState = ECheckState.none;
 
 		public void copyTo(TChessBoard board) {
 			throw new NotImplementedException();
@@ -1181,7 +1187,7 @@ namespace chess.application
 
 		public bool setFEN(string fenStr, TMove move = null) {
 			string tmpFEN;
-			bool tmpCheck;
+			ECheckState tmpCheck;
 
 			var tmpBoard = new TChessBoard();
 			tmpBoard.setFENNoValidate(fenStr);
@@ -1198,7 +1204,7 @@ namespace chess.application
 
 			setFENNoValidate(tmpFEN);
 			lastMove = move;
-			this.check = tmpCheck;
+			this.checkState = tmpCheck;
 
 			return true;
 		}
@@ -1405,6 +1411,12 @@ namespace chess.application
 		none,
 		white,
 		black
+	}
+
+	public enum ECheckState { 
+		none,
+		check,
+		mate
 	}
 
 }
