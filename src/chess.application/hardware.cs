@@ -54,7 +54,7 @@ namespace chess.application
 		private TBitMapping ledMappingRight;
 		private TBitMapping ledMappingSpecial;
 		private TBitMapping outMapping;
-		private TBitMapping outMappingBugFix;
+		//private TBitMapping outMappingBugFix;
 		private TBitMapping sideMapping;
 
 		public bool[,] figureSwitchesOld = new bool[8, 8];
@@ -141,18 +141,25 @@ namespace chess.application
 			piso = new TPISO(namedPins["O7"], namedPins["PL"], namedPins["CP"]);
 
 			ledMapping = new TBitMapping(8);
-			ledMapping.setMapping(0, 3, 7, 6, 1, 2, 4, 5);
+			ledMapping.setMapping(0, 1, 2, 3, 7, 6, 5, 4);
 			ledMappingBottom = new TBitMapping(8);
-			ledMappingBottom.setMapping(0, 3, 7, 6, 1, 2, 4, 5);
+			ledMappingBottom.setMapping(0, 1, 2, 3, 7, 6, 5, 4); //OK?
 			ledMappingRight = new TBitMapping(8);
-			ledMappingRight.setMapping(0, 3, 7, 6, 1, 2, 4, 5);
+			ledMappingRight.setMapping(0, 1, 2, 3, 7, 6, 5, 4); //OK
+			//1000 0000
+
 			ledMappingSpecial = new TBitMapping(8);
-			ledMappingSpecial.setMapping(0, 3, 7, 6, 1, 2, 4, 5);
+			ledMappingSpecial.setMapping(0, 1, 2, 3, 7, 6, 5, 4); //CHECK
 
 			outMapping = new TBitMapping(8);
-			outMapping.setMapping(4, 0, 1, 2, 5, 6, 7, 3);
-			outMappingBugFix = new TBitMapping(8);
-			outMappingBugFix.setMapping(4, 0, 1, 2, 5, 7, 6, 3);
+			//outMapping.setMapping(4, 0, 1, 2, 5, 6, 7, 3);
+			//outMapping.setMapping(3, 7, 6, 5, 2, 1, 0, 4);
+			outMapping.setMapping(7, 6, 5, 4, 3, 2, 1, 0);
+			//0000
+			//0001
+
+			//outMappingBugFix = new TBitMapping(8);
+			//outMappingBugFix.setMapping(4, 0, 1, 2, 5, 7, 6, 3);
 
 			sideMapping = new TBitMapping(8);
 			//sideMapping.setMapping(7, 0, 1, 2, 3, 4, 5, 6);
@@ -191,14 +198,14 @@ namespace chess.application
 
 			figureSwitchesOld = figureSwitchesNew;
 			figureSwitchesNew = new bool[8, 8];
-			readFieldSwitchBits(0, 0, figureSwitchesNew);
-			readFieldSwitchBits(0, 2, figureSwitchesNew);
-			readFieldSwitchBits(0, 4, figureSwitchesNew, outMappingBugFix);
-			readFieldSwitchBits(0, 6, figureSwitchesNew);
-			readFieldSwitchBits(4, 6, figureSwitchesNew);
-			readFieldSwitchBits(4, 4, figureSwitchesNew);
-			readFieldSwitchBits(4, 2, figureSwitchesNew);
 			readFieldSwitchBits(4, 0, figureSwitchesNew);
+			readFieldSwitchBits(4, 2, figureSwitchesNew);
+			readFieldSwitchBits(4, 4, figureSwitchesNew);
+			readFieldSwitchBits(4, 6, figureSwitchesNew);
+			readFieldSwitchBits(0, 6, figureSwitchesNew);
+			readFieldSwitchBits(0, 4, figureSwitchesNew);
+			readFieldSwitchBits(0, 2, figureSwitchesNew);
+			readFieldSwitchBits(0, 0, figureSwitchesNew);
 		}
 
 		public bool loadingLED = true;
@@ -218,7 +225,7 @@ namespace chess.application
 			for (var i = 0; i < 8; i++) {
 				tmpBits[i] = ledBitArray[8, i];
 			}
-			bitList.InsertRange(0, ledMappingBottom.convert(tmpBits));
+			bitList.InsertRange(0, ledMappingRight.convert(tmpBits));
 
 			addLedBits(4, 0, ledBitArray, bitList);
 			addLedBits(4, 2, ledBitArray, bitList);

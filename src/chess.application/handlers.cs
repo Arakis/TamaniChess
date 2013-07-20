@@ -344,8 +344,7 @@ namespace chess.application
 
 		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
 			base.onDrawBoardStatus(e);
-
-			e.gfx.DrawString("Ihr Zug", new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.White), new Point(0, 0));
+			e.DrawString("Ihr Zug");
 		}
 
 	}
@@ -371,6 +370,11 @@ namespace chess.application
 				handler.install();
 				app.player.play("sound2");
 			});
+		}
+
+		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			base.onDrawBoardStatus(e);
+			e.DrawString("Bitte warten...");
 		}
 
 	}
@@ -401,8 +405,7 @@ namespace chess.application
 
 		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
 			base.onDrawBoardStatus(e);
-
-			e.gfx.DrawString("Bitte warten...", new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.White), new Point(0, 0));
+			e.DrawString("Bitte warten...");
 		}
 
 	}
@@ -475,8 +478,7 @@ namespace chess.application
 
 		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
 			base.onDrawBoardStatus(e);
-
-			e.gfx.DrawString("Computer", new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.White), new Point(0, 0));
+			e.DrawString("Computer");
 		}
 
 	}

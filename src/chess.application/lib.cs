@@ -97,6 +97,10 @@ namespace chess.application
 		public TBoardLeds boardLeds = new TBoardLeds();
 
 		public virtual void install() {
+			install(ioController);
+		}
+
+		public virtual void install(TEventController ioController) {
 			if (installed) throw new Exception("action is already installed");
 			ioController.handlers.Add(this);
 			installed = true;
@@ -195,6 +199,10 @@ namespace chess.application
 		}
 
 		public Graphics gfx;
+
+		public void DrawString(string text) {
+			gfx.DrawString(text, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.White), new Point(0, 0));
+		}
 
 	}
 
@@ -340,11 +348,12 @@ namespace chess.application
 			};
 
 			onButtonChanged += (e) => {
+				Console.WriteLine(e.button.ToString());
 				foreach (var h in handlers.ToArray().Reverse())
 					if (h.active) {
 						h.onButtonChanged(e);
 						if (e.stopped) {
-							Console.WriteLine(h.GetType().ToString());
+							//Console.WriteLine(h.GetType().ToString());
 							return;
 						}
 					}
@@ -511,7 +520,8 @@ namespace chess.application
 
 			updateLeds();
 
-			Program.app.ui.drawAll();
+			if (Program.app != null)
+				Program.app.ui.drawAll();
 		}
 
 	}
@@ -1413,7 +1423,8 @@ namespace chess.application
 		black
 	}
 
-	public enum ECheckState { 
+	public enum ECheckState
+	{
 		none,
 		check,
 		mate

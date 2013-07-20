@@ -149,11 +149,11 @@ namespace larne.io.ic
 		public void setBits(IEnumerable<bool> bits, bool flush = true) {
 			if (SRCLR != null) {
 				SRCLR.Write(true);
-				IOUtils.microSleep(100);
+				wait();
 			}
 			if (OE != null) {
 				OE.Write(false);
-				IOUtils.microSleep(100);
+				wait();
 			}
 
 			foreach (var bit in bits.Reverse()) {
@@ -163,11 +163,11 @@ namespace larne.io.ic
 					lastBit = bit;
 					lastBitUndefined = false;
 				}
-				IOUtils.microSleep(100);
+				wait();
 				SRCLK.Write(true);
-				IOUtils.microSleep(100);
+				wait();
 				SRCLK.Write(false);
-				IOUtils.microSleep(100);
+				wait();
 			}
 
 			if (flush) this.flush();
@@ -175,9 +175,9 @@ namespace larne.io.ic
 
 		public void flush() {
 			RCLK.Write(true);
-			IOUtils.microSleep(100);
+			wait();
 			RCLK.Write(false);
-			IOUtils.microSleep(100);
+			wait();
 		}
 
 		public void setBits(IEnumerable<int> bits, bool flush = true) {
@@ -186,6 +186,11 @@ namespace larne.io.ic
 				list.Add(bit == 0 ? false : true);
 			}
 			setBits(list.ToArray(), flush);
+		}
+
+		private void wait() {
+			IOUtils.microSleep(100);
+			//System.Threading.Thread.Sleep(10);
 		}
 
 	}
@@ -335,7 +340,9 @@ namespace larne.io.ic
 			var resultBits = new bool[length];
 			var i = 0;
 			foreach (var bit in bits) {
-				resultBits[mapping[i]] = bit;
+				var idx = mapping[i];
+				if (idx >= 0)
+					resultBits[idx] = bit;
 				i++;
 			}
 			return resultBits;
