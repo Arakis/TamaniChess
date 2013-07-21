@@ -120,12 +120,17 @@ namespace chess.application
 					var piece = Program.app.board[x, y];
 
 					if (!piece.isEmtpy) {
-						gfx.DrawImage(pieces, x * 16, y * 16, getPieceSourceRect(piece.piece), GraphicsUnit.Pixel);
+						gfx.DrawImage(pieces, getFlipOffset(x) * 16, getFlipOffset(y) * 16, getPieceSourceRect(piece.piece), GraphicsUnit.Pixel);
 					}
 				}
 			}
 
 			Program.app.ioController.onDrawBoard(new TDrawBoardEvent() { board = this, gfx = gfx, type = EDrawBoardEventType.PiecesDrawed });
+		}
+
+		public int getFlipOffset(int xy) {
+			//return 7 - xy;
+			return xy;
 		}
 
 		public override void onDraw(TDrawEvent e) {

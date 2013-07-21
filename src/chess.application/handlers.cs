@@ -159,6 +159,11 @@ namespace chess.application
 			app.game.setBoard(app.board.toFEN());
 		}
 
+		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			base.onDrawBoardStatus(e);
+			e.DrawString("Verschieben/Entf.");
+		}
+
 	}
 
 	public class TSetPieceHandler : TChangeBoardHandler
@@ -197,6 +202,11 @@ namespace chess.application
 						handler.resume();
 
 			}
+		}
+
+		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			base.onDrawBoardStatus(e);
+			e.DrawString("Hinzufügen");
 		}
 
 	}
@@ -396,6 +406,11 @@ namespace chess.application
 					}
 				}
 			});
+		}
+
+		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			base.onDrawBoardStatus(e);
+			e.DrawString("Bitte warten...");
 		}
 
 	}
