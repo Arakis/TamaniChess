@@ -661,6 +661,11 @@ namespace chess.application
 				//app.engine.newGame();
 				uninstall();
 			}));
+			list.items.Add(new TUIListEntry(list, "Farbe wechseln", () => {
+				if (app.board.myColor == EPieceColor.white) app.board.myColor = EPieceColor.black;
+				else app.board.myColor = EPieceColor.white;
+				uninstall();
+			}));
 			list.items.Add(new TUIListEntry(list, "Rückgängig", () => {
 				app.game.undo();
 				uninstall();
