@@ -447,6 +447,10 @@ namespace chess.application
 		}
 
 		public override void onPieceChanged(TSwitchChangeEvent e) {
+			if (!e.state && e.pos != move.start && e.pos != move.target) {
+				app.player.play("error");
+			}
+
 			Console.WriteLine(e.pos.ToString() + e.state.ToString());
 			if (e.pos == move.start && !e.state) tmpMove.start = e.pos;
 			if (e.pos == move.start && e.state) tmpMove.start = null;
@@ -494,6 +498,30 @@ namespace chess.application
 		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
 			base.onDrawBoardStatus(e);
 			e.DrawString("Computer");
+		}
+
+	}
+
+	public class TCorrectFiguresHandler : THandler {
+
+		public override void install() {
+			base.install();
+			app.game.uninstallMoveHandler();
+		}
+
+		public override void onButtonChanged(TButtonChangeEvent e) {
+			base.onButtonChanged(e);
+			if (e.state && e.button == EButton.ok) {
+				e.stop();
+				uninstall();
+				app.game.installMoveHandler();
+			}
+		}
+
+		public override void onDrawBoardStatus(TDrawBoardStatusEvent e) {
+			base.onDrawBoardStatus(e);
+
+			e.DrawString("Zurechtrücken");
 		}
 
 	}

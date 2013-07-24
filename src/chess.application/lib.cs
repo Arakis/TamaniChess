@@ -732,8 +732,29 @@ namespace chess.application
 
 	public class TPosition
 	{
-		public int x;
-		public int y;
+
+		//Current position
+
+		public int x {
+			get {
+				return Program.app.board.getFlipOffset(baseX);
+			}
+			set {
+				baseX = Program.app.board.getFlipOffset(value);
+			}
+		}
+
+		public int y {
+			get {
+				return Program.app.board.getFlipOffset(baseY);
+			}
+			set {
+				baseY = Program.app.board.getFlipOffset(value);
+			}
+		}
+
+		public int baseX;
+		public int baseY;
 
 		#region comparison
 
@@ -770,16 +791,23 @@ namespace chess.application
 			this.y = y;
 		}
 
+		private TPosition() { }
+
+		public static TPosition fromBasePosition(int baseX, int baseY) {
+			return new TPosition() { baseX = baseX, baseY = baseY };
+		}
+
 		public TPosition(string position) {
-			x = charsX.IndexOf(position[0].ToString());
-			y = charsY.IndexOf(position[1].ToString());
+			baseX = charsX.IndexOf(position[0].ToString());
+			baseY = charsY.IndexOf(position[1].ToString());
 		}
 
 		const string charsX = "abcdefgh";
 		const string charsY = "87654321";
 
+		//base position
 		public static string ToString(int x, int y) {
-			return charsX[x].ToString() + charsY[y].ToString();
+			return charsX[Program.app.board.getFlipOffset(x)].ToString() + charsY[Program.app.board.getFlipOffset(y)].ToString();
 		}
 
 		public override string ToString() {
@@ -788,13 +816,13 @@ namespace chess.application
 
 		public EBoardRow row {
 			get {
-				return (EBoardRow)7 - y;
+				return (EBoardRow)7 - baseY;
 			}
 		}
 
 		public EBoardColumn column {
 			get {
-				return (EBoardColumn)x;
+				return (EBoardColumn)baseX;
 			}
 		}
 
@@ -903,7 +931,7 @@ namespace chess.application
 
 	public class TGame
 	{
-		public TChessBoard board = new TChessBoard();
+		public TChessBoard board = new TChessBoard(EPieceColor.white);
 
 		public THistoryList history = new THistoryList();
 
@@ -992,7 +1020,7 @@ namespace chess.application
 		private bool set(string fen, TMove move = null) {
 			//return board.setFEN(fen, move);
 
-			var b = new TChessBoard();
+			var b = new TChessBoard(board.myColor);
 			if (b.setFEN(fen, move)) {
 				board = b;
 				history.Add(THistoryEntry.fromChessBoard(b));
@@ -1045,10 +1073,12 @@ namespace chess.application
 	public class TChessBoard
 	{
 
-		public TChessBoard() {
+		public TChessBoard(EPieceColor myColor) {
+			this.myColor = myColor;
+
 			for (var y = 0; y < 8; y++) {
 				for (var x = 0; x < 8; x++) {
-					board[x, y] = new TPiece(new TPosition(x, y), EPiece.none);
+					board[x, y] = new TPiece(TPosition.fromBasePosition(x, y), EPiece.none);
 				}
 			}
 		}
@@ -1074,24 +1104,51 @@ namespace chess.application
 			}
 		}
 
+		//base view
 		private TPiece[,] board = new TPiece[8, 8];
 
+		//public class TBaseView {
+
+		//	public TBaseView(TChessBoard parent) {
+		//		this.parent = parent;
+		//	}
+
+		//	private TChessBoard parent;
+
+		//	public TPiece this[int x, int y] {
+		//		get {
+		//			return parent.board[x, y];
+		//		}
+		//		set {
+		//			parent.board[x, y] = value;
+		//		}
+		//	}
+
+		//}
+
+		//current view
 		public TPiece this[int x, int y] {
 			get {
-				return board[x, y];
+				return board[getFlipOffset(x), getFlipOffset(y)];
 			}
 			set {
-				board[x, y] = value;
+				board[getFlipOffset(x), getFlipOffset(y)] = value;
 			}
 		}
 
+		//current view
 		public TPiece this[TPosition pos] {
 			get {
-				return board[pos.x, pos.y];
+				return board[getFlipOffset(pos.x), getFlipOffset(pos.y)];
 			}
 			set {
-				board[pos.x, pos.y] = value;
+				board[getFlipOffset(pos.x), getFlipOffset(pos.y)] = value;
 			}
+		}
+
+		public int getFlipOffset(int xy) {
+			if (myColor == EPieceColor.white) return xy;
+			return 7 - xy;
 		}
 
 		public string FEN;
@@ -1199,7 +1256,7 @@ namespace chess.application
 			string tmpFEN;
 			ECheckState tmpCheck;
 
-			var tmpBoard = new TChessBoard();
+			var tmpBoard = new TChessBoard(myColor);
 			tmpBoard.setFENNoValidate(fenStr);
 			if (!tmpBoard.canSendToEngine()) {
 				return false;
@@ -1230,7 +1287,7 @@ namespace chess.application
 				if (y != 0) sb.Append("/");
 				var emptyFields = 0;
 				for (var x = 0; x < 8; x++) {
-					if (this[x, y].piece == EPiece.none) {
+					if (board[x, y].piece == EPiece.none) {
 						emptyFields++;
 					}
 					else {
@@ -1238,7 +1295,7 @@ namespace chess.application
 							sb.Append(emptyFields);
 							emptyFields = 0;
 						}
-						sb.Append(pieceToChar(this[x, y].piece));
+						sb.Append(pieceToChar(board[x, y].piece));
 					}
 				}
 				if (emptyFields != 0) sb.Append(emptyFields);
@@ -1327,9 +1384,8 @@ namespace chess.application
 		public EPieceColor myColor;
 
 		public TChessBoard toChessBoard() {
-			var b = new TChessBoard();
+			var b = new TChessBoard(myColor);
 			b.setFEN(fen, lastMove == "" ? null : new TMove(lastMove));
-			b.myColor = myColor;
 			return b;
 		}
 
