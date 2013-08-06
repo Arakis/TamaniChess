@@ -147,6 +147,8 @@ namespace larne.io.ic
 		private bool lastBit;
 		private bool lastBitUndefined = true;
 		public void setBits(IEnumerable<bool> bits, bool flush = true) {
+			//foreach (var bit in bits) Console.Write(bit ? "1" : "0"); Console.WriteLine();
+
 			if (SRCLR != null) {
 				SRCLR.Write(true);
 				wait();

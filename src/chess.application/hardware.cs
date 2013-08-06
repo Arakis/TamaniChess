@@ -212,9 +212,20 @@ namespace chess.application
 		public bool ScreenICOn;
 		public bool ScreenLightOn;
 
+		public void printLeds() {
+			for (var y = 0; y < 9; y++) {
+				for (var x = 0; x < 9; x++) {
+					Console.Write(ledBitArray[x, y] ? "1" : "0");
+				}
+				Console.WriteLine();
+			}
+		}
+
 		private List<bool> oldLedBits = new List<bool>();
 		public void updateLeds() {
 			var tmpBits = new bool[8];
+
+			//printLeds();
 
 			//set led-pins
 			var bitList = new List<bool>();
@@ -270,6 +281,8 @@ namespace chess.application
 			if (changed) {
 				oldLedBits = bitList;
 				sipo.setBits(bitList);
+				//Thread.Sleep(3000);
+				//foreach (var bit in bitList) Console.Write(bit ? "1" : "0"); Console.WriteLine();
 			}
 		}
 

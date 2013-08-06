@@ -82,7 +82,8 @@ namespace chess.application
 
 		public virtual void uninstall() {
 			if (!installed) throw new Exception("action is already uninstalled");
-			ioController.handlers.Remove(this);
+			lock (ioController.handlers)
+				ioController.handlers.Remove(this);
 			installed = false;
 		}
 
@@ -102,7 +103,8 @@ namespace chess.application
 
 		public virtual void install(TEventController ioController) {
 			if (installed) throw new Exception("action is already installed");
-			ioController.handlers.Add(this);
+			lock (ioController.handlers)
+				ioController.handlers.Add(this);
 			installed = true;
 		}
 
@@ -306,50 +308,57 @@ namespace chess.application
 
 		public THandlerList handlers = new THandlerList();
 
+		public IEnumerable<THandler> handlersThreadSafe() {
+			THandler[] array;
+			lock (handlers)
+				array = handlers.ToArray();
+			return array;
+		}
+
 		public TEventController() {
 			ioHardware = new TIOHardware();
 			ioHardware.init();
 
 			onPieceChangedDelay += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onPieceChangedDelay(e);
 			};
 
 			onPiecesChangedDelay += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onPiecesChangedDelay(e);
 			};
 
 			onPieceChanged += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onPieceChanged(e);
 			};
 
 			onPiecesChanged += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onPiecesChanged(e);
 			};
 
 			//--
 			onButtonChangedDelay += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onButtonChangedDelay(e);
 			};
 
 			onButtonsChangedDelay += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onButtonsChangedDelay(e);
 			};
 
 			onButtonChanged += (e) => {
 				Console.WriteLine(e.button.ToString());
-				foreach (var h in handlers.ToArray().Reverse())
+				foreach (var h in handlersThreadSafe().Reverse())
 					if (h.active) {
 						h.onButtonChanged(e);
 						if (e.stopped) {
@@ -360,26 +369,26 @@ namespace chess.application
 			};
 
 			onButtonsChanged += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onButtonsChanged(e);
 			};
 
 			//--
 			onProcessEvents += () => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onProcessEvents();
 			};
 
 			onConsoleLine += (e) => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onConsoleLine(e);
 			};
 
 			onTick += () => {
-				foreach (var h in handlers.ToArray())
+				foreach (var h in handlersThreadSafe())
 					if (h.active)
 						h.onTick();
 			};
@@ -389,25 +398,25 @@ namespace chess.application
 		}
 
 		public void onDrawBoard(TDrawBoardEvent e) {
-			foreach (var h in handlers.ToArray())
+			foreach (var h in handlersThreadSafe())
 				if (h.active)
 					h.onDrawBoard(e);
 		}
 
 		public void onDrawBoardStatus(TDrawBoardStatusEvent e) {
-			foreach (var h in handlers.ToArray())
+			foreach (var h in handlersThreadSafe())
 				if (h.active)
 					h.onDrawBoardStatus(e);
 		}
 
 		public void onDraw(TDrawEvent e) {
-			foreach (var h in handlers.ToArray())
+			foreach (var h in handlersThreadSafe())
 				if (h.active)
 					h.onDraw(e);
 		}
 
 		public void onUpdateGraphics(TUpdateGraphicsEvent e) {
-			foreach (var h in handlers.ToArray())
+			foreach (var h in handlersThreadSafe())
 				if (h.active)
 					h.onUpdateGraphics(e);
 		}
@@ -431,9 +440,9 @@ namespace chess.application
 			for (var y = 0; y < 9; y++) {
 				for (var x = 0; x < 9; x++) {
 					ioHardware.ledBitArray[x, y] = false;
-					for (var i = (int)EPriority.none; i < (int)EPriority.high; i++) {
+					for (var i = (int)EPriority.none; i <= (int)EPriority.high; i++) {
 						var currPrio = (EPriority)i;
-						foreach (var h in handlers.ToArray()) {
+						foreach (var h in handlersThreadSafe()) {
 							if (h.active && h.boardLeds[x, y].prio >= currPrio) {
 								ioHardware.ledBitArray[x, y] = h.boardLeds[x, y].state;
 							}
@@ -737,19 +746,19 @@ namespace chess.application
 
 		public int x {
 			get {
-				return Program.app.board.getFlipOffset(baseX);
+				return TChessBoard.getFlipOffsetStatic(baseX);
 			}
 			set {
-				baseX = Program.app.board.getFlipOffset(value);
+				baseX = TChessBoard.getFlipOffsetStatic(value);
 			}
 		}
 
 		public int y {
 			get {
-				return Program.app.board.getFlipOffset(baseY);
+				return TChessBoard.getFlipOffsetStatic(baseY);
 			}
 			set {
-				baseY = Program.app.board.getFlipOffset(value);
+				baseY = TChessBoard.getFlipOffsetStatic(value);
 			}
 		}
 
@@ -807,7 +816,7 @@ namespace chess.application
 
 		//base position
 		public static string ToString(int x, int y) {
-			return charsX[Program.app.board.getFlipOffset(x)].ToString() + charsY[Program.app.board.getFlipOffset(y)].ToString();
+			return charsX[TChessBoard.getFlipOffsetStatic(x)].ToString() + charsY[TChessBoard.getFlipOffsetStatic(y)].ToString();
 		}
 
 		public override string ToString() {
@@ -1063,7 +1072,7 @@ namespace chess.application
 		}
 
 		public void uninstallMoveHandler() {
-			foreach (var handler in Program.app.ioController.handlers.ToArray())
+			foreach (var handler in Program.app.ioController.handlersThreadSafe())
 				if (handler is TMoveHandler)
 					handler.uninstall();
 		}
@@ -1149,6 +1158,11 @@ namespace chess.application
 		public int getFlipOffset(int xy) {
 			if (myColor == EPieceColor.white) return xy;
 			return 7 - xy;
+		}
+
+		public static int getFlipOffsetStatic(int xy) {
+			if (Program.app == null) return xy;
+			return Program.app.board.getFlipOffset(xy);
 		}
 
 		public string FEN;

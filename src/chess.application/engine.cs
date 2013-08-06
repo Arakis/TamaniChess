@@ -220,6 +220,9 @@ namespace chess.application
 			send("setoption name " + name + " value " + value.ToString().ToLower());
 		}
 
+		public int thinkingTime = 0; //1000;
+		public int depth = 0; //20;
+
 		public void go(Action<string> cb) {
 			System.Threading.ThreadPool.QueueUserWorkItem((state) => {
 				var wait = true;
@@ -231,7 +234,7 @@ namespace chess.application
 				});
 				try {
 					onNewLine += func;
-					send("go movetime 5000 depth 1");
+					send("go movetime " + thinkingTime.ToString() + " depth " + depth.ToString());
 					while (wait) Thread.Sleep(50);
 				}
 				finally {

@@ -241,6 +241,11 @@ namespace chess.application
 
 		public class TSwitchTest : THandler
 		{
+
+			public override void onButtonChanged(TButtonChangeEvent e) {
+				base.onButtonChanged(e);
+				Console.WriteLine(e.button.ToString());
+			}
 			public override void onPieceChangedDelay(TSwitchChangeEvent e) {
 				Console.WriteLine((e.state ? "" : "             ") + e.pos.ToString() + " " + e.state.ToString());
 				//boardLeds.clear();

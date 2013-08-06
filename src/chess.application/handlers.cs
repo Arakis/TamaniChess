@@ -335,7 +335,7 @@ namespace chess.application
 					app.player.play("check");
 				}
 				else {
-					app.player.play("sound3");
+					app.player.play("moved");
 				}
 
 				boardLeds.clear();
@@ -378,7 +378,7 @@ namespace chess.application
 				}
 				var handler = new TComputerMoveHandler(move);
 				handler.install();
-				app.player.play("sound2");
+				app.player.play("computermove");
 			});
 		}
 
@@ -473,9 +473,8 @@ namespace chess.application
 						app.player.play("check");
 					}
 					else {
-						app.player.play("sound3");
+						app.player.play("moved");
 					}
-
 
 					Console.WriteLine("computer move done");
 					uninstall();

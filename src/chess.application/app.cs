@@ -101,9 +101,8 @@ namespace chess.application
 				ui.init();
 
 				player = new TAudioPlayer();
-				player.load("sound1", Config.soundPath + "sound1.wav");
-				player.load("sound2", Config.soundPath + "sound2.wav");
-				player.load("sound3", Config.soundPath + "sound3.wav");
+				player.load("computermove", Config.soundPath + "computermove.wav");
+				player.load("moved", Config.soundPath + "moved.wav");
 				player.load("loaded", Config.soundPath + "loaded.wav");
 				player.load("check", Config.soundPath + "check.wav");
 				player.load("error", Config.soundPath + "error.wav");
