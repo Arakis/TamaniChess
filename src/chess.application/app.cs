@@ -111,6 +111,16 @@ namespace chess.application
 				player.load("silence500ms", Config.soundPath + "silence500ms.wav");
 				player.play("silence500ms");
 
+				//tests
+				//player.playSync("mate");
+				//player.playSync("silence500ms");
+				//player.playSync("check");
+				//player.playSync("silence500ms");
+				//player.playSync("moved");
+				//player.playSync("silence500ms");
+				//player.playSync("computermove");
+				//player.playSync("silence500ms");
+
 				engine = new TEngine();
 				engine.start();
 				//return;
@@ -183,6 +193,8 @@ namespace chess.application
 		public static Queue<string> consoleCommandQueue = new Queue<string>();
 
 		public static void processEvents(DConsoleLine cb) {
+			if (Program.options.service) return;
+
 			if (th == null) start();
 
 			List<string> commands;
@@ -202,9 +214,19 @@ namespace chess.application
 		}
 
 		public static void start() {
+			if (Program.options.service) return;
+
+			int cnt = 0;
 			th = new Thread(() => {
 				while (true) {
 					var line = Console.ReadLine();
+					if (line == null || line == "") {
+						cnt++;
+						if (cnt > 100) {
+							Console.WriteLine("Stopped listening on STDIN. Running as daemon? Call with -service option!");
+							return;
+						}
+					}
 					lock (consoleCommandQueue)
 						consoleCommandQueue.Enqueue(line);
 				}

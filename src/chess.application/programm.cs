@@ -120,6 +120,12 @@ namespace chess.application
 		[CommandLineOption(Description = "Starts a temporary method (for internal use only)")]
 		public bool temp;
 
+		[CommandLineOption(Description = "Running as service")]
+		public bool service;
+
+		[CommandLineOption(Description = "Debugging")]
+		public bool debug;
+
 	}
 
 }

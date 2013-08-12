@@ -49,7 +49,10 @@ namespace chess.launcher
 		private static Thread appThread;
 
 		static void Main(string[] args) {
-			Console.WriteLine("Launcher started");
+			tty = new System.IO.StreamWriter(System.IO.File.Open("/dev/tty1", FileMode.Open, FileAccess.Write), Encoding.UTF8);
+			tty.AutoFlush = true;
+
+			WriteLine("Launcher started");
 
 			System.Diagnostics.Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
 
@@ -63,7 +66,11 @@ namespace chess.launcher
 
 			start();
 
-			Console.CancelKeyPress += (a, b) => stop();
+			Console.CancelKeyPress += (a, b) => {
+				restart = false;
+				stop();
+			};
+
 			//Thread.CurrentThread.Suspend();
 			while (true) {
 				var line = Console.ReadLine();
@@ -81,7 +88,7 @@ namespace chess.launcher
 			time = DateTime.Now;
 			if (updateThread == null) {
 				updateThread = new Thread(() => {
-					Console.WriteLine("update delayed");
+					WriteLine("update delayed");
 					while ((DateTime.Now - time).TotalSeconds < (development ? 2 : 5)) {
 						System.Threading.Thread.Sleep(1000);
 					}
@@ -110,10 +117,10 @@ namespace chess.launcher
 		private static Thread updateThread;
 
 		public static void update() {
-			Console.WriteLine("application update");
+			WriteLine("application update");
 			Tools.copyDirectory(Config.updatePath, Config.applicationPath, true, true);
 			Process.Start("chmod", "+x " + Config.applicationExe).WaitForExit();
-			Console.WriteLine("calling pdb2mdb");
+			WriteLine("calling pdb2mdb");
 			Process.Start(new ProcessStartInfo("pdb2mdb", "chess.application.exe") { WorkingDirectory = Config.applicationPath }).WaitForExit();
 		}
 
@@ -123,30 +130,35 @@ namespace chess.launcher
 			appThread = new Thread(() => {
 				var args = new List<string>(Environment.GetCommandLineArgs());
 				args.RemoveAt(0);
-				var psi = new ProcessStartInfo("mono", "--debug " + Config.applicationExe + " " + string.Join(" ", args));
+				var monoArgs = "";
+
+				monoArgs += " --debug";
+				//monoArgs += " --debugger-agent=transport=dt_socket,address=192.168.20.10:10000";
+
+				var psi = new ProcessStartInfo("mono", monoArgs.Trim() + " " + Config.applicationExe + " " + string.Join(" ", args));
 				psi.UseShellExecute = false;
 				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardInput = true;
 				process = new Process();
 				process.StartInfo = psi;
 				process.OutputDataReceived += (sender, e) => {
-					Console.Write(e.Data);
+					Write(e.Data);
 				};
 				process.Start();
-				Console.WriteLine("application started");
+				WriteLine("application started");
 
 				var buf = new char[1];
 				while (!process.HasExited) {
 					var count = process.StandardOutput.Read(buf, 0, 1);
 					if (count > 0)
-						Console.Write(buf[0]);
+						Write(buf[0]);
 					else
 						System.Threading.Thread.Sleep(50);
 				}
 
 				process.WaitForExit();
 				if (restart) {
-					Console.WriteLine("restart");
+					WriteLine("restart");
 					start();
 				}
 
@@ -156,13 +168,13 @@ namespace chess.launcher
 
 		public static void stop() {
 			if (process != null) {
-				Console.WriteLine("application stopped");
+				WriteLine("application stopped");
 				try {
 					if (!process.HasExited) {
-						Console.WriteLine("send quit signal");
+						WriteLine("send quit signal");
 						process.StandardInput.WriteLine("quit");
 						process.WaitForExit(5000);
-						Console.WriteLine("terminate child process");
+						WriteLine("terminate child process");
 					}
 					process.Kill();
 					process = null;
@@ -171,6 +183,26 @@ namespace chess.launcher
 			}
 
 			Process.Start("sudo", "pkill -KILL -f \"chess.application.exe\"").WaitForExit();
+		}
+
+		public static void WriteLine(string text) {
+			Console.WriteLine(text);
+			tty.WriteLine(text);
+			//tty.Flush();
+		}
+
+		public static StreamWriter tty;
+
+		public static void Write(string text) {
+			Console.Write(text);
+			tty.Write(text);
+			//tty.Flush();
+		}
+
+		public static void Write(char c) {
+			Console.Write(c);
+			tty.Write(c);
+			//tty.Flush();
 		}
 
 	}

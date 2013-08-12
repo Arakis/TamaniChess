@@ -41,7 +41,7 @@ namespace chess.shared
 
 	public static class Config
 	{
-		public static string rootPath = "/home/pi/chess/";
+		public static string rootPath = "/data/cc/";
 		public static string applicationPath = Path.Combine(rootPath, "app") + "/";
 		public static string gfxPath = Path.Combine(applicationPath, "gfx") + "/";
 		public static string applicationExe = Path.Combine(applicationPath, "chess.application.exe");

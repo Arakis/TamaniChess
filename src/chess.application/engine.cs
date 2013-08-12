@@ -220,8 +220,8 @@ namespace chess.application
 			send("setoption name " + name + " value " + value.ToString().ToLower());
 		}
 
-		public int thinkingTime = 0; //1000;
-		public int depth = 0; //20;
+		public int thinkingTime = 50; //1000;
+		public int depth = 1; //20;
 
 		public void go(Action<string> cb) {
 			System.Threading.ThreadPool.QueueUserWorkItem((state) => {

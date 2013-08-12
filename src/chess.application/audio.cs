@@ -47,7 +47,7 @@ namespace chess.application
 
 		private AudioDevice adev;
 		private Dictionary<string, AudioData> files = new Dictionary<string, AudioData>();
-
+		
 		private Thread th;
 
 		public TAudioPlayer() {
@@ -57,6 +57,7 @@ namespace chess.application
 		}
 
 		private AutoResetEvent waiter = new AutoResetEvent(false);
+		private AutoResetEvent waiter2 = new AutoResetEvent(false);
 
 		private Action action;
 
@@ -64,6 +65,7 @@ namespace chess.application
 			while (true) {
 				try {
 					waiter.WaitOne();
+					waiter2.Reset();
 					if (action != null) {
 						var act = action;
 						action = null;
@@ -72,6 +74,9 @@ namespace chess.application
 				}
 				catch (Exception ex) {
 					Console.WriteLine(ex.ToString());
+				}
+				finally {
+					waiter2.Set();
 				}
 			}
 		}
@@ -112,6 +117,11 @@ namespace chess.application
 				playInternal("silence500ms");
 			};
 			waiter.Set();
+		}
+
+		public void playSync(string name) {
+			waiter2.WaitOne();
+			play(name);
 		}
 
 		private void playInternal(string name) {
