@@ -63,7 +63,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)\*.* Q:\launcher</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetDir)\*.exe Q:\launcher
+copy $(TargetDir)\*.dll Q:\launcher
+copy $(TargetDir)\*.pdb Q:\launcher
+del Q:\launcher\*.vshost.exe</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

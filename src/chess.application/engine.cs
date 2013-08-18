@@ -41,58 +41,53 @@ using System.IO;
 namespace chess.application
 {
 
-	public class TConsoleProcess
-	{
+	//public class TConsoleProcess
+	//{
 
-		Thread appThread;
-		Process process;
+	//	Thread appThread;
+	//	Process process;
 
-		public TConsoleProcess(string path, string args) {
-			var wait = true;
+	//	public TConsoleProcess(string path, string args) {
+	//		var wait = true;
 
-			appThread = new Thread(() => {
-				var psi = new ProcessStartInfo(path, args);
-				psi.UseShellExecute = false;
-				psi.RedirectStandardOutput = true;
-				psi.RedirectStandardInput = true;
-				process = new Process();
-				process.StartInfo = psi;
-				//process.OutputDataReceived += (sender, e) => {
-				//	Console.Write(e.Data);
-				//};
-				Console.WriteLine("starting app");
-				process.Start();
+	//		appThread = new Thread(() => {
+	//			var psi = new ProcessStartInfo(path, args);
+	//			psi.UseShellExecute = false;
+	//			psi.RedirectStandardOutput = true;
+	//			psi.RedirectStandardInput = true;
+	//			process = new Process();
+	//			process.StartInfo = psi;
 
-				var buf = new char[1];
-				var sb = new StringBuilder();
-				while (!process.HasExited) {
-					var count = process.StandardOutput.Read(buf, 0, 1);
-					if (count > 0) {
-						wait = false;
-						//Console.Write(buf[0]);
-						if (buf[0].ToString() == Environment.NewLine) {
-							Console.WriteLine("APP: " + sb.ToString());
-							//if (onNewLine != null)
-							//	onNewLine(sb.ToString());
-							//sb.Clear();
-						}
-						else {
-							sb.Append(buf[0]);
-						}
-					}
-					else {
-						Thread.Sleep(50);
-					}
-				}
+	//			Console.WriteLine("starting app");
+	//			process.Start();
 
-				process.WaitForExit();
-			});
-			appThread.Start();
+	//			var buf = new char[1];
+	//			var sb = new StringBuilder();
+	//			while (!process.HasExited) {
+	//				var count = process.StandardOutput.Read(buf, 0, 1);
+	//				if (count > 0) {
+	//					wait = false;
 
-			while (wait) Thread.Sleep(10);
-			Console.WriteLine("app started");
-		}
-	}
+	//					if (buf[0].ToString() == Environment.NewLine) {
+	//						Console.WriteLine("APP: " + sb.ToString());
+	//					}
+	//					else {
+	//						sb.Append(buf[0]);
+	//					}
+	//				}
+	//				else {
+	//					Thread.Sleep(50);
+	//				}
+	//			}
+
+	//			process.WaitForExit();
+	//		});
+	//		appThread.Start();
+
+	//		while (wait) Thread.Sleep(10);
+	//		Console.WriteLine("app started");
+	//	}
+	//}
 
 	public class TEngine
 	{
@@ -117,7 +112,7 @@ namespace chess.application
 				Console.WriteLine("starting chess engine");
 				process.Start();
 				process.PriorityClass = ProcessPriorityClass.BelowNormal;
-
+				
 				var buf = new char[1];
 				var sb = new StringBuilder();
 				while (!process.HasExited) {

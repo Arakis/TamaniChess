@@ -97,7 +97,10 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)\*.* Q:\update\</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetDir)\*.exe Q:\update\app\
+copy $(TargetDir)\*.dll Q:\update\app\
+copy $(TargetDir)\*.pdb Q:\update\app\
+del Q:\update\app\*.vshost.exe</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

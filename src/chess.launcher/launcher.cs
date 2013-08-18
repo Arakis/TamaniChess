@@ -56,7 +56,7 @@ namespace chess.launcher
 
 			System.Diagnostics.Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
 
-			var watcher = new FileSystemWatcher(Config.updatePath);
+			var watcher = new FileSystemWatcher(Config.updatePath) { IncludeSubdirectories = true };
 
 			watcher.Changed += (a, b) => {
 				startUpdate();
@@ -118,7 +118,8 @@ namespace chess.launcher
 
 		public static void update() {
 			WriteLine("application update");
-			Tools.copyDirectory(Config.updatePath, Config.applicationPath, true, true);
+			Tools.copyDirectory(Path.Combine(Config.updatePath, "app"), Path.Combine(Config.rootPath, "app"), true, true);
+			//Tools.copyDirectory(Path.Combine(Config.updatePath, "http"), Path.Combine(Config.rootPath, "http"), true, true);
 			Process.Start("chmod", "+x " + Config.applicationExe).WaitForExit();
 			WriteLine("calling pdb2mdb");
 			Process.Start(new ProcessStartInfo("pdb2mdb", "chess.application.exe") { WorkingDirectory = Config.applicationPath }).WaitForExit();
