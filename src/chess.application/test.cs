@@ -235,7 +235,7 @@ namespace chess.application
 			//}
 
 			var ec = new TEventController();
-			new TSwitchTest().install(ec);
+			new TSwitchTest().install(ec, 0);
 			ec.eventLoop();
 		}
 

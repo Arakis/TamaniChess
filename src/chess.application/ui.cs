@@ -812,4 +812,151 @@ namespace chess.application
 
 	}
 
+	public class TUITextInput : TUIDrawHandler
+	{
+
+		public TUITextInput() {
+			createGraphics();
+
+			var lines = new string[] {
+				"0123456789",
+				"abcdefghi",
+				"jklmnopqr",
+				"stuvwxyz",
+			};
+
+			int height = 0;
+			foreach (var line in lines) {
+				var keyLine = new List<TKey>();
+				int width = 0;
+				for (var x = 0; x < line.Length; x++) {
+					var c = line[x];
+					keyLine.Add(new TCharKey(this, c.ToString()) {
+						rect = new Rectangle(width, height, buttonWidth, buttonHeight)
+					});
+					width += buttonWidth;
+				}
+				keys.Add(keyLine);
+				height += buttonHeight;
+			}
+
+			var bottomLine = new List<TKey>();
+			int bottomWidth = 0;
+
+			bottomLine.Add(new TCharKey(this, "ABC") {
+				rect = new Rectangle(bottomWidth, height, buttonWidth * 2, buttonHeight)
+			});
+			bottomWidth += buttonWidth * 2;
+
+			bottomLine.Add(new TCharKey(this, "?!.") {
+				rect = new Rectangle(bottomWidth, height, buttonWidth * 2, buttonHeight)
+			});
+			bottomWidth += buttonWidth * 2;
+
+			bottomLine.Add(new TCharKey(this, "<--") {
+				rect = new Rectangle(bottomWidth, height, buttonWidth * 2, buttonHeight)
+			});
+			bottomWidth += buttonWidth * 2;
+
+			bottomLine.Add(new TCharKey(this, "OK") {
+				rect = new Rectangle(bottomWidth, height, buttonWidth * 2, buttonHeight)
+			});
+			bottomWidth += buttonWidth * 2;
+
+			keys.Add(bottomLine);
+
+		}
+
+		public List<List<TKey>> keys = new List<List<TKey>>();
+
+		private const int buttonHeight = 20;
+		private const int buttonWidth = 12;
+
+		public override void onUpdateGraphics(TUpdateGraphicsEvent e) {
+			base.onUpdateGraphics(e);
+			gfx.Clear(Color.Black);
+			foreach (var keyLine in keys) {
+				foreach (var key in keyLine) {
+					gfx.Clip = new Region(key.rect);
+					gfx.TranslateTransform(key.rect.X, key.rect.Y);
+					key.onPaint(gfx);
+					gfx.ResetTransform();
+					gfx.ResetClip();
+					gfx.DrawRectangle(Pens.Red, key.rect);
+				}
+			}
+			//gfx.DrawString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.White), new Point(0, 0));
+
+		}
+
+		public override void onDraw(TDrawEvent e) {
+			base.onDraw(e);
+			e.gfx.DrawImage(bmp, 0, 0);
+		}
+
+		public void sendKey(string key) {
+			if (key.Length == 1) writeChar(key[0]);
+			else {
+				switch (key) {
+					case "OK":
+						break;
+				}
+			}
+		}
+
+		public void writeChar(char c) {
+			Console.Write(c);
+		}
+
+		public void writeText(char c) {
+
+		}
+
+		public void back() { }
+
+		public void enter() { }
+
+		public class TKey
+		{
+			public Rectangle rect;
+			protected TUITextInput input;
+
+			public TKey(TUITextInput input) {
+				this.input = input;
+			}
+
+			public virtual void onPress() { }
+			public virtual void onPaint(Graphics gfx) { }
+		}
+
+		public class TCharKey : TKey
+		{
+
+			public string c;
+
+			public TCharKey(TUITextInput input, string c)
+				: base(input) {
+				this.c = c;
+			}
+
+			public override void onPress() {
+				base.onPress();
+				input.sendKey(c);
+			}
+
+			private void getFont() { }
+			private static Font font = new Font(FontFamily.GenericSansSerif, 10);
+			private static Font smallFont = new Font(FontFamily.GenericSansSerif, 8);
+			private static SolidBrush brush = new SolidBrush(Color.White);
+
+			public override void onPaint(Graphics gfx) {
+				base.onPaint(gfx);
+				gfx.Clear(Color.Green);
+				gfx.DrawString(c, font, brush, new Point(2, -1));
+			}
+
+		}
+
+	}
+
 }

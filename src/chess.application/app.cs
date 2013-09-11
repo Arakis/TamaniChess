@@ -149,6 +149,8 @@ namespace chess.application
 				var screenSaver = new TScreenSaverHandler();
 				screenSaver.install();
 
+				new TUITextInput().install();
+
 				ui.drawAll();
 
 				initHandler.uninstall();

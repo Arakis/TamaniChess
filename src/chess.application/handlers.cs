@@ -546,6 +546,10 @@ namespace chess.application
 	public class TScreenSaverHandler : THandler
 	{
 
+		public TScreenSaverHandler() {
+			priority = 100;
+		}
+
 		public DateTime lastActivity = DateTime.Now;
 		public DateTime lastPositionChanged = DateTime.Now;
 

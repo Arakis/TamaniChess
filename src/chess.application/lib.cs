@@ -47,6 +47,8 @@ namespace chess.application
 	public abstract class THandler : IDisposable
 	{
 
+		public int priority = 0;
+
 		protected TEventController ioController {
 			get {
 				return Program.app.ioController;
@@ -98,13 +100,24 @@ namespace chess.application
 		public TBoardLeds boardLeds = new TBoardLeds();
 
 		public virtual void install() {
-			install(ioController);
+			install(ioController, priority);
 		}
 
-		public virtual void install(TEventController ioController) {
+		public virtual void install(TEventController ioController, int priority) {
 			if (installed) throw new Exception("action is already installed");
-			lock (ioController.handlers)
-				ioController.handlers.Add(this);
+			var handlers = ioController.handlers;
+			lock (handlers) {
+				if (handlers.Count == 0 || handlers[handlers.Count - 1].priority <= priority) {
+					handlers.Add(this);
+				}
+				else {
+					for (var i = handlers.Count - 2; i >= 0; i--) {
+						if (handlers[i].priority <= priority) {
+							handlers.Insert(i + 1, this);
+						}
+					}
+				}
+			}
 			installed = true;
 		}
 

@@ -47,6 +47,12 @@
     <Compile Include="shared.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\thirdparty\plossum-commandline\src\Plossum\Plossum.csproj">
+      <Project>{156BF637-7F50-4EC8-8476-D4E162335364}</Project>
+      <Name>Plossum</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

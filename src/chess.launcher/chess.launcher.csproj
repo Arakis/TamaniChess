@@ -60,6 +60,10 @@
       <Project>{75d520da-e59a-4866-85ad-99fde597a9d8}</Project>
       <Name>chess.shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\thirdparty\plossum-commandline\src\Plossum\Plossum.csproj">
+      <Project>{156BF637-7F50-4EC8-8476-D4E162335364}</Project>
+      <Name>Plossum</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

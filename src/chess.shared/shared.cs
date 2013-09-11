@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Plossum.CommandLine;
 
 namespace chess.shared
 {
@@ -222,6 +223,27 @@ namespace chess.shared
 			return Encoding.GetString(Buffer);
 		}
 
+
+	}
+
+	[CommandLineManager(ApplicationName = "Tamani Chess", Copyright = "Copyright (c) Tamani UG")]
+	public class TProgrammOptions
+	{
+
+		[CommandLineOption(Description = "Displays this help text")]
+		public bool help;
+
+		[CommandLineOption(Description = "Starts test routine (for internal use only)")]
+		public bool test;
+
+		[CommandLineOption(Description = "Starts a temporary method (for internal use only)")]
+		public bool temp;
+
+		[CommandLineOption(Description = "Running as service")]
+		public bool service;
+
+		[CommandLineOption(Description = "Debugging")]
+		public bool debug;
 
 	}
 

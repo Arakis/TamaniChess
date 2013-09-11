@@ -38,6 +38,7 @@ using chess.shared;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using Plossum.CommandLine;
 
 namespace chess.launcher
 {
@@ -47,8 +48,14 @@ namespace chess.launcher
 
 		private static Process process;
 		private static Thread appThread;
+		public static TProgrammOptions options;
 
 		static void Main(string[] args) {
+
+			options = new TProgrammOptions();
+			var parser = new CommandLineParser(options);
+			parser.Parse();
+
 			tty = new System.IO.StreamWriter(System.IO.File.Open("/dev/tty1", FileMode.Open, FileAccess.Write), Encoding.UTF8);
 			tty.AutoFlush = true;
 
@@ -188,7 +195,8 @@ namespace chess.launcher
 
 		public static void WriteLine(string text) {
 			Console.WriteLine(text);
-			tty.WriteLine(text);
+			if (options.service)
+				tty.WriteLine(text);
 			//tty.Flush();
 		}
 
@@ -196,13 +204,15 @@ namespace chess.launcher
 
 		public static void Write(string text) {
 			Console.Write(text);
-			tty.Write(text);
+			if (options.service)
+				tty.Write(text);
 			//tty.Flush();
 		}
 
 		public static void Write(char c) {
 			Console.Write(c);
-			tty.Write(c);
+			if (options.service)
+				tty.Write(c);
 			//tty.Flush();
 		}
 
